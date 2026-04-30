@@ -44,7 +44,9 @@ logs/
 
 # Database
 *.db
+!backend/db/eventandmoney.db
 pgdata/
 
-# Outputs (generated files)
-outputs/
+# Outputs (generated files, but keep charts for deployment)
+outputs/*
+!outputs/charts/

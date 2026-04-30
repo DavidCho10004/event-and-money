@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}히트맵 — Event & Money{% endblock %}
+{% block content %}
+<h1>D+30 수익률 히트맵</h1>
+<p style="color:#666; font-size:13px; margin-bottom:10px;">
+    빨강 = 상승 / 파랑 = 하락 / 회색 = 데이터 없음
+</p>
+
+<h2>전체 (30사건 × 37자산, 섹터별 그룹)</h2>
+<img src="/outputs/charts/heatmap_d30_full.png" alt="Full Heatmap" style="max-width:100%; border:1px solid #ddd;">
+
+<h2 style="margin-top:30px;">요약 (30사건 × 8자산)</h2>
+<img src="/outputs/charts/heatmap_d30.png" alt="Summary Heatmap" style="max-width:100%; border:1px solid #ddd;">
+{% endblock %}

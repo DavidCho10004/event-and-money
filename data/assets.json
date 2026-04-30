@@ -223,5 +223,113 @@
     "yahoo_symbol": "ITA",
     "data_start": "2006-05-01",
     "description": "미국 방산/항공우주 ETF (록히드마틴, RTX 등)"
+  },
+  {
+    "symbol": "XLY",
+    "name_ko": "경기소비재 ETF",
+    "name_en": "Consumer Discretionary Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLY",
+    "data_start": "1998-12-22",
+    "description": "경기소비재 섹터 ETF (아마존, 테슬라, 맥도날드 등)"
+  },
+  {
+    "symbol": "XLP",
+    "name_ko": "필수소비재 ETF",
+    "name_en": "Consumer Staples Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLP",
+    "data_start": "1998-12-22",
+    "description": "필수소비재 섹터 ETF (P&G, 코카콜라, 월마트 등) — 경기방어주"
+  },
+  {
+    "symbol": "XLU",
+    "name_ko": "유틸리티 ETF",
+    "name_en": "Utilities Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLU",
+    "data_start": "1998-12-22",
+    "description": "유틸리티 섹터 ETF (전력, 가스, 수도) — 금리 민감"
+  },
+  {
+    "symbol": "XLC",
+    "name_ko": "통신/미디어 ETF",
+    "name_en": "Communication Services Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLC",
+    "data_start": "2018-06-18",
+    "description": "통신/미디어 섹터 ETF (메타, 알파벳, 넷플릭스 등)"
+  },
+  {
+    "symbol": "XLB",
+    "name_ko": "소재 섹터 ETF",
+    "name_en": "Materials Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLB",
+    "data_start": "1998-12-22",
+    "description": "소재 섹터 ETF (화학, 금속, 건자재 등) — 원자재 가격 연동"
+  },
+  {
+    "symbol": "XLRE",
+    "name_ko": "부동산 리츠 ETF",
+    "name_en": "Real Estate Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLRE",
+    "data_start": "2015-10-08",
+    "description": "부동산 리츠 ETF — 금리 민감, 경기 민감"
+  },
+  {
+    "symbol": "XHB",
+    "name_ko": "주택건설 ETF",
+    "name_en": "SPDR S&P Homebuilders ETF",
+    "asset_class": "thematic_etf",
+    "yahoo_symbol": "XHB",
+    "data_start": "2006-02-06",
+    "description": "미국 주택건설업체 ETF — 금리/부동산 사이클 민감"
+  },
+  {
+    "symbol": "KRE",
+    "name_ko": "지역은행 ETF",
+    "name_en": "SPDR S&P Regional Banking ETF",
+    "asset_class": "thematic_etf",
+    "yahoo_symbol": "KRE",
+    "data_start": "2006-06-19",
+    "description": "미국 지역은행 ETF — SVB 뱅크런 때 핵심 지표"
+  },
+  {
+    "symbol": "OIH",
+    "name_ko": "오일서비스 ETF",
+    "name_en": "VanEck Oil Services ETF",
+    "asset_class": "thematic_etf",
+    "yahoo_symbol": "OIH",
+    "data_start": "2011-12-21",
+    "description": "석유 시추/서비스 ETF — 유가와 직접 연동"
+  },
+  {
+    "symbol": "URA",
+    "name_ko": "우라늄 ETF",
+    "name_en": "Global X Uranium ETF",
+    "asset_class": "thematic_etf",
+    "yahoo_symbol": "URA",
+    "data_start": "2010-11-04",
+    "description": "우라늄/원전 관련 ETF — 후쿠시마 때 폭락, 원전 르네상스 수혜"
+  },
+  {
+    "symbol": "COPX",
+    "name_ko": "구리 채굴 ETF",
+    "name_en": "Global X Copper Miners ETF",
+    "asset_class": "thematic_etf",
+    "yahoo_symbol": "COPX",
+    "data_start": "2010-04-20",
+    "description": "구리 채굴업체 ETF — 경기선행지표, 전기차 수요 연동"
+  },
+  {
+    "symbol": "LIT",
+    "name_ko": "리튬/배터리 ETF",
+    "name_en": "Global X Lithium & Battery Tech ETF",
+    "asset_class": "thematic_etf",
+    "yahoo_symbol": "LIT",
+    "data_start": "2010-07-22",
+    "description": "리튬/배터리 ETF — EV 전환, 에너지 전환 수혜"
   }
 ]

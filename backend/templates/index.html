@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}사건 목록 — Event & Money{% endblock %}
+{% block content %}
+<h1>사건 목록 ({{ events|length }}건)</h1>
+
+<div class="filter-bar">
+    <a href="/" class="{% if not current_category %}active{% endif %}">전체</a>
+    {% for cat, name, count in categories %}
+    <a href="/?category={{ cat }}" class="{% if current_category == cat %}active{% endif %}">
+        {{ name }} ({{ count }})
+    </a>
+    {% endfor %}
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>카테고리</th>
+            <th>사건명</th>
+            <th>날짜</th>
+            <th>에너지</th>
+            <th>상세</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for e in events %}
+        <tr>
+            <td>{{ e.id }}</td>
+            <td><span class="badge badge-{{ e.category }}">{{ category_names.get(e.category, e.category) }}</span></td>
+            <td style="text-align:left;">{{ e.name_ko }}</td>
+            <td>{{ e.event_date }}</td>
+            <td>{% if e.energy_impact %}⚡{% endif %}</td>
+            <td><a href="/event/{{ e.id }}">보기</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

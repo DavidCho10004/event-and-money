@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% block title %}{{ event.name_ko }} — Event & Money{% endblock %}
+{% block content %}
+<a href="/" class="back">&larr; 목록으로</a>
+
+<h1>{{ event.id }} {{ event.name_ko }}</h1>
+<p style="margin-bottom:5px;">
+    <span class="badge badge-{{ event.category }}">{{ category_names.get(event.category, event.category) }}</span>
+    {{ event.event_date }}
+    {% if event.energy_impact %} | ⚡ 에너지 공급 차질{% endif %}
+</p>
+<p style="color:#666; font-size:13px; margin-bottom:15px;">{{ event.description_ko }}</p>
+
+<h2>자산별 수익률 <span style="font-weight:normal; font-size:12px; color:#999;">(셀 클릭 → 차트)</span></h2>
+<table>
+    <thead>
+        <tr>
+            <th>자산</th>
+            <th>분류</th>
+            {% for p in periods %}
+            <th>{{ p }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for symbol, info in table.items() %}
+        <tr>
+            <td style="text-align:left; cursor:pointer;" onclick="showChart('{{ symbol }}')">
+                {{ info.name_ko }}
+            </td>
+            <td style="font-size:11px;">{{ info.asset_class }}</td>
+            {% for p in periods %}
+                {% set r = info.periods.get(p) %}
+                {% if r %}
+                    {% if r.return_pct > 0 %}
+                    <td class="positive clickable-cell"
+                        onclick="showChart('{{ symbol }}', '{{ p }}')"
+                        title="base={{ r.date_base }} ({{ '%.2f'|format(r.price_base) }}) → end={{ r.date_end }} ({{ '%.2f'|format(r.price_end) }})">
+                        +{{ '%.2f'|format(r.return_pct) }}%
+                    </td>
+                    {% else %}
+                    <td class="negative clickable-cell"
+                        onclick="showChart('{{ symbol }}', '{{ p }}')"
+                        title="base={{ r.date_base }} ({{ '%.2f'|format(r.price_base) }}) → end={{ r.date_end }} ({{ '%.2f'|format(r.price_end) }})">
+                        {{ '%.2f'|format(r.return_pct) }}%
+                    </td>
+                    {% endif %}
+                {% else %}
+                    <td style="color:#ccc;">—</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- 차트 모달 -->
+<div id="chartModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#fff; border-radius:8px; padding:20px; width:90%; max-width:900px;
+        max-height:90vh; overflow-y:auto; position:relative;">
+        <button onclick="closeChart()" style="position:absolute; top:10px; right:15px;
+            background:none; border:none; font-size:24px; cursor:pointer; color:#666;">&times;</button>
+        <h3 id="chartTitle" style="margin-bottom:5px;"></h3>
+        <p id="chartSubtitle" style="font-size:12px; color:#666; margin-bottom:10px;"></p>
+        <div style="position:relative; height:350px;">
+            <canvas id="priceChart"></canvas>
+        </div>
+        <div id="chartLinks" style="margin-top:12px; display:flex; gap:10px;"></div>
+        <p style="font-size:11px; color:#aaa; margin-top:8px;">
+            Y축: 사건일 기준 수익률(%) | 점선: 사건 발생일 (D=0)
+        </p>
+    </div>
+</div>
+
+<style>
+    .clickable-cell { cursor: pointer; }
+    .clickable-cell:hover { background: #e8e8e8 !important; }
+    .ext-link {
+        display:inline-block; padding:6px 14px; border-radius:4px;
+        font-size:12px; text-decoration:none; color:#fff;
+    }
+    .ext-link-yahoo { background:#7b1fa2; }
+    .ext-link-naver { background:#03c75a; }
+    .ext-link:hover { opacity:0.85; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+<script>
+const EVENT_ID = "{{ event.id }}";
+const EVENT_DATE = "{{ event.event_date }}";
+let chartInstance = null;
+
+function getExternalUrl(symbol, yahooSymbol) {
+    const eventMs = new Date(EVENT_DATE).getTime();
+    const period1 = Math.floor(eventMs / 1000);
+    const period2 = period1 + 365 * 86400;
+
+    if (symbol === "^KS11") {
+        return {
+            url: "https://finance.naver.com/sise/sise_index.naver?code=KOSPI",
+            label: "네이버 증권에서 보기",
+            cls: "ext-link-naver"
+        };
+    }
+    const encoded = yahooSymbol.replace(/=/g, "%3D");
+    return {
+        url: `https://finance.yahoo.com/quote/${encoded}/chart?period1=${period1}&period2=${period2}`,
+        label: "Yahoo Finance에서 보기 (사건 기간)",
+        cls: "ext-link-yahoo"
+    };
+}
+
+function parsePeriodDays(period) {
+    if (!period) return null;
+    const m = period.match(/D\+(\d+)/);
+    return m ? parseInt(m[1]) : null;
+}
+
+async function showChart(symbol, period) {
+    const modal = document.getElementById("chartModal");
+    modal.style.display = "flex";
+
+    document.getElementById("chartTitle").textContent = "로딩 중...";
+    document.getElementById("chartSubtitle").textContent = "";
+    document.getElementById("chartLinks").innerHTML = "";
+
+    const resp = await fetch(`/api/prices/${EVENT_ID}/${encodeURIComponent(symbol)}`);
+    const data = await resp.json();
+
+    if (data.error) {
+        document.getElementById("chartTitle").textContent = "데이터 없음";
+        return;
+    }
+
+    const periodLabel = period ? ` — ${period}` : "";
+    document.getElementById("chartTitle").textContent = `${data.asset_name} (${data.symbol})${periodLabel}`;
+    document.getElementById("chartSubtitle").textContent =
+        `${data.event_name} (${data.event_date}) | 기준가: ${data.base_price.toLocaleString()}`;
+
+    const link = getExternalUrl(data.symbol, data.yahoo_symbol);
+    document.getElementById("chartLinks").innerHTML =
+        `<a href="${link.url}" target="_blank" class="ext-link ${link.cls}">${link.label}</a>`;
+
+    const eventIdx = data.dates.findIndex(d => d >= EVENT_DATE);
+
+    const eventDateMs = new Date(EVENT_DATE).getTime();
+    const labels = data.dates.map(d => {
+        const diff = Math.round((new Date(d).getTime() - eventDateMs) / 86400000);
+        return diff;
+    });
+
+    // 기간 하이라이트 계산
+    const targetDays = parsePeriodDays(period);
+    let periodIdx = null;
+    let periodReturn = null;
+    if (targetDays !== null) {
+        let bestDist = Infinity;
+        for (let i = 0; i < labels.length; i++) {
+            const dist = Math.abs(labels[i] - targetDays);
+            if (dist < bestDist) { bestDist = dist; periodIdx = i; }
+        }
+        if (periodIdx !== null) {
+            periodReturn = data.returns[periodIdx];
+        }
+    }
+
+    if (chartInstance) chartInstance.destroy();
+
+    const annotations = {
+        eventLine: {
+            type: "line",
+            xMin: eventIdx,
+            xMax: eventIdx,
+            borderColor: "#e74c3c",
+            borderWidth: 2,
+            borderDash: [6, 3],
+            label: {
+                display: true,
+                content: "D=0",
+                position: "start",
+                backgroundColor: "#e74c3c",
+                font: { size: 10 },
+            }
+        },
+        zeroLine: {
+            type: "line",
+            yMin: 0,
+            yMax: 0,
+            borderColor: "#999",
+            borderWidth: 1,
+        }
+    };
+
+    if (periodIdx !== null) {
+        annotations.periodBox = {
+            type: "box",
+            xMin: eventIdx,
+            xMax: periodIdx,
+            backgroundColor: "rgba(255, 165, 0, 0.10)",
+            borderColor: "rgba(255, 165, 0, 0.3)",
+            borderWidth: 1,
+        };
+        const retText = periodReturn !== null
+            ? `${period}: ${periodReturn > 0 ? '+' : ''}${periodReturn.toFixed(2)}%`
+            : period;
+        annotations.periodLine = {
+            type: "line",
+            xMin: periodIdx,
+            xMax: periodIdx,
+            borderColor: "#e67e22",
+            borderWidth: 2,
+            borderDash: [4, 4],
+            label: {
+                display: true,
+                content: retText,
+                position: "end",
+                backgroundColor: "#e67e22",
+                font: { size: 11 },
+                padding: 4,
+            }
+        };
+    }
+
+    const ctx = document.getElementById("priceChart").getContext("2d");
+    chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "수익률 (%)",
+                data: data.returns,
+                borderColor: "#1a1a2e",
+                backgroundColor: "rgba(26,26,46,0.08)",
+                borderWidth: 2,
+                pointRadius: 0,
+                pointHitRadius: 8,
+                fill: true,
+                tension: 0.1,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            scales: {
+                x: {
+                    title: { display: true, text: "사건일 기준 경과일 (D)" },
+                    ticks: {
+                        callback: (val, idx) => {
+                            const v = labels[idx];
+                            if (v % 30 === 0 || v === 0 || v === 1 || v === 7) return `D${v >= 0 ? '+' : ''}${v}`;
+                            return null;
+                        },
+                        maxRotation: 0,
+                    }
+                },
+                y: {
+                    title: { display: true, text: "수익률 (%)" },
+                    ticks: { callback: v => `${v > 0 ? '+' : ''}${v}%` },
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: (items) => {
+                            const idx = items[0].dataIndex;
+                            return `${data.dates[idx]} (D${labels[idx] >= 0 ? '+' : ''}${labels[idx]})`;
+                        },
+                        label: (item) => {
+                            const idx = item.dataIndex;
+                            return `${item.parsed.y > 0 ? '+' : ''}${item.parsed.y.toFixed(2)}%  (${data.prices[idx].toLocaleString()})`;
+                        }
+                    }
+                },
+                annotation: { annotations },
+                legend: { display: false },
+            }
+        }
+    });
+}
+
+function closeChart() {
+    document.getElementById("chartModal").style.display = "none";
+    if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+}
+
+document.getElementById("chartModal").addEventListener("click", function(e) {
+    if (e.target === this) closeChart();
+});
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") closeChart();
+});
+</script>
+{% endblock %}
