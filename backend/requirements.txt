@@ -1,0 +1,27 @@
+# Web Framework
+fastapi==0.115.0
+uvicorn==0.30.0
+pydantic==2.9.0
+
+# Database
+sqlalchemy==2.0.35
+psycopg2-binary==2.9.9
+alembic==1.13.2
+
+# Data Collection
+yfinance==0.2.44
+pandas-datareader==0.10.0
+
+# Data Analysis
+pandas==2.2.3
+numpy==2.1.1
+scipy==1.14.1
+
+# Visualization
+matplotlib==3.9.2
+seaborn==0.13.2
+plotly==5.24.1
+
+# Utilities
+python-dotenv==1.0.1
+httpx==0.27.2

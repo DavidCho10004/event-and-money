@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# Node.js
+node_modules/
+.next/
+out/
+frontend/.env.local
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Claude Code
+.claude/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Data (raw data is large, keep processed)
+data/raw/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+pgdata/
+
+# Outputs (generated files)
+outputs/

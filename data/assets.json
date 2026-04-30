@@ -1,0 +1,227 @@
+[
+  {
+    "symbol": "^GSPC",
+    "name_ko": "S&P 500",
+    "name_en": "S&P 500",
+    "asset_class": "equity_index",
+    "yahoo_symbol": "^GSPC",
+    "data_start": "1950-01-03",
+    "description": "미국 대형주 500개 시가총액 가중 지수"
+  },
+  {
+    "symbol": "^IXIC",
+    "name_ko": "나스닥 종합",
+    "name_en": "NASDAQ Composite",
+    "asset_class": "equity_index",
+    "yahoo_symbol": "^IXIC",
+    "data_start": "1971-02-05",
+    "description": "미국 기술주 중심 종합지수"
+  },
+  {
+    "symbol": "^KS11",
+    "name_ko": "KOSPI",
+    "name_en": "KOSPI Composite",
+    "asset_class": "equity_index",
+    "yahoo_symbol": "^KS11",
+    "data_start": "1997-07-01",
+    "description": "한국 종합주가지수"
+  },
+  {
+    "symbol": "^N225",
+    "name_ko": "닛케이 225",
+    "name_en": "Nikkei 225",
+    "asset_class": "equity_index",
+    "yahoo_symbol": "^N225",
+    "data_start": "1965-01-05",
+    "description": "일본 대표 주가지수"
+  },
+  {
+    "symbol": "^STOXX50E",
+    "name_ko": "유로스톡스 50",
+    "name_en": "EURO STOXX 50",
+    "asset_class": "equity_index",
+    "yahoo_symbol": "^STOXX50E",
+    "data_start": "1987-01-01",
+    "description": "유럽 대형주 50개 지수"
+  },
+  {
+    "symbol": "000001.SS",
+    "name_ko": "상하이 종합",
+    "name_en": "Shanghai Composite",
+    "asset_class": "equity_index",
+    "yahoo_symbol": "000001.SS",
+    "data_start": "1991-07-15",
+    "description": "중국 상하이 종합지수"
+  },
+  {
+    "symbol": "CL=F",
+    "name_ko": "WTI 원유",
+    "name_en": "WTI Crude Oil",
+    "asset_class": "commodity",
+    "yahoo_symbol": "CL=F",
+    "data_start": "1983-04-04",
+    "description": "서부 텍사스산 중질유 선물"
+  },
+  {
+    "symbol": "BZ=F",
+    "name_ko": "브렌트 원유",
+    "name_en": "Brent Crude Oil",
+    "asset_class": "commodity",
+    "yahoo_symbol": "BZ=F",
+    "data_start": "2007-05-21",
+    "description": "국제 유가 기준 브렌트유 선물"
+  },
+  {
+    "symbol": "GC=F",
+    "name_ko": "금",
+    "name_en": "Gold",
+    "asset_class": "commodity",
+    "yahoo_symbol": "GC=F",
+    "data_start": "1979-12-31",
+    "description": "금 선물 — 대표 안전자산"
+  },
+  {
+    "symbol": "SI=F",
+    "name_ko": "은",
+    "name_en": "Silver",
+    "asset_class": "commodity",
+    "yahoo_symbol": "SI=F",
+    "data_start": "1979-12-31",
+    "description": "은 선물 — 귀금속/산업용"
+  },
+  {
+    "symbol": "HG=F",
+    "name_ko": "구리",
+    "name_en": "Copper",
+    "asset_class": "commodity",
+    "yahoo_symbol": "HG=F",
+    "data_start": "1988-01-04",
+    "description": "구리 선물 — 경기선행지표 ('Dr. Copper')"
+  },
+  {
+    "symbol": "DX-Y.NYB",
+    "name_ko": "달러 인덱스 (DXY)",
+    "name_en": "US Dollar Index (DXY)",
+    "asset_class": "currency",
+    "yahoo_symbol": "DX-Y.NYB",
+    "data_start": "1985-01-02",
+    "description": "미 달러 가치를 6개 주요 통화 대비 측정"
+  },
+  {
+    "symbol": "USDKRW=X",
+    "name_ko": "원/달러 환율",
+    "name_en": "USD/KRW",
+    "asset_class": "currency",
+    "yahoo_symbol": "USDKRW=X",
+    "data_start": "2003-12-01",
+    "description": "미 달러 대비 한국 원화 환율"
+  },
+  {
+    "symbol": "USDJPY=X",
+    "name_ko": "엔/달러 환율",
+    "name_en": "USD/JPY",
+    "asset_class": "currency",
+    "yahoo_symbol": "USDJPY=X",
+    "data_start": "2003-12-01",
+    "description": "미 달러 대비 일본 엔화 환율"
+  },
+  {
+    "symbol": "EURUSD=X",
+    "name_ko": "유로/달러 환율",
+    "name_en": "EUR/USD",
+    "asset_class": "currency",
+    "yahoo_symbol": "EURUSD=X",
+    "data_start": "2003-12-01",
+    "description": "유로 대비 미 달러 환율"
+  },
+  {
+    "symbol": "^TNX",
+    "name_ko": "미국 10년물 국채금리",
+    "name_en": "US 10-Year Treasury Yield",
+    "asset_class": "bond",
+    "yahoo_symbol": "^TNX",
+    "data_start": "1962-01-02",
+    "description": "미국 10년 만기 국채 수익률"
+  },
+  {
+    "symbol": "^IRX",
+    "name_ko": "미국 단기금리 (13주 T-Bill)",
+    "name_en": "US 13-Week Treasury Bill Rate",
+    "asset_class": "bond",
+    "yahoo_symbol": "^IRX",
+    "data_start": "1962-01-02",
+    "description": "미국 13주 만기 재무부 단기채 금리"
+  },
+  {
+    "symbol": "^VIX",
+    "name_ko": "VIX (공포지수)",
+    "name_en": "CBOE Volatility Index (VIX)",
+    "asset_class": "volatility",
+    "yahoo_symbol": "^VIX",
+    "data_start": "1990-01-02",
+    "description": "S&P 500 옵션 내재 변동성 — 시장 공포 수준 측정"
+  },
+  {
+    "symbol": "XLE",
+    "name_ko": "에너지 섹터 ETF",
+    "name_en": "Energy Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLE",
+    "data_start": "1998-12-22",
+    "description": "미국 에너지 섹터 ETF (엑손모빌, 셰브런 등)"
+  },
+  {
+    "symbol": "XLF",
+    "name_ko": "금융 섹터 ETF",
+    "name_en": "Financial Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLF",
+    "data_start": "1998-12-22",
+    "description": "미국 금융 섹터 ETF (JP모건, 뱅크오브아메리카 등)"
+  },
+  {
+    "symbol": "XLK",
+    "name_ko": "기술 섹터 ETF",
+    "name_en": "Technology Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLK",
+    "data_start": "1998-12-22",
+    "description": "미국 기술 섹터 ETF (애플, 마이크로소프트 등)"
+  },
+  {
+    "symbol": "XLI",
+    "name_ko": "산업재 섹터 ETF",
+    "name_en": "Industrial Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLI",
+    "data_start": "1998-12-22",
+    "description": "미국 산업재 섹터 ETF (방산주 포함)"
+  },
+  {
+    "symbol": "XLV",
+    "name_ko": "헬스케어 섹터 ETF",
+    "name_en": "Health Care Select Sector SPDR",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "XLV",
+    "data_start": "1998-12-22",
+    "description": "미국 헬스케어 섹터 ETF"
+  },
+  {
+    "symbol": "JETS",
+    "name_ko": "항공 ETF",
+    "name_en": "US Global Jets ETF",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "JETS",
+    "data_start": "2015-04-28",
+    "description": "글로벌 항공사 ETF"
+  },
+  {
+    "symbol": "ITA",
+    "name_ko": "방산 ETF",
+    "name_en": "iShares US Aerospace & Defense ETF",
+    "asset_class": "sector_etf",
+    "yahoo_symbol": "ITA",
+    "data_start": "2006-05-01",
+    "description": "미국 방산/항공우주 ETF (록히드마틴, RTX 등)"
+  }
+]
