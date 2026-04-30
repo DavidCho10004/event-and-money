@@ -78,6 +78,7 @@
 {% endif %}
 
 <h2>자산별 수익률 <span style="font-weight:normal; font-size:12px; color:#999;">(셀 클릭 → 차트)</span></h2>
+<div class="table-scroll">
 <table>
     <thead>
         <tr>
@@ -119,6 +120,7 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 
 <!-- 차트 모달 -->
 <div id="chartModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
@@ -140,6 +142,7 @@
 </div>
 
 <style>
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .clickable-cell { cursor: pointer; }
     .clickable-cell:hover { background: #e8e8e8 !important; }
     .ext-link {

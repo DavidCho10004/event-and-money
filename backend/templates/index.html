@@ -12,28 +12,40 @@
     {% endfor %}
 </div>
 
-<table>
+<table class="event-list">
     <thead>
         <tr>
-            <th>ID</th>
             <th>카테고리</th>
             <th>사건명</th>
             <th>날짜</th>
-            <th>에너지</th>
-            <th>상세</th>
         </tr>
     </thead>
     <tbody>
         {% for e in events %}
-        <tr>
-            <td>{{ e.id }}</td>
+        <tr onclick="location.href='/event/{{ e.id }}'" style="cursor:pointer;">
             <td><span class="badge badge-{{ e.category }}">{{ category_names.get(e.category, e.category) }}</span></td>
-            <td style="text-align:left;">{{ e.name_ko }}</td>
-            <td>{{ e.event_date }}</td>
-            <td>{% if e.energy_impact %}⚡{% endif %}</td>
-            <td><a href="/event/{{ e.id }}">보기</a></td>
+            <td style="text-align:left;">
+                <a href="/event/{{ e.id }}" class="event-link">{{ e.name_ko }}</a>
+            </td>
+            <td class="date-full">{{ e.event_date }}</td>
+            <td class="date-short">{{ e.event_date.strftime('%Y.%m') }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<style>
+    .event-list { cursor: default; }
+    .event-list tbody tr:hover { background: #e8f4fd; }
+    .event-link { color: #333; font-weight: 500; }
+    .event-link:hover { color: #0066cc; text-decoration: none; }
+    .date-short { display: none; }
+
+    @media (max-width: 640px) {
+        .date-full { display: none; }
+        .date-short { display: table-cell; font-size: 12px; white-space: nowrap; }
+        .event-list th, .event-list td { padding: 6px 6px; font-size: 12px; }
+        .badge { font-size: 10px; padding: 2px 5px; }
+    }
+</style>
 {% endblock %}
