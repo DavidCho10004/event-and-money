@@ -8,7 +8,20 @@
     "sub_type": "energy_war",
     "description_ko": "유가 4배 상승, 스태그플레이션의 원조. 에너지 공급 차질이 경기침체로 직결된 최초 사례.",
     "description_en": "Oil prices quadrupled. The original stagflation crisis — first case where energy supply disruption directly triggered recession.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": {
+      "what": "OPEC이 이스라엘 지원국에 석유 금수조치를 발동, 유가가 4배 폭등했다.",
+      "why": "에너지 비용 급등이 기업 이익을 압박하고 소비를 위축시켜 스태그플레이션을 유발했다.",
+      "duration": {
+        "start": "1973-10-06",
+        "bottom": "1974-10-03",
+        "bottom_label": "S&P 500 -43.3%",
+        "end": "1980-07-17",
+        "end_label": "약 6년 9개월 (S&P 500 사건 전 수준 회복)",
+        "ongoing": false
+      },
+      "takeaway": "에너지 공급 충격은 회복에 수년이 걸릴 수 있다 — 단기 반등에 속지 마라."
+    }
   },
   {
     "id": "A02",
@@ -19,7 +32,8 @@
     "sub_type": "energy_war",
     "description_ko": "유가 재급등, 폴 볼커의 금리 인상(20%), 한국 -2.1% 성장률. 에너지 수입국에 치명적 타격.",
     "description_en": "Oil prices surged again. Volcker raised rates to 20%. Korea's GDP fell -2.1%. Devastating blow to energy-importing nations.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": null
   },
   {
     "id": "A03",
@@ -30,7 +44,8 @@
     "sub_type": "energy_war",
     "description_ko": "유가 2배 상승 후 빠른 정상화, 미국 경기침체 촉발. 전쟁의 빠른 종결이 시장 회복에 기여.",
     "description_en": "Oil doubled then quickly normalized. Triggered US recession. Swift war conclusion aided market recovery.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": null
   },
   {
     "id": "A04",
@@ -41,7 +56,20 @@
     "sub_type": "terror",
     "description_ko": "NYSE 4일간 폐장, 재개 후 S&P 500 -11.6%. 항공/보험주 붕괴, 방산주 급등.",
     "description_en": "NYSE closed for 4 days. S&P 500 fell -11.6% on reopening. Airlines/insurance collapsed, defense stocks surged.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": {
+      "what": "알카에다가 미국 본토를 공격, NYSE가 4거래일간 폐장했다.",
+      "why": "항공·보험·관광 섹터 직접 타격 + 미국 안보 불확실성이 시장 공포를 극대화했다.",
+      "duration": {
+        "start": "2001-09-11",
+        "bottom": "2001-09-21",
+        "bottom_label": "S&P 500 -11.6%",
+        "end": "2001-10-11",
+        "end_label": "약 1개월 (S&P 500 사건 전 수준 회복)",
+        "ongoing": false
+      },
+      "takeaway": "테러 충격은 깊지만 짧다 — 30일 만에 회복. 공포에 팔면 손해."
+    }
   },
   {
     "id": "A05",
@@ -52,7 +80,20 @@
     "sub_type": "war",
     "description_ko": "전쟁 시작 = 불확실성 해소로 오히려 주가 상승. 대표적 반직관 사례.",
     "description_en": "War start = uncertainty resolved, stocks actually rose. Classic contrarian case study.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": {
+      "what": "미국이 이라크를 침공했으나, 전쟁 시작과 동시에 주가가 반등했다.",
+      "why": "전쟁 전 불확실성이 해소되면서 '소문에 팔고 뉴스에 사라' 패턴이 작동했다.",
+      "duration": {
+        "start": "2003-03-20",
+        "bottom": "2003-03-11",
+        "bottom_label": "S&P 500 -14.1% (침공 전 불확실성 기간)",
+        "end": "2003-05-06",
+        "end_label": "침공 후 47일 만에 전쟁 전 고점 돌파 (반직관적 상승)",
+        "ongoing": false
+      },
+      "takeaway": "전쟁 자체보다 전쟁의 '불확실성'이 시장을 움직인다 — 반직관적 매수 기회."
+    }
   },
   {
     "id": "A06",
@@ -63,7 +104,20 @@
     "sub_type": "energy_war",
     "description_ko": "유럽 에너지 위기, 네온가스(반도체) 공급 차질, 밀/옥수수 급등. 식량+에너지 동시 충격.",
     "description_en": "European energy crisis. Neon gas (semiconductor) supply disruption. Wheat/corn surged. Simultaneous food+energy shock.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": {
+      "what": "러시아가 우크라이나를 전면 침공, 유럽 에너지 위기와 곡물 가격 급등을 촉발했다.",
+      "why": "천연가스·밀·네온(반도체) 공급 차질이 글로벌 인플레를 가속시켰다.",
+      "duration": {
+        "start": "2022-02-24",
+        "bottom": "2022-03-08",
+        "bottom_label": "S&P 500 -1.3%",
+        "end": "2022-03-29",
+        "end_label": "약 1개월 (S&P 500 사건 전 수준 회복)",
+        "ongoing": false
+      },
+      "takeaway": "에너지 수출국이 아닌 지역의 전쟁은 미국 시장 충격이 제한적이다."
+    }
   },
   {
     "id": "A07",
@@ -74,7 +128,8 @@
     "sub_type": "war",
     "description_ko": "중동 확전 우려에도 시장 영향 제한적. 에너지 공급 직접 차질 없었기 때문.",
     "description_en": "Despite escalation fears, market impact was limited — no direct energy supply disruption.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "A08",
@@ -85,7 +140,20 @@
     "sub_type": "energy_war",
     "description_ko": "호르무즈 해협 봉쇄, Brent $70→$113(+60%). IEA 사상 최대 비축유 방출.",
     "description_en": "Strait of Hormuz blockade. Brent surged from $70 to $113 (+60%). IEA released largest-ever strategic reserves.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": {
+      "what": "미국이 이란 핵시설을 공습, 이란이 호르무즈 해협을 봉쇄하며 유가가 60% 급등했다.",
+      "why": "글로벌 원유 수송의 20%가 통과하는 해협 봉쇄로 에너지 공급에 직접적 차질이 발생했다.",
+      "duration": {
+        "start": "2026-02-28",
+        "bottom": null,
+        "bottom_label": null,
+        "end": null,
+        "end_label": null,
+        "ongoing": true
+      },
+      "takeaway": "호르무즈 해협 봉쇄는 에너지 시장의 '핵 옵션' — 모든 자산이 동시에 반응한다."
+    }
   },
   {
     "id": "B01",
@@ -96,7 +164,8 @@
     "sub_type": "market_crash",
     "description_ko": "다우 -22.6% 하루 최대 낙폭. 프로그램 매매(포트폴리오 인슈어런스) 첫 대규모 실패.",
     "description_en": "Dow fell -22.6%, largest single-day drop ever. First major failure of program trading (portfolio insurance).",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "B02",
@@ -107,7 +176,8 @@
     "sub_type": "fx_crisis",
     "description_ko": "태국 바트화 붕괴 → 한국 IMF 구제금융. 원/달러 800→1,900원, KOSPI -65%.",
     "description_en": "Thai baht collapse → Korea IMF bailout. USD/KRW 800→1,900, KOSPI -65%.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "B03",
@@ -118,7 +188,8 @@
     "sub_type": "systemic",
     "description_ko": "러시아 국채 디폴트 → 레버리지 헤지펀드 연쇄 붕괴, 연준 긴급 금리 인하.",
     "description_en": "Russian sovereign default → cascading collapse of leveraged hedge funds. Fed emergency rate cuts.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "B04",
@@ -129,7 +200,8 @@
     "sub_type": "bubble_burst",
     "description_ko": "나스닥 5,048 → 1,114 (-78%). 기술주 대학살, 회복에 15년 소요.",
     "description_en": "NASDAQ fell from 5,048 to 1,114 (-78%). Tech massacre, took 15 years to recover.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "B05",
@@ -140,7 +212,20 @@
     "sub_type": "systemic",
     "description_ko": "S&P 500 -57%, 전 세계 신용 경색. 양적완화(QE) 시대 개막.",
     "description_en": "S&P 500 fell -57%. Global credit freeze. Ushered in the era of quantitative easing (QE).",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": {
+      "what": "리먼 브라더스가 파산 신청, 글로벌 신용 시장이 동결됐다.",
+      "why": "서브프라임 모기지 부실이 금융 시스템 전체로 전염, 은행 간 대출이 중단됐다.",
+      "duration": {
+        "start": "2008-09-15",
+        "bottom": "2009-03-09",
+        "bottom_label": "S&P 500 -46.0%",
+        "end": "2010-12-21",
+        "end_label": "약 2년 3개월 (S&P 500 사건 전 수준 회복)",
+        "ongoing": false
+      },
+      "takeaway": "시스템 리스크는 회복에 2년 이상 걸린다 — 분할 매수 전략이 유효."
+    }
   },
   {
     "id": "B06",
@@ -151,7 +236,8 @@
     "sub_type": "sovereign_debt",
     "description_ko": "그리스 구제금융 → PIIGS 위기, 유로화 급락, 유럽 은행주 폭락.",
     "description_en": "Greek bailout → PIIGS crisis. Euro plunged, European bank stocks collapsed.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "B07",
@@ -162,7 +248,20 @@
     "sub_type": "bank_crisis",
     "description_ko": "금리 급등 → 채권 손실 → 뱅크런, 지방은행 연쇄 위기. 48시간 만에 진화.",
     "description_en": "Rate hikes → bond losses → bank run. Regional bank contagion contained within 48 hours.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": {
+      "what": "실리콘밸리은행이 48시간 만에 뱅크런으로 파산, 지역은행 연쇄 위기가 발생했다.",
+      "why": "급격한 금리 인상으로 채권 포트폴리오 손실이 누적, 예금 인출이 촉발됐다.",
+      "duration": {
+        "start": "2023-03-10",
+        "bottom": "2023-03-13",
+        "bottom_label": "S&P 500 -1.6%",
+        "end": "2023-03-14",
+        "end_label": "1거래일 만에 회복 (정부 예금 보장 발표)",
+        "ongoing": false
+      },
+      "takeaway": "정부가 빠르게 예금 보장을 발표하면 은행 위기도 며칠 만에 진화된다."
+    }
   },
   {
     "id": "C01",
@@ -173,7 +272,8 @@
     "sub_type": "natural_disaster",
     "description_ko": "닛케이 -17.5% (3일), 원전주 폭락. 태양광/풍력주 수혜, 글로벌 원전 정책 전환.",
     "description_en": "Nikkei fell -17.5% in 3 days. Nuclear stocks collapsed. Solar/wind benefited. Global nuclear policy shift.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": null
   },
   {
     "id": "C02",
@@ -184,7 +284,20 @@
     "sub_type": "pandemic",
     "description_ko": "S&P 500 -34% (23거래일), WTI 마이너스 유가. 역사상 가장 빠른 약세장 진입 → 가장 빠른 회복.",
     "description_en": "S&P 500 fell -34% in 23 trading days. WTI went negative. Fastest bear market entry → fastest recovery in history.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": {
+      "what": "WHO가 코로나19를 팬데믹으로 선언, 글로벌 봉쇄가 시작됐다.",
+      "why": "경제 활동 전면 중단 + 수요 증발이 역사상 가장 빠른 약세장을 만들었다.",
+      "duration": {
+        "start": "2020-03-11",
+        "bottom": "2020-03-23",
+        "bottom_label": "S&P 500 -33.9% (2월 19일 고점 대비)",
+        "end": "2020-08-18",
+        "end_label": "약 5개월 (S&P 500 사건 전 고점 회복)",
+        "ongoing": false
+      },
+      "takeaway": "역사상 가장 빠른 하락이 가장 빠른 회복으로 이어졌다 — 패닉 매도가 최악의 선택."
+    }
   },
   {
     "id": "C03",
@@ -195,7 +308,8 @@
     "sub_type": "pandemic_variant",
     "description_ko": "하루 만에 S&P -2.3%, 항공/여행주 급락. 2주 만에 완전 회복. '학습 효과'의 대표 사례.",
     "description_en": "S&P fell -2.3% in one day. Airlines/travel stocks dropped. Full recovery in 2 weeks. Prime example of 'learning effect'.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "C04",
@@ -206,7 +320,8 @@
     "sub_type": "real_estate",
     "description_ko": "중국 부동산 버블 우려, 항셍 -3.3%. 글로벌 전염 제한적.",
     "description_en": "China real estate bubble fears. Hang Seng fell -3.3%. Global contagion was limited.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "D01",
@@ -217,7 +332,8 @@
     "sub_type": "monetary_policy",
     "description_ko": "기준금리 20%, 인플레 진압 성공하나 심각한 경기침체 유발.",
     "description_en": "Fed funds rate raised to 20%. Successfully crushed inflation but triggered severe recession.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "D02",
@@ -228,7 +344,8 @@
     "sub_type": "fx_policy",
     "description_ko": "G5 달러 약세 합의. 엔화 급등 → 일본 버블의 씨앗.",
     "description_en": "G5 agreed to weaken the dollar. Yen surged — sowed the seeds of Japan's bubble.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "D03",
@@ -239,7 +356,8 @@
     "sub_type": "fx_policy",
     "description_ko": "중국 위안화 갑작스런 절하. 글로벌 증시 동반 하락, 원자재 폭락.",
     "description_en": "Sudden yuan devaluation. Global equities fell in tandem, commodities collapsed.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "D04",
@@ -250,7 +368,8 @@
     "sub_type": "political",
     "description_ko": "파운드 -8% (사상 최대 일일 낙폭), FTSE 250 -7%. 48시간 내 대부분 회복.",
     "description_en": "Pound fell -8% (largest single-day drop ever). FTSE 250 -7%. Mostly recovered within 48 hours.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "D05",
@@ -261,7 +380,8 @@
     "sub_type": "trade_policy",
     "description_ko": "트럼프 관세 발표, 반도체/기술주 타격. 글로벌 공급망 재편 시작.",
     "description_en": "Trump tariff announcement. Semiconductor/tech stocks hit. Global supply chain restructuring began.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "D06",
@@ -272,7 +392,20 @@
     "sub_type": "monetary_policy",
     "description_ko": "FOMC 의사록 매파 충격. 나스닥 -33%(연간), 60/40 포트폴리오 역사적 실패.",
     "description_en": "Hawkish FOMC minutes shock. NASDAQ -33% (annual). Historic failure of 60/40 portfolio.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": {
+      "what": "FOMC 의사록이 예상보다 매파적으로 공개, 금리 인상 사이클이 시작됐다.",
+      "why": "제로 금리에서 5.25%로의 급등이 성장주 밸류에이션을 파괴하고 채권도 동반 하락시켰다.",
+      "duration": {
+        "start": "2022-01-05",
+        "bottom": "2022-10-12",
+        "bottom_label": "S&P 500 -25.4%",
+        "end": "2024-01-19",
+        "end_label": "약 2년 (S&P 500 사건 전 고점 회복)",
+        "ongoing": false
+      },
+      "takeaway": "금리 인상 사이클은 느리지만 깊다 — 60/40 포트폴리오도 방어가 안 된다."
+    }
   },
   {
     "id": "E01",
@@ -283,7 +416,8 @@
     "sub_type": "industrial_disaster",
     "description_ko": "BP 주가 -55%, 해양 시추 규제 강화, 에너지 섹터 재편.",
     "description_en": "BP stock fell -55%. Tightened offshore drilling regulations. Energy sector reshuffled.",
-    "energy_impact": true
+    "energy_impact": true,
+    "summary": null
   },
   {
     "id": "E02",
@@ -294,7 +428,8 @@
     "sub_type": "corporate_scandal",
     "description_ko": "VW 주가 -37%, 유럽 자동차주 동반 하락. EV 전환 가속화 촉매.",
     "description_en": "VW stock fell -37%. European automakers dropped. Catalyzed EV transition.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "E03",
@@ -305,7 +440,8 @@
     "sub_type": "tech_paradigm",
     "description_ko": "엔비디아 +240%(2023). AI 밸류체인 재편, 전통 IT 기업 위기감.",
     "description_en": "NVIDIA +240% (2023). AI value chain restructured. Traditional IT firms under pressure.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "E04",
@@ -316,7 +452,8 @@
     "sub_type": "tech_competition",
     "description_ko": "중국산 저비용 AI 모델 등장. 엔비디아 -17%, AI 거품론 부상. 하루 만에 시총 $600B 증발.",
     "description_en": "Low-cost Chinese AI model emerged. NVIDIA -17%. AI bubble narrative resurfaced. $600B market cap evaporated in one day.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": null
   },
   {
     "id": "E05",
@@ -327,6 +464,19 @@
     "sub_type": "trade_policy",
     "description_ko": "상호관세 발표, S&P 500 -10.5%(2일). 글로벌 공급망 충격. 이후 대법원이 IEEPA 관세 위헌 판결.",
     "description_en": "Reciprocal tariffs announced. S&P 500 fell -10.5% in 2 days. Global supply chain shock. Supreme Court later ruled IEEPA tariffs unconstitutional.",
-    "energy_impact": false
+    "energy_impact": false,
+    "summary": {
+      "what": "트럼프가 상호관세를 전격 발표, S&P 500이 4거래일간 -12.1% 급락했다.",
+      "why": "글로벌 공급망 비용 급증 우려 + 보복 관세 전쟁 확대 가능성이 시장을 압도했다.",
+      "duration": {
+        "start": "2025-04-02",
+        "bottom": "2025-04-08",
+        "bottom_label": "S&P 500 -12.1%",
+        "end": "2025-05-02",
+        "end_label": "약 1개월 (90일 유예 발표 후 S&P 500 사건 전 수준 회복)",
+        "ongoing": false
+      },
+      "takeaway": "정책 충격은 되돌릴 수 있다 — 90일 유예 발표 하루 만에 +9.5% 반등."
+    }
   }
 ]

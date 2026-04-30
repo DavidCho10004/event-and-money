@@ -4,6 +4,7 @@ Event & Money — FastAPI 웹 서버
 실행: python -m backend.main
 접속: http://localhost:8000
 """
+import json
 import sys
 from pathlib import Path
 
@@ -39,6 +40,14 @@ CATEGORY_NAMES = {
 }
 
 PERIOD_ORDER = ["D+1", "D+7", "D+30", "D+180", "D+365"]
+
+EVENTS_JSON = Path(__file__).parent.parent / "data" / "events.json"
+
+def _load_summaries():
+    with open(EVENTS_JSON, "r", encoding="utf-8") as f:
+        return {e["id"]: e.get("summary") for e in json.load(f)}
+
+SUMMARIES = _load_summaries()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -94,6 +103,7 @@ def event_detail(request: Request, event_id: str):
         "table": table,
         "periods": PERIOD_ORDER,
         "category_names": CATEGORY_NAMES,
+        "summary": SUMMARIES.get(event_id),
     })
 
 

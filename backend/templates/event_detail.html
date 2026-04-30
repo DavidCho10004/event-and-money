@@ -11,6 +11,72 @@
 </p>
 <p style="color:#666; font-size:13px; margin-bottom:15px;">{{ event.description_ko }}</p>
 
+{% if summary %}
+<details class="event-summary">
+    <summary class="event-summary-toggle">📋 사건 요약 보기</summary>
+    <div class="event-summary-content">
+        <div class="summary-section">
+            <div class="summary-label">What</div>
+            <div class="summary-text">{{ summary.what }}</div>
+        </div>
+        <div class="summary-section">
+            <div class="summary-label">Why</div>
+            <div class="summary-text">{{ summary.why }}</div>
+        </div>
+
+        {% if summary.duration %}
+        <div class="summary-section">
+            <div class="summary-label">Duration</div>
+            <div class="duration-timeline">
+                {% set dur = summary.duration %}
+                {% if dur.ongoing %}
+                <div class="timeline-track">
+                    <div class="timeline-filled timeline-ongoing" style="width:100%;">
+                        <span class="timeline-arrow">▶</span>
+                    </div>
+                </div>
+                <div class="timeline-labels">
+                    <span class="tl-start">{{ dur.start }}<br><small>사건 발생</small></span>
+                    <span class="tl-ongoing">진행 중</span>
+                </div>
+                {% else %}
+                <div class="timeline-track">
+                    {% if dur.bottom and dur.bottom < dur.start %}
+                    {# 반직관적 케이스: 바닥이 사건 전 #}
+                    <div class="timeline-before" style="width:20%;">
+                        <span class="timeline-marker timeline-marker-bottom"></span>
+                    </div>
+                    <div class="timeline-decline" style="width:0%;"></div>
+                    <div class="timeline-recovery" style="width:80%;"></div>
+                    {% else %}
+                    <div class="timeline-decline" style="width:40%;"></div>
+                    <div class="timeline-recovery" style="width:60%;"></div>
+                    {% endif %}
+                </div>
+                <div class="timeline-labels">
+                    {% if dur.bottom and dur.bottom < dur.start %}
+                    <span class="tl-bottom">{{ dur.bottom }}<br><small>{{ dur.bottom_label }}</small></span>
+                    <span class="tl-start">{{ dur.start }}<br><small>사건 발생 (반등 시작)</small></span>
+                    <span class="tl-end">{{ dur.end }}<br><small>{{ dur.end_label }}</small></span>
+                    {% else %}
+                    <span class="tl-start">{{ dur.start }}<br><small>사건 발생</small></span>
+                    <span class="tl-bottom">{{ dur.bottom }}<br><small>{{ dur.bottom_label }}</small></span>
+                    <span class="tl-end">{{ dur.end }}<br><small>{{ dur.end_label }}</small></span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="summary-section summary-takeaway">
+            <div class="summary-label">Takeaway</div>
+            <div class="summary-text"><strong>{{ summary.takeaway }}</strong></div>
+        </div>
+    </div>
+</details>
+{% endif %}
+
 <h2>자산별 수익률 <span style="font-weight:normal; font-size:12px; color:#999;">(셀 클릭 → 차트)</span></h2>
 <table>
     <thead>
@@ -83,6 +149,99 @@
     .ext-link-yahoo { background:#7b1fa2; }
     .ext-link-naver { background:#03c75a; }
     .ext-link:hover { opacity:0.85; }
+
+    .event-summary {
+        margin-bottom: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        background: #fafafa;
+    }
+    .event-summary-toggle {
+        cursor: pointer;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        list-style: none;
+        user-select: none;
+    }
+    .event-summary-toggle::-webkit-details-marker { display: none; }
+    .event-summary-toggle::before { content: "▸ "; }
+    .event-summary[open] .event-summary-toggle::before { content: "▾ "; }
+    .event-summary-content {
+        padding: 0 16px 16px;
+    }
+    .summary-section {
+        margin-bottom: 12px;
+    }
+    .summary-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 3px;
+    }
+    .summary-text {
+        font-size: 13px;
+        color: #333;
+        line-height: 1.5;
+    }
+    .summary-takeaway {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid #e8e8e8;
+    }
+
+    .duration-timeline {
+        margin-top: 6px;
+    }
+    .timeline-track {
+        display: flex;
+        height: 18px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #e8e8e8;
+    }
+    .timeline-decline {
+        background: linear-gradient(90deg, #e74c3c, #c0392b);
+        border-radius: 4px 0 0 4px;
+    }
+    .timeline-recovery {
+        background: linear-gradient(90deg, #27ae60, #2ecc71);
+        border-radius: 0 4px 4px 0;
+    }
+    .timeline-before {
+        background: linear-gradient(90deg, #e74c3c, #e67e22);
+        border-radius: 4px 0 0 4px;
+        position: relative;
+    }
+    .timeline-ongoing {
+        background: linear-gradient(90deg, #e74c3c, #c0392b);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 8px;
+    }
+    .timeline-arrow {
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .timeline-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+        font-size: 11px;
+        color: #666;
+    }
+    .timeline-labels span { text-align: center; }
+    .timeline-labels small { color: #999; font-size: 10px; }
+    .tl-start { text-align: left !important; }
+    .tl-end { text-align: right !important; }
+    .tl-ongoing { text-align: right !important; color: #c0392b; font-weight: 600; }
+    .tl-bottom { color: #c0392b; font-weight: 600; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
