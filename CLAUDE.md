@@ -157,6 +157,20 @@
 
 ---
 
+## 배포 워크플로우 (항상 따른다)
+
+코드 변경이 끝나면 **항상** 아래 순서로 배포까지 마무리한다 (규훈님이 매번 지시하지 않아도):
+
+1. 작업 브랜치(예: `claude/...`)에 커밋 & 푸시
+2. **PR 생성** (`mcp__github__create_pull_request`) — base 브랜치는 `master`
+3. **PR 머지** (`mcp__github__merge_pull_request`, `merge_method: squash`) → Railway 자동 재배포 트리거
+4. 머지 완료 후 PR URL과 "1~2분 후 production 반영"임을 규훈님에게 알림
+5. 운영 URL: `https://event-and-money-production.up.railway.app` (master 브랜치 배포)
+
+예외: 규훈님이 "PR만 만들고 머지는 하지 마"라고 명시한 경우만 머지 생략.
+
+---
+
 ## 작업 모드 (매우 중요)
 
 너는 두 가지 모드를 전환하며 작업한다. **코드부터 짜지 마라.**
