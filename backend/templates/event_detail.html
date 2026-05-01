@@ -83,7 +83,6 @@
     <thead>
         <tr>
             <th>자산</th>
-            <th>분류</th>
             {% for p in periods %}
             <th>{{ p }}</th>
             {% endfor %}
@@ -95,7 +94,6 @@
             <td style="text-align:left; cursor:pointer;" onclick="showChart('{{ symbol }}')">
                 {{ info.name_ko }}
             </td>
-            <td style="font-size:11px;">{{ info.asset_class }}</td>
             {% for p in periods %}
                 {% set r = info.periods.get(p) %}
                 {% if r %}
@@ -143,8 +141,12 @@
 
 <style>
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .table-scroll td, .table-scroll th { word-break: keep-all; }
     .clickable-cell { cursor: pointer; }
     .clickable-cell:hover { background: #e8e8e8 !important; }
+    @media (max-width: 640px) {
+        .table-scroll th, .table-scroll td { padding: 5px 4px; font-size: 12px; }
+    }
     .ext-link {
         display:inline-block; padding:6px 14px; border-radius:4px;
         font-size:12px; text-decoration:none; color:#fff;
