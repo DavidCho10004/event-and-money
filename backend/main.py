@@ -202,6 +202,8 @@ def event_detail(request: Request, key: str):
             if all(row["car"] is None for row in car_table):
                 car_table = None
 
+    missing_affected = [s for s in affected if s not in table] if affected else []
+
     db.close()
     return templates.TemplateResponse("event_detail.html", {
         "request": request,
@@ -213,6 +215,7 @@ def event_detail(request: Request, key: str):
         "summary": SUMMARIES.get(event_id),
         "attribution": attribution,
         "car_table": car_table,
+        "missing_affected": missing_affected,
     })
 
 
@@ -345,6 +348,28 @@ SUMMARY_ASSETS = [
     "USDKRW=X", "^TNX", "^VIX",
 ]
 
+# 🇰🇷 한국 사건(마이크로 위주)에서 자주 쓰일 요약 자산
+SUMMARY_ASSETS_KR = [
+    "^KS11",        # KOSPI
+    "005930.KS",    # 삼성전자
+    "035720.KS",    # 카카오
+    "035420.KS",    # 네이버
+    "267250.KS",    # HD현대
+    "051910.KS",    # LG화학
+    "005490.KS",    # 포스코홀딩스
+    "USDKRW=X",     # 원달러
+    "^TNX",         # 미국 10년 (글로벌 금리 영향)
+    "CL=F",         # 유가 (한국 수입 영향)
+]
+
+
+def _is_korean_event(event):
+    """affected_entities나 comparable_universe에 .KS 종목이 있으면 한국 사건으로 판정"""
+    for field in (event.affected_entities, event.comparable_universe):
+        if field and ".KS" in field:
+            return True
+    return False
+
 
 def _heatmap_cell_class(v):
     """수익률(%)을 5단계 빨강/파랑 색상 클래스로 매핑. 한국식: 상승=빨강."""
@@ -366,15 +391,16 @@ def _heatmap_cell_class(v):
 def heatmap(request: Request,
             scale: str = Query(None),
             period: str = Query("D+30"),
-            assets: str = Query("summary")):
+            assets: str = Query(None)):
     """인터랙티브 히트맵 (HTML 테이블).
 
-    필터: scale (all/macro/micro), period (D-30~D+365), assets (summary/all)
+    필터: scale (all/macro/micro), period (D-30~D+365), assets (summary/korea/all)
+    assets 미지정 시: scale=micro면 korea, 그 외엔 summary로 자동 선택
     """
     if period not in PERIOD_ORDER:
         period = "D+30"
-    if assets not in ("summary", "all"):
-        assets = "summary"
+    if assets not in ("summary", "korea", "all"):
+        assets = "korea" if scale == "micro" else "summary"
 
     db = SessionLocal()
 
@@ -387,10 +413,11 @@ def heatmap(request: Request,
     # 자산 (asset_class 그룹별 정렬)
     aq = db.query(Asset).order_by(Asset.asset_class, Asset.symbol)
     asset_list = aq.all()
-    if assets == "summary":
-        asset_list = [a for a in asset_list if a.symbol in SUMMARY_ASSETS]
-        # SUMMARY_ASSETS 순서 보존
-        order = {s: i for i, s in enumerate(SUMMARY_ASSETS)}
+    preset_map = {"summary": SUMMARY_ASSETS, "korea": SUMMARY_ASSETS_KR}
+    if assets in preset_map:
+        preset = preset_map[assets]
+        asset_list = [a for a in asset_list if a.symbol in preset]
+        order = {s: i for i, s in enumerate(preset)}
         asset_list.sort(key=lambda a: order.get(a.symbol, 999))
 
     # 수익률 매트릭스 한 번에 로드
@@ -438,17 +465,20 @@ def _default_compare_symbol(event, returns_by_symbol):
     """비교 화면에서 자동 선택될 대표 자산.
 
     우선순위:
-      1) 마이크로: affected_entities[0] (수익률 데이터가 있을 때만)
-      2) 데이터 있는 자산 중 우선순위 순 (^GSPC > ^KS11 > 첫 자산)
+      1) affected_entities[0] (수익률 데이터가 있을 때)
+      2) 한국 사건이면 ^KS11 → ^GSPC 순, 그 외엔 ^GSPC → ^KS11 순
+      3) 데이터 있는 첫 자산
     """
     if event.affected_entities:
         affected = json.loads(event.affected_entities)
         for s in affected:
             if s in returns_by_symbol:
                 return s
-    for preferred in ("^GSPC", "^KS11"):
-        if preferred in returns_by_symbol:
-            return preferred
+    # 사건 성격에 따라 벤치마크 우선순위 전환
+    preferred = ("^KS11", "^GSPC") if _is_korean_event(event) else ("^GSPC", "^KS11")
+    for p in preferred:
+        if p in returns_by_symbol:
+            return p
     return next(iter(returns_by_symbol), None)
 
 
