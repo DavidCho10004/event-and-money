@@ -64,13 +64,32 @@ SUMMARIES = _load_summaries()
 
 
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request, category: str = Query(None), scale: str = Query(None)):
+def index(request: Request, category: str = Query(None), scale: str = Query(None),
+          q: str = Query(None), sort: str = Query("date_desc")):
+    if sort not in ("date_asc", "date_desc", "category"):
+        sort = "date_desc"
+
     db = SessionLocal()
-    query = db.query(Event).order_by(Event.event_date)
+    query = db.query(Event)
     if category:
         query = query.filter(Event.category == category)
     if scale in ("macro", "micro"):
         query = query.filter(Event.scale == scale)
+    if q:
+        # 사건명(한/영)·설명에서 부분 일치 검색
+        like = f"%{q.strip()}%"
+        query = query.filter(
+            Event.name_ko.ilike(like)
+            | Event.name_en.ilike(like)
+            | Event.description_ko.ilike(like)
+        )
+
+    if sort == "date_asc":
+        query = query.order_by(Event.event_date)
+    elif sort == "category":
+        query = query.order_by(Event.category, Event.event_date.desc())
+    else:  # date_desc (기본: 최신순)
+        query = query.order_by(Event.event_date.desc())
     events = query.all()
 
     categories = db.query(Event.category, func.count()).group_by(Event.category).all()
@@ -85,6 +104,8 @@ def index(request: Request, category: str = Query(None), scale: str = Query(None
         "categories": cat_list,
         "current_category": category,
         "current_scale": scale,
+        "current_q": q or "",
+        "current_sort": sort,
         "scale_counts": scale_counts,
         "category_names": CATEGORY_NAMES,
     })

@@ -27,6 +27,26 @@
     {% endfor %}
 </div>
 
+<form method="get" class="search-bar">
+    {% if current_scale %}<input type="hidden" name="scale" value="{{ current_scale }}">{% endif %}
+    {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+    <input type="search" name="q" value="{{ current_q }}" placeholder="사건명·설명 검색 (예: 오일, 카카오, 상속)" autocomplete="off">
+    <select name="sort" onchange="this.form.submit()">
+        <option value="date_desc" {% if current_sort == 'date_desc' %}selected{% endif %}>최신순</option>
+        <option value="date_asc" {% if current_sort == 'date_asc' %}selected{% endif %}>오래된순</option>
+        <option value="category" {% if current_sort == 'category' %}selected{% endif %}>카테고리순</option>
+    </select>
+    <button type="submit">검색</button>
+    {% if current_q %}
+    <a href="/{% if current_scale or current_category %}?{% if current_scale %}scale={{ current_scale }}{% endif %}{% if current_scale and current_category %}&{% endif %}{% if current_category %}category={{ current_category }}{% endif %}{% endif %}"
+       class="search-clear">✕ 초기화</a>
+    {% endif %}
+</form>
+
+{% if current_q and events|length == 0 %}
+<p style="color:#999; margin:20px 0;">"{{ current_q }}"에 해당하는 사건이 없습니다.</p>
+{% endif %}
+
 <table class="event-list">
     <thead>
         <tr>
@@ -52,6 +72,21 @@
 <style>
     .scale-bar { margin-bottom: 0; }
     .scale-bar a { font-weight: 600; }
+
+    .search-bar { margin: 10px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .search-bar input[type="search"] {
+        flex: 1 1 220px; max-width: 360px; padding: 7px 12px; font-size: 13px;
+        border: 1px solid #ccc; border-radius: 18px;
+    }
+    .search-bar select {
+        padding: 6px 8px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px;
+    }
+    .search-bar button {
+        padding: 7px 16px; font-size: 13px; background: #1a1a2e; color: #fff;
+        border: none; border-radius: 18px; cursor: pointer;
+    }
+    .search-bar button:hover { background: #16213e; }
+    .search-clear { font-size: 12px; color: #888; }
     .event-list { cursor: default; }
     .event-list tbody tr:hover { background: #e8f4fd; }
     .event-link { color: #333; font-weight: 500; }
