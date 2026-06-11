@@ -100,6 +100,18 @@
 </details>
 {% endif %}
 
+{% if event.scale == 'micro' and (event.affected_entities or event.comparable_universe) %}
+<h2>사전 반응 → 사건 충격 타임라인
+    <span style="font-weight:normal; font-size:12px; color:#999;">
+        ({% if event.announce_date and event.announce_date != event.event_date %}📢 발표일 D− → 사건일 D=0{% else %}D-30 → D+30{% endif %}, 사건일 가격 = 0%)
+    </span>
+</h2>
+<div class="timeline-wrap">
+    <canvas id="timelineChart"></canvas>
+    <div id="timelineEmpty" style="display:none; color:#999; font-size:13px; text-align:center; padding:80px 20px;"></div>
+</div>
+{% endif %}
+
 {% if car_table %}
 <h2>초과수익률 (CAR) <span style="font-weight:normal; font-size:12px; color:#999;">직접영향 평균 − 비교군 평균</span></h2>
 <div class="table-scroll">
@@ -233,6 +245,14 @@
     }
     .role-affected { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
     .role-comparable { background: #eaf2f8; color: #2471a3; border: 1px solid #aed6f1; }
+
+    .timeline-wrap {
+        position: relative; height: 280px; background: #fff;
+        padding: 10px; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 15px;
+    }
+    @media (max-width: 640px) {
+        .timeline-wrap { height: 220px; padding: 6px; }
+    }
 
     /* 사건 전(D-) 컬럼: 옅은 배경 + 경계선으로 사건 후(D+)와 시각적 구분 */
     .returns-table th.pre-event, .returns-table td.pre-event { background: #fafafa; }
@@ -553,5 +573,125 @@ document.getElementById("chartModal").addEventListener("click", function(e) {
 document.addEventListener("keydown", function(e) {
     if (e.key === "Escape") closeChart();
 });
+
+// ── 인라인 사전반응 타임라인 차트 (마이크로 사건 전용) ──
+const COLORS_AFFECTED = ["#c0392b", "#e74c3c", "#d35400", "#a93226"];
+const COLORS_COMPARABLE = ["#2980b9", "#3498db", "#5dade2", "#1f618d"];
+
+async function loadTimeline() {
+    const canvas = document.getElementById("timelineChart");
+    if (!canvas) return;  // 매크로 사건은 캔버스 자체가 없음
+
+    const empty = document.getElementById("timelineEmpty");
+    const resp = await fetch(`/api/timeline/${EVENT_ID}`);
+    const data = await resp.json();
+
+    if (!data.series || data.series.length === 0) {
+        canvas.style.display = "none";
+        empty.style.display = "block";
+        empty.textContent = "이 사건의 가격 데이터가 아직 수집되지 않았습니다.";
+        return;
+    }
+
+    // 모든 series의 dates를 합집합 → 정렬
+    const allDatesSet = new Set();
+    data.series.forEach(s => s.data.forEach(d => allDatesSet.add(d.date)));
+    const allDates = [...allDatesSet].sort();
+
+    const eventDateMs = new Date(data.event_date).getTime();
+    const labels = allDates.map(d => Math.round((new Date(d).getTime() - eventDateMs) / 86400000));
+    const eventIdx = allDates.findIndex(d => d >= data.event_date);
+
+    let aff = 0, cmp = 0;
+    const datasets = data.series.map(s => {
+        const map = Object.fromEntries(s.data.map(d => [d.date, d.value]));
+        const isAffected = s.role === "affected";
+        const color = isAffected
+            ? COLORS_AFFECTED[aff++ % COLORS_AFFECTED.length]
+            : COLORS_COMPARABLE[cmp++ % COLORS_COMPARABLE.length];
+        return {
+            label: `${isAffected ? "🎯" : "⚖️"} ${s.name}`,
+            data: allDates.map(d => map[d] ?? null),
+            borderColor: color,
+            backgroundColor: color + "20",
+            borderWidth: isAffected ? 2.5 : 1.5,
+            borderDash: isAffected ? [] : [4, 3],
+            pointRadius: 0,
+            pointHitRadius: 6,
+            tension: 0.1,
+            spanGaps: true,
+        };
+    });
+
+    const annotations = {
+        eventLine: {
+            type: "line",
+            xMin: eventIdx, xMax: eventIdx,
+            borderColor: "#e74c3c", borderWidth: 2, borderDash: [6, 3],
+            label: { display: true, content: "D=0", position: "start", backgroundColor: "#e74c3c", font: { size: 10 } },
+        },
+        zeroLine: { type: "line", yMin: 0, yMax: 0, borderColor: "#999", borderWidth: 1 },
+    };
+
+    // announce_date가 사건일과 다르면 발표 시점에 보조선
+    if (data.announce_date && data.announce_date !== data.event_date) {
+        const annIdx = allDates.findIndex(d => d >= data.announce_date);
+        if (annIdx >= 0 && annIdx !== eventIdx) {
+            annotations.announceLine = {
+                type: "line",
+                xMin: annIdx, xMax: annIdx,
+                borderColor: "#f39c12", borderWidth: 1.5, borderDash: [3, 3],
+                label: { display: true, content: "📢 발표", position: "start", backgroundColor: "#f39c12", font: { size: 10 } },
+            };
+        }
+    }
+
+    new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: { labels, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            scales: {
+                x: {
+                    title: { display: true, text: "사건일 기준 경과일 (D)" },
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 0,
+                        callback: (val, idx) => {
+                            const day = labels[idx];
+                            const keyDays = [-30, -14, -7, -1, 0, 1, 7, 14, 30];
+                            // 긴 윈도우(트랙C)에서는 30일 간격으로
+                            const span = labels[labels.length - 1] - labels[0];
+                            if (span > 90) {
+                                return (day % 30 === 0 || day === 0) ? `D${day >= 0 ? '+' : ''}${day}` : null;
+                            }
+                            return keyDays.includes(day) ? `D${day >= 0 ? '+' : ''}${day}` : null;
+                        },
+                    },
+                },
+                y: {
+                    title: { display: true, text: "사건일 대비 수익률 (%)" },
+                    ticks: { callback: v => `${v > 0 ? '+' : ''}${v}%` },
+                },
+            },
+            plugins: {
+                annotation: { annotations },
+                legend: { position: "bottom", labels: { font: { size: 11 }, boxWidth: 18 } },
+                tooltip: {
+                    callbacks: {
+                        title: (items) => {
+                            const idx = items[0].dataIndex;
+                            return `${allDates[idx]} (D${labels[idx] >= 0 ? '+' : ''}${labels[idx]})`;
+                        },
+                        label: (item) => `${item.dataset.label}: ${item.parsed.y > 0 ? '+' : ''}${item.parsed.y.toFixed(2)}%`,
+                    },
+                },
+            },
+        },
+    });
+}
+
+loadTimeline();
 </script>
 {% endblock %}
