@@ -310,6 +310,93 @@ def heatmap(request: Request):
     return templates.TemplateResponse("heatmap.html", {"request": request})
 
 
+def _default_compare_symbol(event, returns_by_symbol):
+    """비교 화면에서 자동 선택될 대표 자산.
+
+    우선순위:
+      1) 마이크로: affected_entities[0] (수익률 데이터가 있을 때만)
+      2) 데이터 있는 자산 중 우선순위 순 (^GSPC > ^KS11 > 첫 자산)
+    """
+    if event.affected_entities:
+        affected = json.loads(event.affected_entities)
+        for s in affected:
+            if s in returns_by_symbol:
+                return s
+    for preferred in ("^GSPC", "^KS11"):
+        if preferred in returns_by_symbol:
+            return preferred
+    return next(iter(returns_by_symbol), None)
+
+
+def _event_compare_data(db, event_id, override_symbol=None):
+    """단일 사건의 비교용 데이터 묶음.
+
+    반환: dict(event, table_row(symbol+periods 매핑), default_symbol, attribution)
+    """
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        return None
+
+    returns = (
+        db.query(Return)
+        .filter(Return.event_id == event_id)
+        .order_by(Return.symbol, Return.period)
+        .all()
+    )
+    returns_by_symbol = {}
+    for r in returns:
+        returns_by_symbol.setdefault(r.symbol, {})[r.period] = r
+
+    symbol = override_symbol if override_symbol in returns_by_symbol \
+        else _default_compare_symbol(event, returns_by_symbol)
+
+    asset = db.query(Asset).filter(Asset.symbol == symbol).first() if symbol else None
+    periods_data = returns_by_symbol.get(symbol, {}) if symbol else {}
+
+    attribution = None
+    if event.scale == "micro" and event.attr_political is not None:
+        attribution = {
+            "political": event.attr_political,
+            "corporate": event.attr_corporate,
+            "macro": event.attr_macro,
+            "rationale": event.attr_rationale,
+        }
+
+    return {
+        "event": event,
+        "symbol": symbol,
+        "asset_name": asset.name_ko if asset else (symbol or ""),
+        "yahoo_symbol": asset.yahoo_symbol if asset else symbol,
+        "periods_data": periods_data,
+        "attribution": attribution,
+        "available_symbols": sorted(returns_by_symbol.keys()),
+    }
+
+
+@app.get("/compare", response_class=HTMLResponse)
+def compare(request: Request,
+            a: str = Query(None), b: str = Query(None),
+            sa: str = Query(None), sb: str = Query(None)):
+    """두 사건을 나란히 비교. 쿼리: a, b (event_id) / sa, sb (각 사건 대표 자산 override)"""
+    db = SessionLocal()
+    events_all = db.query(Event).order_by(Event.event_date).all()
+
+    side_a = _event_compare_data(db, a, sa) if a else None
+    side_b = _event_compare_data(db, b, sb) if b else None
+
+    db.close()
+    return templates.TemplateResponse("compare.html", {
+        "request": request,
+        "events_all": events_all,
+        "side_a": side_a,
+        "side_b": side_b,
+        "a": a, "b": b,
+        "periods": PERIOD_ORDER,
+        "pre_event_count": PRE_EVENT_COUNT,
+        "category_names": CATEGORY_NAMES,
+    })
+
+
 if __name__ == "__main__":
     import os
     import uvicorn
