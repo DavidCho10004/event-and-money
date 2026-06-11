@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block title %}사건 비교 — Event & Money{% endblock %}
+{% block og_title %}{% if side_a and side_b %}{{ side_a.event.name_ko }} vs {{ side_b.event.name_ko }}{% else %}사건 비교{% endif %} — Event & Money{% endblock %}
+{% block og_description %}두 사건의 자산별 반응·어트리뷰션·가격 추이를 나란히 비교{% endblock %}
 {% block content %}
 <h1>사건 비교</h1>
 <p style="color:#666; font-size:13px; margin-bottom:10px;">
