@@ -9,7 +9,8 @@ class Event(Base):
     id = Column(String(4), primary_key=True)            # 'A01', 'M001' 등
     name_ko = Column(Text, nullable=False)               # '9/11 테러'
     name_en = Column(Text, nullable=False)               # 'September 11 Attacks'
-    event_date = Column(Date, nullable=False)             # 2001-09-11
+    event_date = Column(Date, nullable=False)             # 2001-09-11 (D=0, 시장에 반영된 시점)
+    announce_date = Column(Date)                          # 공시·소문 보도일 (선택, 트랙C 사전반응 분석용)
     category = Column(String(30), nullable=False)         # macro: 'war', 'financial' / micro: 'corporate_scandal' 등
     sub_type = Column(String(50))                         # 'terror', 'gapjil' 등
     description_ko = Column(Text)

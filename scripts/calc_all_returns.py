@@ -29,7 +29,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 PILOT_EVENTS = ["A04", "A08", "B05", "C02", "D06"]
+# 양수 = 사건 후 (D+N) / 음수 = 사건 전 (D-N, 사전반응 분석용)
 PERIODS = [
+    ("D-30", -30),
+    ("D-7", -7),
+    ("D-1", -1),
     ("D+1", 1),
     ("D+7", 7),
     ("D+30", 30),
@@ -65,25 +69,36 @@ def find_price_on_or_after(price_dict, target_date):
 
 
 def calc_returns_for_pair(event, price_dict):
-    """단일 사건 × 단일 자산의 수익률 계산"""
-    # 기준가: 사건일 당일 또는 직전 거래일
-    base = find_price_on_or_before(price_dict, event.event_date)
-    if not base or float(base.adj_close) == 0:
+    """단일 사건 × 단일 자산의 수익률 계산.
+
+    D+N: base = 사건일(또는 직전 거래일), end = 사건일+N일(또는 직후 거래일)
+    D-N: base = 사건일-N일(또는 직전 거래일), end = 사건일(또는 직후 거래일)
+         → "사건 직전 N일 동안 자산이 얼마나 움직였나" (사전반응)
+    """
+    # 사건일 기준 거래일 (D=0의 시장 가격)
+    event_day_price = find_price_on_or_before(price_dict, event.event_date)
+    if not event_day_price or float(event_day_price.adj_close) == 0:
         return []
 
     results = []
     for period_name, days in PERIODS:
-        target_date = event.event_date + timedelta(days=days)
+        if days >= 0:
+            # D+N: 사건일 → 사건일+N
+            base = event_day_price
+            target_date = event.event_date + timedelta(days=days)
+            if target_date > date.today():
+                continue
+            end = find_price_on_or_after(price_dict, target_date)
+        else:
+            # D-N: 사건일-N → 사건일
+            target_date = event.event_date + timedelta(days=days)  # days는 음수
+            base = find_price_on_or_before(price_dict, target_date)
+            end = event_day_price
 
-        if target_date > date.today():
+        if not base or not end or float(base.adj_close) == 0:
             continue
 
-        # 종료가: target_date 당일 또는 직후 거래일
-        end = find_price_on_or_after(price_dict, target_date)
-        if not end:
-            continue
-
-        # 기준가와 종료가가 같은 날이면 의미 없는 데이터 → 스킵
+        # base와 end가 같은 날이면 0% 수익률 → 스킵
         if end.trade_date <= base.trade_date:
             continue
 
