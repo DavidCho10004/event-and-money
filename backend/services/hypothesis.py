@@ -229,7 +229,12 @@ def h5_korea_premium(db, matrix):
 def run_all(db):
     """5대 가설 전체 실행 → 템플릿용 dict"""
     matrix = _load_matrix(db)
+    # 사건 카운트 (현재 가설 분석은 매크로 전용 — 마이크로는 한국 주식 가격 데이터 필요)
+    macro_n = db.query(Event).filter(Event.scale == "macro").count()
+    micro_n = db.query(Event).filter(Event.scale == "micro").count()
     return {
+        "macro_n": macro_n,
+        "micro_n": micro_n,
         "h1": h1_recovery_speed(db, matrix),
         "h2": h2_energy_dependence(db, matrix),
         "h3": h3_chain_lag(db, matrix),

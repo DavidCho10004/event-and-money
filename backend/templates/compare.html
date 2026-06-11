@@ -9,29 +9,33 @@
     유사 사건 간 차이(예: 9/11 vs 이란 전쟁, 와병 vs 별세)를 한눈에.
 </p>
 
+{% macro event_options(events_macro, events_micro, current) %}
+<option value="">— 선택 —</option>
+<optgroup label="🌍 매크로 ({{ events_macro|length }}건)">
+    {% for e in events_macro %}
+    <option value="{{ e.id }}" {% if e.id == current %}selected{% endif %}>
+        {{ e.id }} · {{ e.event_date }} · {{ e.name_ko[:42] }}
+    </option>
+    {% endfor %}
+</optgroup>
+<optgroup label="🏢 마이크로 ({{ events_micro|length }}건)">
+    {% for e in events_micro %}
+    <option value="{{ e.id }}" {% if e.id == current %}selected{% endif %}>
+        {{ e.id }} · {{ e.event_date }} · {{ e.name_ko[:42] }}
+    </option>
+    {% endfor %}
+</optgroup>
+{% endmacro %}
+
 <form method="get" class="compare-form">
     <div class="compare-pickers">
         <div class="picker">
             <label>사건 A</label>
-            <select name="a">
-                <option value="">— 선택 —</option>
-                {% for e in events_all %}
-                <option value="{{ e.id }}" {% if e.id == a %}selected{% endif %}>
-                    {{ e.id }} · {{ e.event_date }} · {{ e.name_ko[:42] }}
-                </option>
-                {% endfor %}
-            </select>
+            <select name="a">{{ event_options(events_macro, events_micro, a) }}</select>
         </div>
         <div class="picker">
             <label>사건 B</label>
-            <select name="b">
-                <option value="">— 선택 —</option>
-                {% for e in events_all %}
-                <option value="{{ e.id }}" {% if e.id == b %}selected{% endif %}>
-                    {{ e.id }} · {{ e.event_date }} · {{ e.name_ko[:42] }}
-                </option>
-                {% endfor %}
-            </select>
+            <select name="b">{{ event_options(events_macro, events_micro, b) }}</select>
         </div>
         <button type="submit">비교 →</button>
     </div>
@@ -79,12 +83,16 @@
 
         <div class="symbol-picker">
             <strong style="font-size:12px;">대표 자산:</strong>
+            {% if side.available_symbols %}
             <select onchange="onSymbolChange('{{ side_letter|lower }}', this.value)">
                 {% for sym in side.available_symbols %}
                 <option value="{{ sym }}" {% if sym == side.symbol %}selected{% endif %}>{{ sym }}</option>
                 {% endfor %}
             </select>
             <span style="color:#777; font-size:12px;">{{ side.asset_name }}</span>
+            {% else %}
+            <span style="color:#996515; font-size:12px;">⏳ 가격 데이터 미수집 — 로컬 가격 수집 후 표시</span>
+            {% endif %}
         </div>
 
         <div class="returns-mini">

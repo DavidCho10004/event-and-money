@@ -545,7 +545,10 @@ def compare(request: Request,
             sa: str = Query(None), sb: str = Query(None)):
     """두 사건을 나란히 비교. 쿼리: a, b (event_id) / sa, sb (각 사건 대표 자산 override)"""
     db = SessionLocal()
-    events_all = db.query(Event).order_by(Event.event_date).all()
+    events_all = db.query(Event).order_by(Event.event_date.desc()).all()
+    # 드롭다운용 그룹화 (매크로/마이크로)
+    events_macro = [e for e in events_all if (e.scale or "macro") == "macro"]
+    events_micro = [e for e in events_all if e.scale == "micro"]
 
     side_a = _event_compare_data(db, a, sa) if a else None
     side_b = _event_compare_data(db, b, sb) if b else None
@@ -554,6 +557,8 @@ def compare(request: Request,
     return templates.TemplateResponse("compare.html", {
         "request": request,
         "events_all": events_all,
+        "events_macro": events_macro,
+        "events_micro": events_micro,
         "side_a": side_a,
         "side_b": side_b,
         "a": a, "b": b,

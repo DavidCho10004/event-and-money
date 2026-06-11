@@ -5,9 +5,13 @@
 {% block content %}
 <h1>5대 가설 검증</h1>
 <p style="color:#666; font-size:13px; margin-bottom:15px;">
-    매크로 사건 30건의 수익률 데이터로 핵심 가설을 검증합니다.
+    🌍 매크로 사건 <strong>{{ r.macro_n }}건</strong>의 수익률 데이터로 핵심 가설을 검증합니다.
     모든 수치는 DB에서 실시간 산출 — 데이터가 갱신되면 결과도 갱신됩니다.
     기준 자산: S&P 500 (^GSPC), Adjusted Close.
+</p>
+<p style="background:#eaf2f8; border:1px solid #aed6f1; border-radius:4px; padding:8px 12px; font-size:12px; color:#1f618d; margin-bottom:18px;">
+    🏢 마이크로 사건 <strong>{{ r.micro_n }}건</strong>(승계·자본 이벤트·오너 리스크 등)은
+    한국 주식 가격 데이터 수집 후 별도 가설(물적분할 디스카운트 정량화, 오너 리스크 회복 시간 등)로 분석할 예정입니다.
 </p>
 
 {% macro verdict_badge(v) %}
