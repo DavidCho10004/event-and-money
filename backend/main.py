@@ -42,6 +42,9 @@ CATEGORY_NAMES = {
     "owner_risk": "오너 리스크",
     "product_safety": "제품/안전",
     "labor": "노동/파업",
+    "succession": "승계/지배구조",
+    "listing_event": "상장/IPO",
+    "capital_event": "자본 이벤트",
 }
 
 SCALE_NAMES = {"macro": "매크로", "micro": "마이크로"}

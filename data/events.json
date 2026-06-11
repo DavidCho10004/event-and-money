@@ -695,5 +695,264 @@
       },
       "takeaway": "노정 충돌은 정치 사건이지만 자본시장 영향은 업종별로 매크로 사건처럼 작동한다."
     }
+  },
+  {
+    "id": "M006",
+    "name_ko": "이건희 회장 와병 (심근경색 입원)",
+    "name_en": "Lee Kun-hee Heart Attack Hospitalization",
+    "event_date": "2014-05-10",
+    "category": "succession",
+    "sub_type": "owner_health",
+    "description_ko": "삼성그룹 이건희 회장이 심근경색으로 입원해 의식을 회복하지 못함. 사실상 그룹 승계 작업이 본격화되는 분기점.",
+    "description_en": "Samsung Chairman Lee Kun-hee was hospitalized with a heart attack, never regaining consciousness. Effectively the inflection point for group succession.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 90,
+      "macro": 5
+    },
+    "attribution_rationale": "오너 건강 이슈와 지배구조 재편 기대(기업 90%). 정치 연결성 낮음. 거시 무관.",
+    "affected_entities": [
+      "005930.KS",
+      "028260.KS"
+    ],
+    "comparable_universe": [
+      "^KS11"
+    ],
+    "summary": {
+      "what": "이건희 회장 심근경색 → 6년 와병의 시작.",
+      "why": "지배구조 재편·승계 가시화 기대로 삼성 계열 지주성 종목에 프리미엄.",
+      "duration": {
+        "start": "2014-05-10",
+        "ongoing": true
+      },
+      "takeaway": "오너 건강 이슈는 단기 충격보다 지배구조 재편 기대로 작동한다."
+    }
+  },
+  {
+    "id": "M007",
+    "name_ko": "이건희 회장 별세 (상속·배당 정책 전환)",
+    "name_en": "Lee Kun-hee Death (Succession & Dividend Policy Shift)",
+    "event_date": "2020-10-25",
+    "category": "succession",
+    "sub_type": "succession_death",
+    "description_ko": "이건희 회장 별세, 상속세 12조 원 부담. 상속세 재원 마련을 위한 배당 확대 가능성이 시장에 선반영. 삼성가의 세계 최고 수준 상속세 사례.",
+    "description_en": "Lee Kun-hee died. Heirs faced a ₩12T inheritance tax; markets priced in expanded dividend policy to fund the tax burden.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 10,
+      "corporate": 75,
+      "macro": 15
+    },
+    "attribution_rationale": "오너 별세·승계(기업 75%) + 상속세 정책 영향(정치 10%) + 글로벌 반도체 상승 사이클(거시 15%).",
+    "affected_entities": [
+      "005930.KS",
+      "028260.KS",
+      "207940.KS"
+    ],
+    "comparable_universe": [
+      "^KS11"
+    ],
+    "summary": {
+      "what": "이건희 회장 별세, 상속세 12조 원 → 특별배당·자사주 정책 기대.",
+      "why": "한국 상속세 최고세율 50%(최대주주 할증시 60%)의 압박이 배당 정책으로 전이.",
+      "duration": {
+        "start": "2020-10-25",
+        "bottom": "2021-01-08",
+        "bottom_label": "상속세 신고 후 분할 납부 결정",
+        "end": "2021-12-31",
+        "end_label": "특별배당 4년 약정 발표, 주가 정점",
+        "ongoing": false
+      },
+      "takeaway": "한국 한정 가설 — 상속세 재원이 배당 정책을 흔든다."
+    }
+  },
+  {
+    "id": "M008",
+    "name_ko": "제일모직-삼성물산 합병 주총 통과",
+    "name_en": "Cheil Industries - Samsung C&T Merger Approval",
+    "event_date": "2015-07-17",
+    "announce_date": "2015-05-26",
+    "category": "succession",
+    "sub_type": "merger_succession",
+    "description_ko": "제일모직-삼성물산 합병 비율 1:0.35 논란 속 임시주총 가결. 엘리엇 매니지먼트 반대 진영. 사실상 이재용 부회장으로의 승계 작업.",
+    "description_en": "EGM approved the 1:0.35 merger ratio amid Elliott Management's opposition. Effectively a succession move toward Vice Chairman Lee Jae-yong.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 20,
+      "corporate": 70,
+      "macro": 10
+    },
+    "attribution_rationale": "승계·합병 비율(기업 70%) + 국민연금 의결권·정치 개입 의혹(정치 20%) + 시장 무관(10%).",
+    "affected_entities": [
+      "028260.KS"
+    ],
+    "comparable_universe": [
+      "^KS11"
+    ],
+    "summary": {
+      "what": "제일모직-삼성물산 합병 주총 통과 (1:0.35 비율).",
+      "why": "합병 비율이 승계자에게 유리하다는 비판 + 국민연금 찬성표 정치적 논란.",
+      "duration": {
+        "start": "2015-05-26",
+        "bottom": "2015-07-17",
+        "bottom_label": "주총 가결 (D=0)",
+        "end": "2017-03-07",
+        "end_label": "국정농단 박영수 특검 수사",
+        "ongoing": false
+      },
+      "takeaway": "합병비율은 승계의 기술이자 정치의 표적이다."
+    }
+  },
+  {
+    "id": "M009",
+    "name_ko": "정기선 HD현대 부회장 승진 (3세 승계 가시화)",
+    "name_en": "Chung Ki-sun Promoted to HD Hyundai Vice Chairman",
+    "event_date": "2023-11-23",
+    "category": "succession",
+    "sub_type": "succession_3rd_gen",
+    "description_ko": "HD현대 정기선 사장이 부회장으로 승진하며 3세 승계가 가시화. 시장은 경영권 안정과 신사업 확장 기대로 반응.",
+    "description_en": "Chung Ki-sun was promoted to Vice Chairman of HD Hyundai, signaling 3rd-generation succession.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 10,
+      "corporate": 80,
+      "macro": 10
+    },
+    "attribution_rationale": "3세 승계 가시화(기업 80%) + 조선업 사이클 거시 일부(10%) + 정치 연결성 낮음.",
+    "affected_entities": [
+      "267250.KS"
+    ],
+    "comparable_universe": [
+      "010140.KS",
+      "042660.KS"
+    ],
+    "summary": {
+      "what": "정기선 사장 → 부회장 승진. 3세 승계 트랙 본격화.",
+      "why": "조선 업황 회복기에 승계가 맞물려 경영권 프리미엄 부각.",
+      "duration": {
+        "start": "2023-11-23",
+        "ongoing": true
+      },
+      "takeaway": "한국 한정 — 승계 확정 시점이 그룹 지주사 리레이팅 트리거가 된다."
+    }
+  },
+  {
+    "id": "M010",
+    "name_ko": "LG화학 LG에너지솔루션 물적분할 발표",
+    "name_en": "LG Chem Announces Spin-off of LG Energy Solution",
+    "event_date": "2020-09-17",
+    "category": "capital_event",
+    "sub_type": "spin_off",
+    "description_ko": "LG화학이 배터리 사업을 100% 자회사로 물적분할 발표. 모회사 주주 가치 희석 논란으로 발표 직후 LG화학 -6% 폭락. 한국 '쪼개기 상장' 디스카운트 논쟁의 도화선.",
+    "description_en": "LG Chem announced spinning off its battery business as a wholly-owned subsidiary. Triggered a -6% same-day drop and ignited Korea's 'split listing' discount debate.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 10,
+      "corporate": 70,
+      "macro": 20
+    },
+    "attribution_rationale": "모회사 거버넌스·자본 정책(기업 70%) + 물적분할 디스카운트 일반화(거시 20%) + 향후 규제 논의(정치 10%).",
+    "affected_entities": [
+      "051910.KS"
+    ],
+    "comparable_universe": [
+      "^KS11"
+    ],
+    "summary": {
+      "what": "LG화학, 배터리 사업 LG에너지솔루션으로 물적분할 발표.",
+      "why": "한국 특유의 물적분할-쪼개기 상장이 모회사 주주가치 희석 우려를 자극.",
+      "duration": {
+        "start": "2020-09-17",
+        "bottom": "2020-09-17",
+        "bottom_label": "발표 당일 -6%",
+        "end": "2022-01-27",
+        "end_label": "LG엔솔 상장 후 디스카운트 고착화",
+        "ongoing": false
+      },
+      "takeaway": "물적분할 발표는 모회사 주가에 즉시 디스카운트로 반영된다."
+    }
+  },
+  {
+    "id": "M011",
+    "name_ko": "LG에너지솔루션 상장 (한국 최대 IPO)",
+    "name_en": "LG Energy Solution IPO (Largest in Korean History)",
+    "event_date": "2022-01-27",
+    "announce_date": "2020-09-17",
+    "category": "listing_event",
+    "sub_type": "ipo_mega",
+    "description_ko": "LG에너지솔루션 코스피 상장. 시가총액 100조 원 돌파, 한국 사상 최대 IPO. 모회사 LG화학의 디스카운트는 상장 전부터 누적.",
+    "description_en": "LG Energy Solution listed on KOSPI at over ₩100T market cap — the largest IPO in Korean history. Parent LG Chem's discount had accumulated since the spin-off announcement.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 80,
+      "macro": 15
+    },
+    "attribution_rationale": "기업 자본 이벤트(80%) + 2차전지 거시 사이클(15%) + 정치 영향 미미.",
+    "affected_entities": [
+      "373220.KS",
+      "051910.KS"
+    ],
+    "comparable_universe": [
+      "^KS11"
+    ],
+    "summary": {
+      "what": "LG엔솔 상장. 모회사 LG화학은 발표(D-497) → 상장(D=0) 구간 누적 디스카운트.",
+      "why": "사전반응(트랙C) 대표 사례 — 상장 전부터 모회사가 흘러내림.",
+      "duration": {
+        "start": "2020-09-17",
+        "bottom": "2022-01-27",
+        "bottom_label": "상장일 (D=0)",
+        "end": "2022-12-31",
+        "end_label": "전기차 수요 둔화로 동반 하락",
+        "ongoing": false
+      },
+      "takeaway": "사전 반응이 사후 충격보다 큰 사건이 한국에 빈번하다 — 발표일이 진짜 D=0."
+    }
+  },
+  {
+    "id": "M012",
+    "name_ko": "카카오뱅크 상장 (인터넷전문은행 최초 IPO)",
+    "name_en": "KakaoBank IPO (First Internet-Only Bank Listing)",
+    "event_date": "2021-08-06",
+    "announce_date": "2021-07-26",
+    "category": "listing_event",
+    "sub_type": "ipo_subsidiary",
+    "description_ko": "카카오뱅크 코스피 상장. 시초가 대비 +29.97% 따상 마감. 모회사 카카오의 자회사 분리 상장 패턴이 본격화된 사례.",
+    "description_en": "KakaoBank listed on KOSPI, hitting +29.97% from offering price on debut. A landmark case of Kakao's subsidiary-listing pattern.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 75,
+      "macro": 20
+    },
+    "attribution_rationale": "기업 자본 이벤트(75%) + 2021 IPO 호황 거시(20%) + 정치 영향 미미.",
+    "affected_entities": [
+      "323410.KS",
+      "035720.KS"
+    ],
+    "comparable_universe": [
+      "086790.KS",
+      "138930.KS"
+    ],
+    "summary": {
+      "what": "카카오뱅크 상장, 따상 마감. 모회사 카카오는 사전 반영.",
+      "why": "자회사 상장 = 모회사 가치 분리 + 신주 상장 직후 락업 해제 우려가 동시 작용.",
+      "duration": {
+        "start": "2021-07-26",
+        "bottom": "2022-10-28",
+        "bottom_label": "공모가 하회",
+        "ongoing": false
+      },
+      "takeaway": "자회사 상장 초기 프리미엄은 락업 해제 일정과 함께 빠르게 소멸한다."
+    }
   }
 ]

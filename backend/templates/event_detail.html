@@ -7,6 +7,9 @@
 <p style="margin-bottom:5px;">
     <span class="badge badge-{{ event.category }}">{{ category_names.get(event.category, event.category) }}</span>
     {{ event.event_date }}
+    {% if event.announce_date and event.announce_date != event.event_date %}
+    <span style="color:#888; font-size:12px;">| 📢 발표·공시일 {{ event.announce_date }}</span>
+    {% endif %}
     {% if event.energy_impact %} | ⚡ 에너지 공급 차질{% endif %}
 </p>
 <p style="color:#666; font-size:13px; margin-bottom:15px;">{{ event.description_ko }}</p>
