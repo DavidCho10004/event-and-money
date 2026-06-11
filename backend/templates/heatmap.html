@@ -1,14 +1,138 @@
 {% extends "base.html" %}
 {% block title %}히트맵 — Event & Money{% endblock %}
 {% block content %}
-<h1>D+30 수익률 히트맵</h1>
+<h1>수익률 히트맵 <span style="font-weight:normal; font-size:14px; color:#888;">({{ rows|length }}건 × {{ asset_list|length }}자산)</span></h1>
 <p style="color:#666; font-size:13px; margin-bottom:10px;">
-    빨강 = 상승 / 파랑 = 하락 / 회색 = 데이터 없음
+    빨강 = 상승, 파랑 = 하락. 진할수록 큰 변동. 셀 클릭 → 사건 상세.
 </p>
 
-<h2>전체 (30사건 × 37자산, 섹터별 그룹)</h2>
-<img src="/outputs/charts/heatmap_d30_full.png" alt="Full Heatmap" style="max-width:100%; border:1px solid #ddd;">
+<form method="get" class="hm-form">
+    <div class="hm-filter-group">
+        <span class="hm-label">스케일</span>
+        <a href="?period={{ period }}&assets={{ assets_mode }}" class="hm-chip {% if not scale %}active{% endif %}">전체</a>
+        <a href="?scale=macro&period={{ period }}&assets={{ assets_mode }}" class="hm-chip {% if scale=='macro' %}active{% endif %}">🌍 매크로 ({{ scale_counts.get('macro', 0) }})</a>
+        <a href="?scale=micro&period={{ period }}&assets={{ assets_mode }}" class="hm-chip {% if scale=='micro' %}active{% endif %}">🏢 마이크로 ({{ scale_counts.get('micro', 0) }})</a>
+    </div>
+    <div class="hm-filter-group">
+        <span class="hm-label">시점</span>
+        {% for p in periods %}
+        <a href="?{% if scale %}scale={{ scale }}&{% endif %}period={{ p }}&assets={{ assets_mode }}"
+           class="hm-chip {% if p == period %}active{% endif %}{% if p.startswith('D-') %} hm-chip-pre{% endif %}">{{ p }}</a>
+        {% endfor %}
+    </div>
+    <div class="hm-filter-group">
+        <span class="hm-label">자산</span>
+        <a href="?{% if scale %}scale={{ scale }}&{% endif %}period={{ period }}&assets=summary" class="hm-chip {% if assets_mode=='summary' %}active{% endif %}">요약 (주요 10종)</a>
+        <a href="?{% if scale %}scale={{ scale }}&{% endif %}period={{ period }}&assets=all" class="hm-chip {% if assets_mode=='all' %}active{% endif %}">전체</a>
+    </div>
+</form>
 
-<h2 style="margin-top:30px;">요약 (30사건 × 8자산)</h2>
-<img src="/outputs/charts/heatmap_d30.png" alt="Summary Heatmap" style="max-width:100%; border:1px solid #ddd;">
+{% if rows|length == 0 or asset_list|length == 0 %}
+<p style="color:#999; margin-top:30px;">해당 조건의 사건/자산이 없습니다.</p>
+{% else %}
+<div class="hm-scroll">
+<table class="hm-table">
+    <thead>
+        <tr>
+            <th class="hm-sticky-left">사건 / 자산</th>
+            {% for a in asset_list %}
+            <th class="hm-asset-h" title="{{ a.name_ko }} ({{ a.asset_class }})">{{ a.symbol }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for row in rows %}
+        <tr>
+            <td class="hm-sticky-left hm-event-cell">
+                <a href="/event/{{ row.event.id }}" class="hm-event-link">
+                    <span class="badge badge-{{ row.event.category }}">{{ row.event.id }}</span>
+                    <span class="hm-event-name">{{ row.event.name_ko[:22] }}{% if row.event.name_ko|length > 22 %}…{% endif %}</span>
+                    <small class="hm-event-date">{{ row.event.event_date }}</small>
+                </a>
+            </td>
+            {% for cell in row.cells %}
+                {% if cell.value is none %}
+                <td class="hm-cell {{ cell.cls }}">—</td>
+                {% else %}
+                <td class="hm-cell {{ cell.cls }}"
+                    title="{{ row.event.name_ko }} × {{ asset_list[loop.index0].name_ko }}: {{ '%+.2f'|format(cell.value) }}%"
+                    onclick="location.href='/event/{{ row.event.id }}'">
+                    {{ '%+.1f'|format(cell.value) }}
+                </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<p style="font-size:11px; color:#888; margin-top:8px;">
+    셀 숫자: 사건일 기준 {{ period }} 시점 수익률(%). 셀 클릭 시 해당 사건 상세 페이지로 이동.
+</p>
+{% endif %}
+
+<style>
+    .hm-form {
+        background:#fff; padding:10px 14px; border:1px solid #ddd; border-radius:6px;
+        margin-bottom:12px;
+    }
+    .hm-filter-group { margin:6px 0; display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
+    .hm-label { font-size:11px; color:#666; font-weight:600; margin-right:8px; min-width:36px; }
+    .hm-chip {
+        display:inline-block; padding:3px 10px; font-size:12px; color:#555;
+        border:1px solid #ccc; border-radius:14px; text-decoration:none;
+    }
+    .hm-chip:hover { background:#f0f0f0; text-decoration:none; }
+    .hm-chip.active { background:#1a1a2e; color:#fff; border-color:#1a1a2e; }
+    .hm-chip-pre { font-style:italic; color:#888; }
+    .hm-chip-pre.active { color:#fff; font-style:normal; }
+
+    .hm-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+    .hm-table { border-collapse:collapse; }
+    .hm-table th, .hm-table td {
+        border:1px solid #e0e0e0; font-size:11px; padding:3px 5px;
+        white-space:nowrap; text-align:center;
+    }
+    .hm-table thead th {
+        background:#1a1a2e; color:#fff; font-weight:normal; padding:5px 7px;
+        position:sticky; top:0; z-index:2;
+    }
+    .hm-asset-h { font-family:monospace; font-size:10px; }
+    .hm-sticky-left {
+        position:sticky; left:0; z-index:3;
+        background:#fff; min-width:200px; max-width:230px; text-align:left;
+    }
+    .hm-table thead th.hm-sticky-left { background:#1a1a2e; z-index:4; }
+    .hm-event-cell { padding:5px 8px !important; }
+    .hm-event-link {
+        display:block; color:#333; text-decoration:none; font-size:12px; line-height:1.3;
+    }
+    .hm-event-link:hover { color:#0066cc; text-decoration:none; }
+    .hm-event-name { font-weight:500; margin-left:4px; }
+    .hm-event-date { display:block; color:#999; font-size:10px; margin-left:0; }
+
+    .hm-cell { cursor:pointer; font-weight:600; min-width:42px; }
+    .hm-cell:hover { outline:2px solid #1a1a2e; outline-offset:-2px; position:relative; }
+    .cell-na { background:#f0f0f0; color:#ccc; cursor:default; }
+    .cell-na:hover { outline:none; }
+    /* 한국식: 상승=빨강, 하락=파랑 */
+    .cell-pos-1 { background:#fdecea; color:#c0392b; }
+    .cell-pos-2 { background:#fab1a0; color:#922b21; }
+    .cell-pos-3 { background:#f1948a; color:#fff; }
+    .cell-pos-4 { background:#e74c3c; color:#fff; }
+    .cell-pos-5 { background:#a93226; color:#fff; }
+    .cell-neg-1 { background:#eaf2f8; color:#2471a3; }
+    .cell-neg-2 { background:#aed6f1; color:#1f618d; }
+    .cell-neg-3 { background:#5dade2; color:#fff; }
+    .cell-neg-4 { background:#2980b9; color:#fff; }
+    .cell-neg-5 { background:#1a5276; color:#fff; }
+
+    @media (max-width:640px) {
+        .hm-sticky-left { min-width:140px; max-width:160px; }
+        .hm-event-name { font-size:11px; }
+        .hm-table td, .hm-table th { font-size:10px; padding:2px 4px; }
+        .hm-cell { min-width:34px; }
+    }
+</style>
 {% endblock %}

@@ -305,9 +305,99 @@ def api_prices(event_id: str, symbol: str):
     return JSONResponse(data)
 
 
+SUMMARY_ASSETS = [
+    "^GSPC", "^IXIC", "^KS11", "^N225",
+    "CL=F", "GC=F", "DX-Y.NYB",
+    "USDKRW=X", "^TNX", "^VIX",
+]
+
+
+def _heatmap_cell_class(v):
+    """수익률(%)을 5단계 빨강/파랑 색상 클래스로 매핑. 한국식: 상승=빨강."""
+    if v is None:
+        return "cell-na"
+    if v > 20: return "cell-pos-5"
+    if v > 10: return "cell-pos-4"
+    if v > 5:  return "cell-pos-3"
+    if v > 2:  return "cell-pos-2"
+    if v > 0:  return "cell-pos-1"
+    if v > -2:  return "cell-neg-1"
+    if v > -5:  return "cell-neg-2"
+    if v > -10: return "cell-neg-3"
+    if v > -20: return "cell-neg-4"
+    return "cell-neg-5"
+
+
 @app.get("/heatmap", response_class=HTMLResponse)
-def heatmap(request: Request):
-    return templates.TemplateResponse("heatmap.html", {"request": request})
+def heatmap(request: Request,
+            scale: str = Query(None),
+            period: str = Query("D+30"),
+            assets: str = Query("summary")):
+    """인터랙티브 히트맵 (HTML 테이블).
+
+    필터: scale (all/macro/micro), period (D-30~D+365), assets (summary/all)
+    """
+    if period not in PERIOD_ORDER:
+        period = "D+30"
+    if assets not in ("summary", "all"):
+        assets = "summary"
+
+    db = SessionLocal()
+
+    # 사건 (최신순, scale 필터)
+    eq = db.query(Event).order_by(Event.event_date.desc())
+    if scale in ("macro", "micro"):
+        eq = eq.filter(Event.scale == scale)
+    events = eq.all()
+
+    # 자산 (asset_class 그룹별 정렬)
+    aq = db.query(Asset).order_by(Asset.asset_class, Asset.symbol)
+    asset_list = aq.all()
+    if assets == "summary":
+        asset_list = [a for a in asset_list if a.symbol in SUMMARY_ASSETS]
+        # SUMMARY_ASSETS 순서 보존
+        order = {s: i for i, s in enumerate(SUMMARY_ASSETS)}
+        asset_list.sort(key=lambda a: order.get(a.symbol, 999))
+
+    # 수익률 매트릭스 한 번에 로드
+    event_ids = [e.id for e in events]
+    asset_symbols = [a.symbol for a in asset_list]
+    returns = []
+    if event_ids and asset_symbols:
+        returns = (
+            db.query(Return)
+            .filter(
+                Return.period == period,
+                Return.event_id.in_(event_ids),
+                Return.symbol.in_(asset_symbols),
+            )
+            .all()
+        )
+    matrix = {(r.event_id, r.symbol): float(r.return_pct) for r in returns}
+
+    scale_counts = dict(db.query(Event.scale, func.count()).group_by(Event.scale).all())
+
+    db.close()
+
+    rows = []
+    for e in events:
+        cells = []
+        for a in asset_list:
+            v = matrix.get((e.id, a.symbol))
+            cells.append({"value": v, "cls": _heatmap_cell_class(v)})
+        rows.append({"event": e, "cells": cells})
+
+    return templates.TemplateResponse("heatmap.html", {
+        "request": request,
+        "rows": rows,
+        "asset_list": asset_list,
+        "scale": scale,
+        "period": period,
+        "periods": PERIOD_ORDER,
+        "assets_mode": assets,
+        "scale_counts": scale_counts,
+        "category_names": CATEGORY_NAMES,
+    })
 
 
 def _default_compare_symbol(event, returns_by_symbol):
