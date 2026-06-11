@@ -3,10 +3,25 @@
 {% block content %}
 <h1>사건 목록 ({{ events|length }}건)</h1>
 
+<div class="filter-bar scale-bar">
+    <a href="/{% if current_category %}?category={{ current_category }}{% endif %}"
+       class="{% if not current_scale %}active{% endif %}">전체</a>
+    <a href="/?scale=macro{% if current_category %}&category={{ current_category }}{% endif %}"
+       class="{% if current_scale == 'macro' %}active{% endif %}">
+        🌍 매크로 ({{ scale_counts.get('macro', 0) }})
+    </a>
+    <a href="/?scale=micro{% if current_category %}&category={{ current_category }}{% endif %}"
+       class="{% if current_scale == 'micro' %}active{% endif %}">
+        🏢 마이크로 ({{ scale_counts.get('micro', 0) }})
+    </a>
+</div>
+
 <div class="filter-bar">
-    <a href="/" class="{% if not current_category %}active{% endif %}">전체</a>
+    <a href="/{% if current_scale %}?scale={{ current_scale }}{% endif %}"
+       class="{% if not current_category %}active{% endif %}">전체</a>
     {% for cat, name, count in categories %}
-    <a href="/?category={{ cat }}" class="{% if current_category == cat %}active{% endif %}">
+    <a href="/?category={{ cat }}{% if current_scale %}&scale={{ current_scale }}{% endif %}"
+       class="{% if current_category == cat %}active{% endif %}">
         {{ name }} ({{ count }})
     </a>
     {% endfor %}
@@ -35,6 +50,8 @@
 </table>
 
 <style>
+    .scale-bar { margin-bottom: 0; }
+    .scale-bar a { font-weight: 600; }
     .event-list { cursor: default; }
     .event-list tbody tr:hover { background: #e8f4fd; }
     .event-link { color: #333; font-weight: 500; }

@@ -11,6 +11,26 @@
 </p>
 <p style="color:#666; font-size:13px; margin-bottom:15px;">{{ event.description_ko }}</p>
 
+{% if attribution %}
+<div class="attribution-box">
+    <div class="attribution-title">사건 성격 분해 <span style="font-weight:normal; color:#999;">(직관 가중치, 데이터 검증 예정)</span></div>
+    <div class="attr-bar">
+        {% if attribution.political %}
+        <div class="attr-seg attr-political" style="width:{{ attribution.political }}%;">정치 {{ attribution.political }}%</div>
+        {% endif %}
+        {% if attribution.corporate %}
+        <div class="attr-seg attr-corporate" style="width:{{ attribution.corporate }}%;">오너/기업 {{ attribution.corporate }}%</div>
+        {% endif %}
+        {% if attribution.macro %}
+        <div class="attr-seg attr-macro" style="width:{{ attribution.macro }}%;">시장 {{ attribution.macro }}%</div>
+        {% endif %}
+    </div>
+    {% if attribution.rationale %}
+    <p class="attr-rationale">{{ attribution.rationale }}</p>
+    {% endif %}
+</div>
+{% endif %}
+
 {% if summary %}
 <details class="event-summary">
     <summary class="event-summary-toggle">📋 사건 요약 보기</summary>
@@ -77,6 +97,48 @@
 </details>
 {% endif %}
 
+{% if car_table %}
+<h2>초과수익률 (CAR) <span style="font-weight:normal; font-size:12px; color:#999;">직접영향 평균 − 비교군 평균</span></h2>
+<div class="table-scroll">
+<table>
+    <thead>
+        <tr>
+            <th>시점</th>
+            <th>🎯 직접영향</th>
+            <th>⚖️ 비교군</th>
+            <th>CAR</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in car_table %}
+        <tr>
+            <td>{{ row.period }}</td>
+            {% for v in [row.affected, row.comparable, row.car] %}
+                {% if v is none %}
+                <td style="color:#ccc;">—</td>
+                {% elif v > 0 %}
+                <td class="positive">+{{ '%.2f'|format(v) }}%</td>
+                {% else %}
+                <td class="negative">{{ '%.2f'|format(v) }}%</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<p style="font-size:11px; color:#999; margin-bottom:15px;">
+    CAR이 음수 = 이 사건 고유의 충격으로 비교군 대비 추가 하락. 0에 수렴 = 사건 영향 소멸.
+</p>
+{% endif %}
+
+{% if not table %}
+<div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px; padding:12px 16px; margin:15px 0; font-size:13px; color:#795548;">
+    ⏳ 이 사건의 가격 데이터가 아직 수집되지 않았습니다.
+    로컬에서 <code>python scripts/fetch_all_prices.py</code> → <code>python scripts/calc_all_returns.py</code> 실행 후 반영됩니다.
+</div>
+{% endif %}
+
 <h2>자산별 수익률 <span style="font-weight:normal; font-size:12px; color:#999;">(셀 클릭 → 차트)</span></h2>
 <div class="table-scroll">
 <table>
@@ -93,6 +155,8 @@
         <tr>
             <td style="text-align:left; cursor:pointer;" onclick="showChart('{{ symbol }}')">
                 {{ info.name_ko }}
+                {% if info.role == 'affected' %}<span class="role-tag role-affected">직접</span>
+                {% elif info.role == 'comparable' %}<span class="role-tag role-comparable">비교</span>{% endif %}
             </td>
             {% for p in periods %}
                 {% set r = info.periods.get(p) %}
@@ -142,6 +206,28 @@
 <style>
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .table-scroll td, .table-scroll th { word-break: keep-all; }
+
+    .attribution-box {
+        background: #fff; border: 1px solid #e0e0e0; border-radius: 6px;
+        padding: 12px 16px; margin-bottom: 15px;
+    }
+    .attribution-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    .attr-bar {
+        display: flex; height: 26px; border-radius: 5px; overflow: hidden;
+        font-size: 11px; color: #fff; font-weight: 600;
+    }
+    .attr-seg { display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden; }
+    .attr-political { background: #c0392b; }
+    .attr-corporate { background: #8e44ad; }
+    .attr-macro { background: #2980b9; }
+    .attr-rationale { font-size: 12px; color: #777; margin-top: 8px; line-height: 1.5; }
+
+    .role-tag {
+        display: inline-block; padding: 1px 6px; border-radius: 3px;
+        font-size: 10px; font-weight: 600; margin-left: 4px; vertical-align: middle;
+    }
+    .role-affected { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+    .role-comparable { background: #eaf2f8; color: #2471a3; border: 1px solid #aed6f1; }
     .clickable-cell { cursor: pointer; }
     .clickable-cell:hover { background: #e8e8e8 !important; }
     @media (max-width: 640px) {
