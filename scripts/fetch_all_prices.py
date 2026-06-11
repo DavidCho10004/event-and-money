@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 PILOT_EVENTS = ["A04", "A08", "B05", "C02", "D06"]
-BUFFER_BEFORE = 30    # 사건일 - 30일 (D-30 차트용)
+BUFFER_BEFORE = 45    # 사건일 - 45일 (D-30 수익률 + 주말/공휴일/휴장 여유)
 BUFFER_AFTER = 400    # 사건일 + 400일 (D+365 + 주말/공휴일 여유)
 MAX_RETRIES = 3
 RETRY_DELAY = 5       # 초

@@ -139,14 +139,14 @@
 </div>
 {% endif %}
 
-<h2>자산별 수익률 <span style="font-weight:normal; font-size:12px; color:#999;">(셀 클릭 → 차트)</span></h2>
+<h2>자산별 수익률 <span style="font-weight:normal; font-size:12px; color:#999;">(셀 클릭 → 차트, ⟵ 사건 전 | 사건 후 ⟶)</span></h2>
 <div class="table-scroll">
-<table>
+<table class="returns-table">
     <thead>
         <tr>
             <th>자산</th>
             {% for p in periods %}
-            <th>{{ p }}</th>
+            <th class="{% if loop.index0 < pre_event_count %}pre-event{% endif %}{% if loop.index == pre_event_count %} pre-event-last{% endif %}">{{ p }}</th>
             {% endfor %}
         </tr>
     </thead>
@@ -159,23 +159,25 @@
                 {% elif info.role == 'comparable' %}<span class="role-tag role-comparable">비교</span>{% endif %}
             </td>
             {% for p in periods %}
+                {% set cls_pre = 'pre-event' if loop.index0 < pre_event_count else '' %}
+                {% set cls_sep = ' pre-event-last' if loop.index == pre_event_count else '' %}
                 {% set r = info.periods.get(p) %}
                 {% if r %}
                     {% if r.return_pct > 0 %}
-                    <td class="positive clickable-cell"
+                    <td class="positive clickable-cell {{ cls_pre }}{{ cls_sep }}"
                         onclick="showChart('{{ symbol }}', '{{ p }}')"
                         title="base={{ r.date_base }} ({{ '%.2f'|format(r.price_base) }}) → end={{ r.date_end }} ({{ '%.2f'|format(r.price_end) }})">
                         +{{ '%.2f'|format(r.return_pct) }}%
                     </td>
                     {% else %}
-                    <td class="negative clickable-cell"
+                    <td class="negative clickable-cell {{ cls_pre }}{{ cls_sep }}"
                         onclick="showChart('{{ symbol }}', '{{ p }}')"
                         title="base={{ r.date_base }} ({{ '%.2f'|format(r.price_base) }}) → end={{ r.date_end }} ({{ '%.2f'|format(r.price_end) }})">
                         {{ '%.2f'|format(r.return_pct) }}%
                     </td>
                     {% endif %}
                 {% else %}
-                    <td style="color:#ccc;">—</td>
+                    <td class="{{ cls_pre }}{{ cls_sep }}" style="color:#ccc;">—</td>
                 {% endif %}
             {% endfor %}
         </tr>
@@ -228,6 +230,11 @@
     }
     .role-affected { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
     .role-comparable { background: #eaf2f8; color: #2471a3; border: 1px solid #aed6f1; }
+
+    /* 사건 전(D-) 컬럼: 옅은 배경 + 경계선으로 사건 후(D+)와 시각적 구분 */
+    .returns-table th.pre-event, .returns-table td.pre-event { background: #fafafa; }
+    .returns-table th.pre-event { background: #2c3e50; }
+    .returns-table th.pre-event-last, .returns-table td.pre-event-last { border-left: 3px solid #1a1a2e; }
     .clickable-cell { cursor: pointer; }
     .clickable-cell:hover { background: #e8e8e8 !important; }
     @media (max-width: 640px) {

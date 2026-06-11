@@ -34,6 +34,7 @@ MICRO_COLUMNS = [
     ("attr_rationale", "TEXT"),
     ("affected_entities", "TEXT"),
     ("comparable_universe", "TEXT"),
+    ("announce_date", "DATE"),  # 트랙C 사전반응 분석용 (공시·보도일)
 ]
 
 
@@ -71,6 +72,9 @@ def seed_events():
             attr_rationale = row.get("attribution_rationale")
             affected = row.get("affected_entities")
             comparable = row.get("comparable_universe")
+            announce_date = (
+                date.fromisoformat(row["announce_date"]) if row.get("announce_date") else None
+            )
 
             affected_json = json.dumps(affected, ensure_ascii=False) if affected else None
             comparable_json = json.dumps(comparable, ensure_ascii=False) if comparable else None
@@ -86,6 +90,7 @@ def seed_events():
                 event.attr_rationale = attr_rationale
                 event.affected_entities = affected_json
                 event.comparable_universe = comparable_json
+                event.announce_date = announce_date
                 updated += 1
                 continue
 
@@ -106,6 +111,7 @@ def seed_events():
                 attr_rationale=attr_rationale,
                 affected_entities=affected_json,
                 comparable_universe=comparable_json,
+                announce_date=announce_date,
             )
             db.add(event)
             inserted += 1

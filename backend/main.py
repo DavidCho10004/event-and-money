@@ -46,7 +46,9 @@ CATEGORY_NAMES = {
 
 SCALE_NAMES = {"macro": "매크로", "micro": "마이크로"}
 
-PERIOD_ORDER = ["D+1", "D+7", "D+30", "D+180", "D+365"]
+PERIOD_ORDER = ["D-30", "D-7", "D-1", "D+1", "D+7", "D+30", "D+180", "D+365"]
+# UI에서 D-와 D+ 사이에 시각적 구분선을 그릴 인덱스
+PRE_EVENT_COUNT = 3
 
 EVENTS_JSON = Path(__file__).parent.parent / "data" / "events.json"
 
@@ -169,6 +171,7 @@ def event_detail(request: Request, event_id: str):
         "event": event,
         "table": table,
         "periods": PERIOD_ORDER,
+        "pre_event_count": PRE_EVENT_COUNT,
         "category_names": CATEGORY_NAMES,
         "summary": SUMMARIES.get(event_id),
         "attribution": attribution,
