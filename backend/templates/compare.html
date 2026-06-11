@@ -57,7 +57,7 @@
             </p>
             <p style="font-size:12px; color:#666;">{{ side.event.description_ko[:140] }}{% if side.event.description_ko|length > 140 %}…{% endif %}</p>
             <p style="font-size:11px; color:#888; margin-top:4px;">
-                <a href="/event/{{ side.event.id }}">→ 상세 보기</a>
+                <a href="/event/{{ side.event.slug or side.event.id }}">→ 상세 보기</a>
             </p>
         </div>
 
