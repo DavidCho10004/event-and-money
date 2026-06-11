@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}5대 가설 검증 — Event & Money{% endblock %}
+{% block content %}
+<h1>5대 가설 검증</h1>
+<p style="color:#666; font-size:13px; margin-bottom:15px;">
+    매크로 사건 30건의 수익률 데이터로 핵심 가설을 검증합니다.
+    모든 수치는 DB에서 실시간 산출 — 데이터가 갱신되면 결과도 갱신됩니다.
+    기준 자산: S&P 500 (^GSPC), Adjusted Close.
+</p>
+
+{% macro verdict_badge(v) %}
+    {% if v == '지지' %}<span class="vd vd-support">✓ 지지</span>
+    {% elif v == '기각 방향' %}<span class="vd vd-reject">✗ 기각 방향</span>
+    {% elif v == '혼재' %}<span class="vd vd-mixed">~ 혼재</span>
+    {% else %}<span class="vd vd-na">? {{ v }}</span>{% endif %}
+{% endmacro %}
+
+<!-- 가설 1 -->
+<div class="hyp-card">
+    <h2>가설 1. 회복 속도 가속화 {{ verdict_badge(r.h1.verdict) }}</h2>
+    <p class="hyp-q">시장의 충격 후 회복 속도가 시대별로 빨라지고 있는가?</p>
+    <p class="hyp-method">방법: D+30에 하락(음수)했던 사건을 시대 3구간으로 나눠, D+180 시점에 플러스 전환된 비율 비교.</p>
+    <table class="hyp-table">
+        <thead><tr><th>시대</th><th>충격 사건 n</th><th>D+180 회복</th><th>회복률</th><th>평균 D+30</th><th>평균 D+180</th></tr></thead>
+        <tbody>
+        {% for row in r.h1.rows %}
+        <tr>
+            <td>{{ row.era }}</td>
+            <td>{{ row.n }}</td>
+            <td>{{ row.recovered_n }}</td>
+            <td>{% if row.recovered_pct is not none %}{{ row.recovered_pct }}%{% else %}—{% endif %}</td>
+            <td>{% if row.avg_d30 is not none %}{{ row.avg_d30 }}%{% else %}—{% endif %}</td>
+            <td>{% if row.avg_d180 is not none %}{{ row.avg_d180 }}%{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="hyp-note">⚠ 시대별 표본이 작아(구간당 2~6건) 통계적 확정이 어려움. 사건 추가 시 재검증.</p>
+</div>
+
+<!-- 가설 2 -->
+<div class="hyp-card">
+    <h2>가설 2. 에너지 의존도 {{ verdict_badge(r.h2.verdict) }}</h2>
+    <p class="hyp-q">에너지 공급 차질을 동반한 사건만 장기(D+365) 영향을 미치는가?</p>
+    <table class="hyp-table">
+        <thead><tr><th>그룹</th><th>n</th><th>D+180 평균</th><th>D+180 중앙값</th><th>D+365 평균</th><th>D+365 중앙값</th></tr></thead>
+        <tbody>
+        <tr>
+            <td>⚡ 에너지 차질</td>
+            <td>{{ r.h2.groups.energy.n }}</td>
+            <td>{{ r.h2.groups.energy.mean_d180 }}%</td>
+            <td>{{ r.h2.groups.energy.median_d180 }}%</td>
+            <td>{{ r.h2.groups.energy.mean_d365 }}%</td>
+            <td>{{ r.h2.groups.energy.median_d365 }}%</td>
+        </tr>
+        <tr>
+            <td>일반 사건</td>
+            <td>{{ r.h2.groups.non_energy.n }}</td>
+            <td>{{ r.h2.groups.non_energy.mean_d180 }}%</td>
+            <td>{{ r.h2.groups.non_energy.median_d180 }}%</td>
+            <td>{{ r.h2.groups.non_energy.mean_d365 }}%</td>
+            <td>{{ r.h2.groups.non_energy.median_d365 }}%</td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="hyp-note">에너지 차질 사건의 1년 후 수익률이 일반 사건보다 낮으면 가설 지지.</p>
+</div>
+
+<!-- 가설 3 -->
+<div class="hyp-card">
+    <h2>가설 3. 파급 체인 시차 {{ verdict_badge(r.h3.verdict) }}</h2>
+    <p class="hyp-q">1차 변인(유가) → 2차 변인(주가) 사이에 일관된 시차가 존재하는가?</p>
+    <p>현재 프록시 분석: 유가(WTI) D+7 수익률과 S&P 500 D+30 수익률의 상관계수
+        = <strong>{{ r.h3.corr_oil7_spx30 if r.h3.corr_oil7_spx30 is not none else '계산 불가' }}</strong>
+        (n={{ r.h3.n }})
+    </p>
+    <p class="hyp-note">⚠ {{ r.h3.note }}</p>
+</div>
+
+<!-- 가설 4 -->
+<div class="hyp-card">
+    <h2>가설 4. 학습 효과 {{ verdict_badge(r.h4.verdict) }}</h2>
+    <p class="hyp-q">유사 사건이 반복되면 초기 하락폭(D+30)이 줄어드는가?</p>
+    <p>같은 유형(sub_type) 그룹 {{ r.h4.total }}개 중 <strong>{{ r.h4.support }}개</strong>에서 후행 사건의 충격 완화 확인.</p>
+    {% for g in r.h4.groups %}
+    <div class="h4-group">
+        <strong>{{ g.sub_type }}</strong>
+        {% if g.trend == '완화' %}<span class="vd vd-support">완화</span>
+        {% elif g.trend == '심화' %}<span class="vd vd-reject">심화</span>{% endif %}
+        <table class="hyp-table compact">
+            <tbody>
+            {% for e in g.events %}
+            <tr>
+                <td style="text-align:left;"><a href="/event/{{ e.id }}">{{ e.id }}</a> {{ e.name }} ({{ e.year }})</td>
+                <td>{% if e.d30 is not none %}{{ '%+.2f'|format(e.d30) }}%{% else %}데이터 미확보{% endif %}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 가설 5 -->
+<div class="hyp-card">
+    <h2>가설 5. 한국 프리미엄 (과잉반응) {{ verdict_badge(r.h5.verdict) }}</h2>
+    <p class="hyp-q">KOSPI가 S&P 500보다 과잉반응하는 경향이 있는가?</p>
+    <p>
+        비교 가능 사건 {{ r.h5.n }}건 중 <strong>{{ r.h5.over_n }}건({{ r.h5.over_pct }}%)</strong>에서
+        |KOSPI D+30| &gt; |S&P D+30|.
+        평균 진폭 비율(|KOSPI|/|S&P|): <strong>{{ r.h5.amp_ratio }}배</strong>
+    </p>
+    <div class="hyp-scroll">
+    <table class="hyp-table">
+        <thead><tr><th>사건</th><th>연도</th><th>KOSPI D+30</th><th>S&P D+30</th><th>과잉반응</th></tr></thead>
+        <tbody>
+        {% for row in r.h5.rows %}
+        <tr>
+            <td style="text-align:left;"><a href="/event/{{ row.id }}">{{ row.id }}</a> {{ row.name }}</td>
+            <td>{{ row.year }}</td>
+            <td class="{{ 'positive' if row.kospi > 0 else 'negative' }}">{{ '%+.2f'|format(row.kospi) }}%</td>
+            <td class="{{ 'positive' if row.spx > 0 else 'negative' }}">{{ '%+.2f'|format(row.spx) }}%</td>
+            <td>{{ '🔴' if row.overreact else '—' }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <p class="hyp-note">건수 기준 50%지만 진폭 비율이 1을 크게 넘으면 "움직일 때는 크게 움직인다"는 부분 지지로 해석 가능.</p>
+</div>
+
+<style>
+    .hyp-card {
+        background:#fff; border:1px solid #e0e0e0; border-radius:6px;
+        padding:16px 18px; margin-bottom:18px;
+    }
+    .hyp-card h2 { margin-top:0; }
+    .hyp-q { font-size:13px; color:#555; font-style:italic; margin-bottom:8px; }
+    .hyp-method { font-size:12px; color:#888; margin-bottom:8px; }
+    .hyp-note { font-size:12px; color:#996515; background:#fffaf0; padding:6px 10px; border-radius:4px; margin-top:8px; }
+    .hyp-table { width:auto; min-width:60%; }
+    .hyp-table th, .hyp-table td { padding:5px 12px; font-size:12px; }
+    .hyp-table.compact td { padding:3px 10px; font-size:12px; }
+    .hyp-scroll { overflow-x:auto; }
+    .h4-group { margin:10px 0; }
+
+    .vd {
+        display:inline-block; padding:2px 10px; border-radius:12px;
+        font-size:12px; font-weight:600; vertical-align:middle; margin-left:6px;
+    }
+    .vd-support { background:#eafaf1; color:#1e8449; border:1px solid #a9dfbf; }
+    .vd-reject { background:#fdedec; color:#c0392b; border:1px solid #f5b7b1; }
+    .vd-mixed { background:#fef9e7; color:#9a7d0a; border:1px solid #f9e79f; }
+    .vd-na { background:#f4f6f6; color:#7f8c8d; border:1px solid #d5dbdb; }
+</style>
+{% endblock %}
