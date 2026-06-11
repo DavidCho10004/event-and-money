@@ -46,7 +46,7 @@
     {% for row in rows %}
         <tr>
             <td class="hm-sticky-left hm-event-cell">
-                <a href="/event/{{ row.event.id }}" class="hm-event-link">
+                <a href="/event/{{ row.event.slug or row.event.id }}" class="hm-event-link">
                     <span class="badge badge-{{ row.event.category }}">{{ row.event.id }}</span>
                     <span class="hm-event-name">{{ row.event.name_ko[:22] }}{% if row.event.name_ko|length > 22 %}…{% endif %}</span>
                     <small class="hm-event-date">{{ row.event.event_date }}</small>
@@ -58,7 +58,7 @@
                 {% else %}
                 <td class="hm-cell {{ cell.cls }}"
                     title="{{ row.event.name_ko }} × {{ asset_list[loop.index0].name_ko }}: {{ '%+.2f'|format(cell.value) }}%"
-                    onclick="location.href='/event/{{ row.event.id }}'">
+                    onclick="location.href='/event/{{ row.event.slug or row.event.id }}'">
                     {{ '%+.1f'|format(cell.value) }}
                 </td>
                 {% endif %}

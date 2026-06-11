@@ -35,6 +35,7 @@ MICRO_COLUMNS = [
     ("affected_entities", "TEXT"),
     ("comparable_universe", "TEXT"),
     ("announce_date", "DATE"),  # 트랙C 사전반응 분석용 (공시·보도일)
+    ("slug", "VARCHAR(80)"),    # URL slug
 ]
 
 
@@ -75,6 +76,7 @@ def seed_events():
             announce_date = (
                 date.fromisoformat(row["announce_date"]) if row.get("announce_date") else None
             )
+            slug = row.get("slug")
 
             affected_json = json.dumps(affected, ensure_ascii=False) if affected else None
             comparable_json = json.dumps(comparable, ensure_ascii=False) if comparable else None
@@ -91,6 +93,7 @@ def seed_events():
                 event.affected_entities = affected_json
                 event.comparable_universe = comparable_json
                 event.announce_date = announce_date
+                event.slug = slug
                 updated += 1
                 continue
 
@@ -112,6 +115,7 @@ def seed_events():
                 affected_entities=affected_json,
                 comparable_universe=comparable_json,
                 announce_date=announce_date,
+                slug=slug,
             )
             db.add(event)
             inserted += 1

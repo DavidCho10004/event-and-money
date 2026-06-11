@@ -22,7 +22,8 @@
       },
       "takeaway": "에너지 공급 충격은 회복에 수년이 걸릴 수 있다 — 단기 반등에 속지 마라."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "first-oil-crisis-1973"
   },
   {
     "id": "A02",
@@ -35,7 +36,8 @@
     "description_en": "Oil prices surged again. Volcker raised rates to 20%. Korea's GDP fell -2.1%. Devastating blow to energy-importing nations.",
     "energy_impact": true,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "second-oil-crisis-1979"
   },
   {
     "id": "A03",
@@ -48,7 +50,8 @@
     "description_en": "Oil doubled then quickly normalized. Triggered US recession. Swift war conclusion aided market recovery.",
     "energy_impact": true,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "gulf-war-1990"
   },
   {
     "id": "A04",
@@ -73,7 +76,8 @@
       },
       "takeaway": "테러 충격은 깊지만 짧다 — 30일 만에 회복. 공포에 팔면 손해."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "september-11-attacks-2001"
   },
   {
     "id": "A05",
@@ -98,7 +102,8 @@
       },
       "takeaway": "전쟁 자체보다 전쟁의 '불확실성'이 시장을 움직인다 — 반직관적 매수 기회."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "iraq-war-2003"
   },
   {
     "id": "A06",
@@ -123,7 +128,8 @@
       },
       "takeaway": "에너지 수출국이 아닌 지역의 전쟁은 미국 시장 충격이 제한적이다."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "russia-ukraine-war-2022"
   },
   {
     "id": "A07",
@@ -136,7 +142,8 @@
     "description_en": "Despite escalation fears, market impact was limited — no direct energy supply disruption.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "israel-hamas-war-2023"
   },
   {
     "id": "A08",
@@ -161,7 +168,8 @@
       },
       "takeaway": "호르무즈 해협 봉쇄는 에너지 시장의 '핵 옵션' — 모든 자산이 동시에 반응한다."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "us-iran-war-2026"
   },
   {
     "id": "B01",
@@ -174,7 +182,8 @@
     "description_en": "Dow fell -22.6%, largest single-day drop ever. First major failure of program trading (portfolio insurance).",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "black-monday-1987"
   },
   {
     "id": "B02",
@@ -187,7 +196,8 @@
     "description_en": "Thai baht collapse → Korea IMF bailout. USD/KRW 800→1,900, KOSPI -65%.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "asian-financial-crisis-1997"
   },
   {
     "id": "B03",
@@ -200,7 +210,8 @@
     "description_en": "Russian sovereign default → cascading collapse of leveraged hedge funds. Fed emergency rate cuts.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "ltcm-collapse-russian-default-1998"
   },
   {
     "id": "B04",
@@ -213,7 +224,8 @@
     "description_en": "NASDAQ fell from 5,048 to 1,114 (-78%). Tech massacre, took 15 years to recover.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "dot-com-bubble-burst-2000"
   },
   {
     "id": "B05",
@@ -238,7 +250,8 @@
       },
       "takeaway": "시스템 리스크는 회복에 2년 이상 걸린다 — 분할 매수 전략이 유효."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "global-financial-crisis-2008"
   },
   {
     "id": "B06",
@@ -251,7 +264,8 @@
     "description_en": "Greek bailout → PIIGS crisis. Euro plunged, European bank stocks collapsed.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "european-sovereign-debt-crisis-2010"
   },
   {
     "id": "B07",
@@ -276,7 +290,8 @@
       },
       "takeaway": "정부가 빠르게 예금 보장을 발표하면 은행 위기도 며칠 만에 진화된다."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "silicon-valley-bank-run-2023"
   },
   {
     "id": "C01",
@@ -289,7 +304,8 @@
     "description_en": "Nikkei fell -17.5% in 3 days. Nuclear stocks collapsed. Solar/wind benefited. Global nuclear policy shift.",
     "energy_impact": true,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "fukushima-nuclear-disaster-2011"
   },
   {
     "id": "C02",
@@ -314,7 +330,8 @@
       },
       "takeaway": "역사상 가장 빠른 하락이 가장 빠른 회복으로 이어졌다 — 패닉 매도가 최악의 선택."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "covid-19-pandemic-2020"
   },
   {
     "id": "C03",
@@ -327,7 +344,8 @@
     "description_en": "S&P fell -2.3% in one day. Airlines/travel stocks dropped. Full recovery in 2 weeks. Prime example of 'learning effect'.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "covid-omicron-variant-shock-2021"
   },
   {
     "id": "C04",
@@ -340,7 +358,8 @@
     "description_en": "China real estate bubble fears. Hang Seng fell -3.3%. Global contagion was limited.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "evergrande-crisis-2021"
   },
   {
     "id": "D01",
@@ -353,7 +372,8 @@
     "description_en": "Fed funds rate raised to 20%. Successfully crushed inflation but triggered severe recession.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "volcker-shock-1980"
   },
   {
     "id": "D02",
@@ -366,7 +386,8 @@
     "description_en": "G5 agreed to weaken the dollar. Yen surged — sowed the seeds of Japan's bubble.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "plaza-accord-1985"
   },
   {
     "id": "D03",
@@ -379,7 +400,8 @@
     "description_en": "Sudden yuan devaluation. Global equities fell in tandem, commodities collapsed.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "yuan-devaluation-2015"
   },
   {
     "id": "D04",
@@ -392,7 +414,8 @@
     "description_en": "Pound fell -8% (largest single-day drop ever). FTSE 250 -7%. Mostly recovered within 48 hours.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "brexit-referendum-2016"
   },
   {
     "id": "D05",
@@ -405,7 +428,8 @@
     "description_en": "Trump tariff announcement. Semiconductor/tech stocks hit. Global supply chain restructuring began.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "us-china-trade-war-escalation-2018"
   },
   {
     "id": "D06",
@@ -430,7 +454,8 @@
       },
       "takeaway": "금리 인상 사이클은 느리지만 깊다 — 60/40 포트폴리오도 방어가 안 된다."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "fed-hawkish-shock-2022"
   },
   {
     "id": "E01",
@@ -443,7 +468,8 @@
     "description_en": "BP stock fell -55%. Tightened offshore drilling regulations. Energy sector reshuffled.",
     "energy_impact": true,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "bp-deepwater-horizon-oil-spill-2010"
   },
   {
     "id": "E02",
@@ -456,7 +482,8 @@
     "description_en": "VW stock fell -37%. European automakers dropped. Catalyzed EV transition.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "volkswagen-dieselgate-2015"
   },
   {
     "id": "E03",
@@ -469,7 +496,8 @@
     "description_en": "NVIDIA +240% (2023). AI value chain restructured. Traditional IT firms under pressure.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "chatgpt-launch-ai-big-bang-2022"
   },
   {
     "id": "E04",
@@ -482,7 +510,8 @@
     "description_en": "Low-cost Chinese AI model emerged. NVIDIA -17%. AI bubble narrative resurfaced. $600B market cap evaporated in one day.",
     "energy_impact": false,
     "summary": null,
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "deepseek-shock-2025"
   },
   {
     "id": "E05",
@@ -507,7 +536,8 @@
       },
       "takeaway": "정책 충격은 되돌릴 수 있다 — 90일 유예 발표 하루 만에 +9.5% 반등."
     },
-    "scale": "macro"
+    "scale": "macro",
+    "slug": "trump-tariff-bomb-2025"
   },
   {
     "id": "M001",
@@ -542,7 +572,8 @@
         "ongoing": true
       },
       "takeaway": "마이크로 사건도 정치 사건과 만나면 그룹 전체 리스크로 비화한다."
-    }
+    },
+    "slug": "starbucks-korea-518-tank-day-controversy-2026"
   },
   {
     "id": "M002",
@@ -581,7 +612,8 @@
         "ongoing": false
       },
       "takeaway": "오너 리스크는 그룹 지주사일수록 더 크게 반영된다."
-    }
+    },
+    "slug": "hanjin-water-cup-gapjil-incident-2018"
   },
   {
     "id": "M003",
@@ -617,7 +649,8 @@
         "ongoing": true
       },
       "takeaway": "B2C 기업의 오너 리스크는 단기 주가가 아니라 펀더멘털을 영구 훼손할 수 있다."
-    }
+    },
+    "slug": "namyang-dairy-gapjil-voice-file-exposure-2013"
   },
   {
     "id": "M004",
@@ -656,7 +689,8 @@
         "ongoing": false
       },
       "takeaway": "플랫폼 기업의 신뢰 자본은 인프라 사고 한 번에 영구 손상될 수 있다."
-    }
+    },
+    "slug": "kakao-pangyo-data-center-fire-2022"
   },
   {
     "id": "M005",
@@ -694,7 +728,8 @@
         "ongoing": false
       },
       "takeaway": "노정 충돌은 정치 사건이지만 자본시장 영향은 업종별로 매크로 사건처럼 작동한다."
-    }
+    },
+    "slug": "truckers-second-general-strike-2022"
   },
   {
     "id": "M006",
@@ -728,7 +763,8 @@
         "ongoing": true
       },
       "takeaway": "오너 건강 이슈는 단기 충격보다 지배구조 재편 기대로 작동한다."
-    }
+    },
+    "slug": "lee-kun-hee-heart-attack-hospitalization-2014"
   },
   {
     "id": "M007",
@@ -767,7 +803,8 @@
         "ongoing": false
       },
       "takeaway": "한국 한정 가설 — 상속세 재원이 배당 정책을 흔든다."
-    }
+    },
+    "slug": "lee-kun-hee-death-2020"
   },
   {
     "id": "M008",
@@ -805,7 +842,8 @@
         "ongoing": false
       },
       "takeaway": "합병비율은 승계의 기술이자 정치의 표적이다."
-    }
+    },
+    "slug": "cheil-industries-samsung-ct-2015"
   },
   {
     "id": "M009",
@@ -839,7 +877,8 @@
         "ongoing": true
       },
       "takeaway": "한국 한정 — 승계 확정 시점이 그룹 지주사 리레이팅 트리거가 된다."
-    }
+    },
+    "slug": "chung-ki-sun-promoted-to-hd-2023"
   },
   {
     "id": "M010",
@@ -876,7 +915,8 @@
         "ongoing": false
       },
       "takeaway": "물적분할 발표는 모회사 주가에 즉시 디스카운트로 반영된다."
-    }
+    },
+    "slug": "lg-chem-announces-spin-off-of-2020"
   },
   {
     "id": "M011",
@@ -915,7 +955,8 @@
         "ongoing": false
       },
       "takeaway": "사전 반응이 사후 충격보다 큰 사건이 한국에 빈번하다 — 발표일이 진짜 D=0."
-    }
+    },
+    "slug": "lg-energy-solution-ipo-2022"
   },
   {
     "id": "M012",
@@ -953,7 +994,8 @@
         "ongoing": false
       },
       "takeaway": "자회사 상장 초기 프리미엄은 락업 해제 일정과 함께 빠르게 소멸한다."
-    }
+    },
+    "slug": "kakaobank-ipo-2021"
   },
   {
     "id": "M013",
@@ -991,7 +1033,8 @@
         "ongoing": false
       },
       "takeaway": "액면분할은 이벤트일 뿐 펀더멘털을 바꾸지 않는다."
-    }
+    },
+    "slug": "samsung-electronics-501-stock-split-2018"
   },
   {
     "id": "M014",
@@ -1028,7 +1071,8 @@
         "ongoing": false
       },
       "takeaway": "액면분할 랠리는 수급 이벤트 — 고점 신호일 수 있다."
-    }
+    },
+    "slug": "kakao-51-stock-split-2021"
   },
   {
     "id": "M015",
@@ -1065,7 +1109,8 @@
         "ongoing": false
       },
       "takeaway": "유증 발표일이 단기 저점인 경우가 많다 — 희석 공포의 과잉반응 검증 사례."
-    }
+    },
+    "slug": "korean-air-announces-asiana-acquisition-25t-2020"
   },
   {
     "id": "M016",
@@ -1099,7 +1144,8 @@
         "ongoing": false
       },
       "takeaway": "같은 유형 이벤트의 2번째는 시장 반응 속도가 다르다 — M010 vs M016 비교."
-    }
+    },
+    "slug": "sk-innovation-announces-battery-spin-off-2021"
   },
   {
     "id": "M017",
@@ -1133,6 +1179,7 @@
         "ongoing": true
       },
       "takeaway": "자본 이벤트의 방향(쪼개기 vs 합치기)이 밸류에이션 재평가를 가른다."
-    }
+    },
+    "slug": "meritz-financial-consolidation-2022"
   }
 ]

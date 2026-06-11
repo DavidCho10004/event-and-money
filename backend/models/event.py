@@ -26,3 +26,4 @@ class Event(Base):
     attr_rationale = Column(Text)                         # 가중치 부여 근거
     affected_entities = Column(Text)                      # JSON list of symbols (직접 영향)
     comparable_universe = Column(Text)                    # JSON list of symbols (비교군, CAR 계산용)
+    slug = Column(String(80), unique=True)                # URL slug (예: first-oil-crisis-1973)

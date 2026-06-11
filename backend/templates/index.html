@@ -57,10 +57,10 @@
     </thead>
     <tbody>
         {% for e in events %}
-        <tr onclick="location.href='/event/{{ e.id }}'" style="cursor:pointer;">
+        <tr onclick="location.href='/event/{{ e.slug or e.id }}'" style="cursor:pointer;">
             <td><span class="badge badge-{{ e.category }}">{{ category_names.get(e.category, e.category) }}</span></td>
             <td style="text-align:left;">
-                <a href="/event/{{ e.id }}" class="event-link">{{ e.name_ko }}</a>
+                <a href="/event/{{ e.slug or e.id }}" class="event-link">{{ e.name_ko }}</a>
             </td>
             <td class="date-full">{{ e.event_date }}</td>
             <td class="date-short">{{ e.event_date.strftime('%Y.%m') }}</td>

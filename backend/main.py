@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from datetime import timedelta
 
 from fastapi import FastAPI, Request, Query
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
@@ -111,10 +111,22 @@ def index(request: Request, category: str = Query(None), scale: str = Query(None
     })
 
 
-@app.get("/event/{event_id}", response_class=HTMLResponse)
-def event_detail(request: Request, event_id: str):
+@app.get("/event/{key}", response_class=HTMLResponse)
+def event_detail(request: Request, key: str):
+    """사건 상세. key는 slug(권장) 또는 ID(하위호환). ID 접근 시 slug로 301 리다이렉트."""
     db = SessionLocal()
-    event = db.query(Event).filter(Event.id == event_id).first()
+    event = db.query(Event).filter((Event.slug == key) | (Event.id == key)).first()
+
+    if not event:
+        db.close()
+        return HTMLResponse("<h1>404</h1><p>사건을 찾을 수 없습니다. <a href='/'>목록으로</a></p>", status_code=404)
+
+    # canonical URL = slug
+    if event.slug and key == event.id:
+        db.close()
+        return RedirectResponse(f"/event/{event.slug}", status_code=301)
+
+    event_id = event.id
 
     returns = (
         db.query(Return)
