@@ -37,7 +37,14 @@ CATEGORY_NAMES = {
     "pandemic": "팬데믹/재난",
     "policy": "정책/통화",
     "industry": "산업/기술",
+    # 마이크로 사건 카테고리
+    "corporate_scandal": "기업 스캔들",
+    "owner_risk": "오너 리스크",
+    "product_safety": "제품/안전",
+    "labor": "노동/파업",
 }
+
+SCALE_NAMES = {"macro": "매크로", "micro": "마이크로"}
 
 PERIOD_ORDER = ["D+1", "D+7", "D+30", "D+180", "D+365"]
 
@@ -51,15 +58,19 @@ SUMMARIES = _load_summaries()
 
 
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request, category: str = Query(None)):
+def index(request: Request, category: str = Query(None), scale: str = Query(None)):
     db = SessionLocal()
     query = db.query(Event).order_by(Event.event_date)
     if category:
         query = query.filter(Event.category == category)
+    if scale in ("macro", "micro"):
+        query = query.filter(Event.scale == scale)
     events = query.all()
 
     categories = db.query(Event.category, func.count()).group_by(Event.category).all()
     cat_list = [(c, CATEGORY_NAMES.get(c, c), n) for c, n in sorted(categories)]
+
+    scale_counts = dict(db.query(Event.scale, func.count()).group_by(Event.scale).all())
 
     db.close()
     return templates.TemplateResponse("index.html", {
@@ -67,6 +78,8 @@ def index(request: Request, category: str = Query(None)):
         "events": events,
         "categories": cat_list,
         "current_category": category,
+        "current_scale": scale,
+        "scale_counts": scale_counts,
         "category_names": CATEGORY_NAMES,
     })
 
@@ -92,9 +105,63 @@ def event_detail(request: Request, event_id: str):
             table[r.symbol] = {
                 "name_ko": asset.name_ko if asset else r.symbol,
                 "asset_class": asset.asset_class if asset else "",
+                "role": None,  # 'affected' | 'comparable' | None
                 "periods": {},
             }
         table[r.symbol]["periods"][r.period] = r
+
+    # ── 마이크로 사건: 3축 분해 + 직접영향/비교군 + CAR(초과수익률) ──
+    attribution = None
+    car_table = None
+    affected = json.loads(event.affected_entities) if (event and event.affected_entities) else []
+    comparable = json.loads(event.comparable_universe) if (event and event.comparable_universe) else []
+
+    if event and event.scale == "micro":
+        if event.attr_political is not None:
+            attribution = {
+                "political": event.attr_political,
+                "corporate": event.attr_corporate,
+                "macro": event.attr_macro,
+                "rationale": event.attr_rationale,
+            }
+
+        # 직접영향 → 비교군 → 나머지 순으로 테이블 재정렬 + role 태그
+        for s in affected:
+            if s in table:
+                table[s]["role"] = "affected"
+        for s in comparable:
+            if s in table:
+                table[s]["role"] = "comparable"
+        order = (
+            [s for s in affected if s in table]
+            + [s for s in comparable if s in table]
+            + [s for s in table if s not in affected and s not in comparable]
+        )
+        table = {s: table[s] for s in order}
+
+        # CAR = 직접영향 평균 수익률 − 비교군 평균 수익률 (시점별)
+        def _avg_return(symbols, period):
+            vals = [
+                float(table[s]["periods"][period].return_pct)
+                for s in symbols
+                if s in table and period in table[s]["periods"]
+            ]
+            return sum(vals) / len(vals) if vals else None
+
+        if affected and comparable:
+            car_table = []
+            for p in PERIOD_ORDER:
+                a = _avg_return(affected, p)
+                c = _avg_return(comparable, p)
+                car_table.append({
+                    "period": p,
+                    "affected": a,
+                    "comparable": c,
+                    "car": (a - c) if (a is not None and c is not None) else None,
+                })
+            # 데이터가 하나도 없으면 섹션 자체를 숨김
+            if all(row["car"] is None for row in car_table):
+                car_table = None
 
     db.close()
     return templates.TemplateResponse("event_detail.html", {
@@ -104,6 +171,8 @@ def event_detail(request: Request, event_id: str):
         "periods": PERIOD_ORDER,
         "category_names": CATEGORY_NAMES,
         "summary": SUMMARIES.get(event_id),
+        "attribution": attribution,
+        "car_table": car_table,
     })
 
 
