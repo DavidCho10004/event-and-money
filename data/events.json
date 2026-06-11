@@ -21,7 +21,8 @@
         "ongoing": false
       },
       "takeaway": "에너지 공급 충격은 회복에 수년이 걸릴 수 있다 — 단기 반등에 속지 마라."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "A02",
@@ -33,7 +34,8 @@
     "description_ko": "유가 재급등, 폴 볼커의 금리 인상(20%), 한국 -2.1% 성장률. 에너지 수입국에 치명적 타격.",
     "description_en": "Oil prices surged again. Volcker raised rates to 20%. Korea's GDP fell -2.1%. Devastating blow to energy-importing nations.",
     "energy_impact": true,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "A03",
@@ -45,7 +47,8 @@
     "description_ko": "유가 2배 상승 후 빠른 정상화, 미국 경기침체 촉발. 전쟁의 빠른 종결이 시장 회복에 기여.",
     "description_en": "Oil doubled then quickly normalized. Triggered US recession. Swift war conclusion aided market recovery.",
     "energy_impact": true,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "A04",
@@ -69,7 +72,8 @@
         "ongoing": false
       },
       "takeaway": "테러 충격은 깊지만 짧다 — 30일 만에 회복. 공포에 팔면 손해."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "A05",
@@ -93,7 +97,8 @@
         "ongoing": false
       },
       "takeaway": "전쟁 자체보다 전쟁의 '불확실성'이 시장을 움직인다 — 반직관적 매수 기회."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "A06",
@@ -117,7 +122,8 @@
         "ongoing": false
       },
       "takeaway": "에너지 수출국이 아닌 지역의 전쟁은 미국 시장 충격이 제한적이다."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "A07",
@@ -129,7 +135,8 @@
     "description_ko": "중동 확전 우려에도 시장 영향 제한적. 에너지 공급 직접 차질 없었기 때문.",
     "description_en": "Despite escalation fears, market impact was limited — no direct energy supply disruption.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "A08",
@@ -153,7 +160,8 @@
         "ongoing": true
       },
       "takeaway": "호르무즈 해협 봉쇄는 에너지 시장의 '핵 옵션' — 모든 자산이 동시에 반응한다."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "B01",
@@ -165,7 +173,8 @@
     "description_ko": "다우 -22.6% 하루 최대 낙폭. 프로그램 매매(포트폴리오 인슈어런스) 첫 대규모 실패.",
     "description_en": "Dow fell -22.6%, largest single-day drop ever. First major failure of program trading (portfolio insurance).",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "B02",
@@ -177,7 +186,8 @@
     "description_ko": "태국 바트화 붕괴 → 한국 IMF 구제금융. 원/달러 800→1,900원, KOSPI -65%.",
     "description_en": "Thai baht collapse → Korea IMF bailout. USD/KRW 800→1,900, KOSPI -65%.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "B03",
@@ -189,7 +199,8 @@
     "description_ko": "러시아 국채 디폴트 → 레버리지 헤지펀드 연쇄 붕괴, 연준 긴급 금리 인하.",
     "description_en": "Russian sovereign default → cascading collapse of leveraged hedge funds. Fed emergency rate cuts.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "B04",
@@ -201,7 +212,8 @@
     "description_ko": "나스닥 5,048 → 1,114 (-78%). 기술주 대학살, 회복에 15년 소요.",
     "description_en": "NASDAQ fell from 5,048 to 1,114 (-78%). Tech massacre, took 15 years to recover.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "B05",
@@ -225,7 +237,8 @@
         "ongoing": false
       },
       "takeaway": "시스템 리스크는 회복에 2년 이상 걸린다 — 분할 매수 전략이 유효."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "B06",
@@ -237,7 +250,8 @@
     "description_ko": "그리스 구제금융 → PIIGS 위기, 유로화 급락, 유럽 은행주 폭락.",
     "description_en": "Greek bailout → PIIGS crisis. Euro plunged, European bank stocks collapsed.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "B07",
@@ -261,7 +275,8 @@
         "ongoing": false
       },
       "takeaway": "정부가 빠르게 예금 보장을 발표하면 은행 위기도 며칠 만에 진화된다."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "C01",
@@ -273,7 +288,8 @@
     "description_ko": "닛케이 -17.5% (3일), 원전주 폭락. 태양광/풍력주 수혜, 글로벌 원전 정책 전환.",
     "description_en": "Nikkei fell -17.5% in 3 days. Nuclear stocks collapsed. Solar/wind benefited. Global nuclear policy shift.",
     "energy_impact": true,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "C02",
@@ -297,7 +313,8 @@
         "ongoing": false
       },
       "takeaway": "역사상 가장 빠른 하락이 가장 빠른 회복으로 이어졌다 — 패닉 매도가 최악의 선택."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "C03",
@@ -309,7 +326,8 @@
     "description_ko": "하루 만에 S&P -2.3%, 항공/여행주 급락. 2주 만에 완전 회복. '학습 효과'의 대표 사례.",
     "description_en": "S&P fell -2.3% in one day. Airlines/travel stocks dropped. Full recovery in 2 weeks. Prime example of 'learning effect'.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "C04",
@@ -321,7 +339,8 @@
     "description_ko": "중국 부동산 버블 우려, 항셍 -3.3%. 글로벌 전염 제한적.",
     "description_en": "China real estate bubble fears. Hang Seng fell -3.3%. Global contagion was limited.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "D01",
@@ -333,7 +352,8 @@
     "description_ko": "기준금리 20%, 인플레 진압 성공하나 심각한 경기침체 유발.",
     "description_en": "Fed funds rate raised to 20%. Successfully crushed inflation but triggered severe recession.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "D02",
@@ -345,7 +365,8 @@
     "description_ko": "G5 달러 약세 합의. 엔화 급등 → 일본 버블의 씨앗.",
     "description_en": "G5 agreed to weaken the dollar. Yen surged — sowed the seeds of Japan's bubble.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "D03",
@@ -357,7 +378,8 @@
     "description_ko": "중국 위안화 갑작스런 절하. 글로벌 증시 동반 하락, 원자재 폭락.",
     "description_en": "Sudden yuan devaluation. Global equities fell in tandem, commodities collapsed.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "D04",
@@ -369,7 +391,8 @@
     "description_ko": "파운드 -8% (사상 최대 일일 낙폭), FTSE 250 -7%. 48시간 내 대부분 회복.",
     "description_en": "Pound fell -8% (largest single-day drop ever). FTSE 250 -7%. Mostly recovered within 48 hours.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "D05",
@@ -381,7 +404,8 @@
     "description_ko": "트럼프 관세 발표, 반도체/기술주 타격. 글로벌 공급망 재편 시작.",
     "description_en": "Trump tariff announcement. Semiconductor/tech stocks hit. Global supply chain restructuring began.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "D06",
@@ -405,7 +429,8 @@
         "ongoing": false
       },
       "takeaway": "금리 인상 사이클은 느리지만 깊다 — 60/40 포트폴리오도 방어가 안 된다."
-    }
+    },
+    "scale": "macro"
   },
   {
     "id": "E01",
@@ -417,7 +442,8 @@
     "description_ko": "BP 주가 -55%, 해양 시추 규제 강화, 에너지 섹터 재편.",
     "description_en": "BP stock fell -55%. Tightened offshore drilling regulations. Energy sector reshuffled.",
     "energy_impact": true,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "E02",
@@ -429,7 +455,8 @@
     "description_ko": "VW 주가 -37%, 유럽 자동차주 동반 하락. EV 전환 가속화 촉매.",
     "description_en": "VW stock fell -37%. European automakers dropped. Catalyzed EV transition.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "E03",
@@ -441,7 +468,8 @@
     "description_ko": "엔비디아 +240%(2023). AI 밸류체인 재편, 전통 IT 기업 위기감.",
     "description_en": "NVIDIA +240% (2023). AI value chain restructured. Traditional IT firms under pressure.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "E04",
@@ -453,7 +481,8 @@
     "description_ko": "중국산 저비용 AI 모델 등장. 엔비디아 -17%, AI 거품론 부상. 하루 만에 시총 $600B 증발.",
     "description_en": "Low-cost Chinese AI model emerged. NVIDIA -17%. AI bubble narrative resurfaced. $600B market cap evaporated in one day.",
     "energy_impact": false,
-    "summary": null
+    "summary": null,
+    "scale": "macro"
   },
   {
     "id": "E05",
@@ -477,6 +506,194 @@
         "ongoing": false
       },
       "takeaway": "정책 충격은 되돌릴 수 있다 — 90일 유예 발표 하루 만에 +9.5% 반등."
+    },
+    "scale": "macro"
+  },
+  {
+    "id": "M001",
+    "name_ko": "스타벅스 5·18 탱크데이 논란",
+    "name_en": "Starbucks Korea 5·18 TANK DAY Controversy",
+    "event_date": "2026-05-18",
+    "category": "corporate_scandal",
+    "sub_type": "political_backlash",
+    "description_ko": "5·18 민주화운동 기념일에 스타벅스코리아가 '탱크데이' 텀블러 프로모션과 '책상에 탁!' 문구를 사용해 역사 희화화 논란. 대표 경질, 정용진 회장 사과, 시민단체 고발·경찰 병합수사로 확대.",
+    "description_en": "On the 5·18 Gwangju Uprising anniversary, Starbucks Korea used 'TANK DAY' tumbler promotion and a phrase echoing the infamous 1987 Park Jong-chul torture case. CEO dismissed, Chairman Chung Yong-jin apologized, civic group complaints under police investigation.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 45,
+      "corporate": 50,
+      "macro": 5
+    },
+    "attribution_rationale": "5·18 민감성·시민단체 고발(정치)이 절반 + 대표 경질·회장 사과·그룹 거버넌스 실패(오너/기업)가 절반. 거시 영향은 미미.",
+    "affected_entities": [
+      "004170.KS",
+      "139480.KS"
+    ],
+    "comparable_universe": [
+      "023530.KS",
+      "069960.KS"
+    ],
+    "summary": {
+      "what": "5·18 기념일 마케팅에서 '탱크데이'·'책상에 탁!' 문구로 역사 희화화 논란.",
+      "why": "신세계그룹 거버넌스 실패가 정치적 민감성과 충돌, 시민단체 고발로 사법 리스크까지 확대.",
+      "duration": {
+        "start": "2026-05-18",
+        "ongoing": true
+      },
+      "takeaway": "마이크로 사건도 정치 사건과 만나면 그룹 전체 리스크로 비화한다."
+    }
+  },
+  {
+    "id": "M002",
+    "name_ko": "한진 조현민 물컵 갑질 사건",
+    "name_en": "Hanjin 'Water Cup' Gapjil Incident",
+    "event_date": "2018-04-12",
+    "category": "owner_risk",
+    "sub_type": "gapjil",
+    "description_ko": "대한항공 조현민 전무가 광고회사 직원에게 물컵을 던졌다는 보도 이후 한진가 갑질 시리즈로 확산. 조양호 회장 일가 전반 도덕성 논란, 한진칼·대한항공 주가 충격.",
+    "description_en": "Cho Hyun-min, a Hanjin family executive, allegedly threw water at an ad agency employee. Triggered cascading 'gapjil' (abuse-of-power) scandals across the Cho family, hitting Hanjin KAL and Korean Air shares.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 10,
+      "corporate": 80,
+      "macro": 10
+    },
+    "attribution_rationale": "오너 일가의 개인 일탈이 핵심(80%). 정치 연결성은 낮지만 국회·국토부 조사로 일부 정치화. 거시 무관.",
+    "affected_entities": [
+      "180640.KS",
+      "003490.KS"
+    ],
+    "comparable_universe": [
+      "020560.KS",
+      "089590.KS"
+    ],
+    "summary": {
+      "what": "한진가 조현민 물컵 갑질 보도 → 일가 전반의 갑질·밀수 의혹으로 확산.",
+      "why": "오너 일가 도덕성 리스크가 그룹 지주사·핵심 사업회사 주가를 동시 압박.",
+      "duration": {
+        "start": "2018-04-12",
+        "bottom": "2018-04-13",
+        "bottom_label": "한진칼 -8%대 급락",
+        "end": "2018-12-31",
+        "end_label": "주가 부분 회복",
+        "ongoing": false
+      },
+      "takeaway": "오너 리스크는 그룹 지주사일수록 더 크게 반영된다."
+    }
+  },
+  {
+    "id": "M003",
+    "name_ko": "남양유업 갑질 음성파일 공개",
+    "name_en": "Namyang Dairy 'Gapjil' Voice File Exposure",
+    "event_date": "2013-05-04",
+    "category": "owner_risk",
+    "sub_type": "gapjil",
+    "description_ko": "남양유업 본사 영업사원이 대리점주에게 폭언·강제 떠넘기기 한 음성파일이 공개. 사회적 분노로 불매운동 장기화, 매출·영업이익 수년간 감소.",
+    "description_en": "A voice recording revealed Namyang Dairy headquarters staff verbally abusing and forcing inventory onto independent dealers. Triggered a years-long boycott that durably damaged sales and operating profit.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 90,
+      "macro": 5
+    },
+    "attribution_rationale": "기업 문화·오너 일가 리스크가 본질(90%). 정치 연결성 거의 없음. 거시 무관.",
+    "affected_entities": [
+      "003920.KS"
+    ],
+    "comparable_universe": [
+      "005180.KS",
+      "097950.KS"
+    ],
+    "summary": {
+      "what": "본사 영업의 대리점 갑질 음성파일 공개 후 전국 불매운동.",
+      "why": "오너·기업문화 리스크가 소비자 보이콧으로 직결되어 펀더멘털(영업이익) 자체를 훼손.",
+      "duration": {
+        "start": "2013-05-04",
+        "bottom": "2020-12-31",
+        "bottom_label": "매출 회복 실패, 사모펀드 매각 분쟁",
+        "ongoing": true
+      },
+      "takeaway": "B2C 기업의 오너 리스크는 단기 주가가 아니라 펀더멘털을 영구 훼손할 수 있다."
+    }
+  },
+  {
+    "id": "M004",
+    "name_ko": "카카오 SK C&C 판교 데이터센터 화재",
+    "name_en": "Kakao Pangyo Data Center Fire (SK C&C)",
+    "event_date": "2022-10-15",
+    "category": "product_safety",
+    "sub_type": "infrastructure_failure",
+    "description_ko": "SK C&C 판교 데이터센터 화재로 카카오톡·카카오뱅크·카카오페이 등 전체 서비스 장기 먹통. 국민 일상 마비, 인프라 단일 의존도 문제 부각, 정부·국회 청문회로 확대.",
+    "description_en": "A fire at SK C&C's Pangyo data center caused prolonged outage of all Kakao services (Talk, Bank, Pay), paralyzing daily life nationwide. Spotlighted single-point-of-failure issues, escalating to government and parliamentary hearings.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 15,
+      "corporate": 70,
+      "macro": 15
+    },
+    "attribution_rationale": "인프라 단일 의존(BCP 실패)이라는 기업 리스크가 본질(70%). 청문회·규제 강화 논의로 정치화 일부. 거시 측면에선 빅테크 인프라 리스크 일반화 효과.",
+    "affected_entities": [
+      "035720.KS",
+      "323410.KS",
+      "377300.KS"
+    ],
+    "comparable_universe": [
+      "035420.KS"
+    ],
+    "summary": {
+      "what": "판교 데이터센터 화재 → 카카오 전 서비스 수일간 장애 → 국회 청문회.",
+      "why": "이중화(BCP) 실패라는 기업 리스크가 사회적 인프라 사고로 비화, 규제·여론 동시 압박.",
+      "duration": {
+        "start": "2022-10-15",
+        "bottom": "2022-10-17",
+        "bottom_label": "카카오 -9% 급락",
+        "end": "2023-06-30",
+        "end_label": "주가 부분 회복",
+        "ongoing": false
+      },
+      "takeaway": "플랫폼 기업의 신뢰 자본은 인프라 사고 한 번에 영구 손상될 수 있다."
+    }
+  },
+  {
+    "id": "M005",
+    "name_ko": "화물연대 2차 총파업 (안전운임제)",
+    "name_en": "Truckers' Second General Strike (Safe Trucking Rates)",
+    "event_date": "2022-11-24",
+    "category": "labor",
+    "sub_type": "strike",
+    "description_ko": "안전운임제 일몰을 둘러싸고 민주노총 화물연대가 2차 총파업 돌입. 시멘트·정유·철강 출하 전면 차질, 정부 업무개시명령 발동으로 정치 충돌 격화.",
+    "description_en": "Korea Cargo Truckers' Solidarity launched a second general strike over the safe trucking rate system. Cement, petroleum and steel shipments halted; the government issued back-to-work orders, escalating political confrontation.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 50,
+      "corporate": 5,
+      "macro": 45
+    },
+    "attribution_rationale": "정부 업무개시명령·노정 충돌(정치 50%) + 시멘트·철강·정유 공급망 마비(거시 산업 45%). 개별 기업 책임은 미미.",
+    "affected_entities": [
+      "005490.KS",
+      "003410.KS"
+    ],
+    "comparable_universe": [
+      "^KS11"
+    ],
+    "summary": {
+      "what": "안전운임제 일몰 갈등으로 화물연대 2차 파업, 정부 업무개시명령.",
+      "why": "노정 정치 충돌이 시멘트·철강 공급망에 직격, 일부 업종 셧다운 우려로 확산.",
+      "duration": {
+        "start": "2022-11-24",
+        "bottom": "2022-12-09",
+        "bottom_label": "파업 종료, 16일간 지속",
+        "end": "2023-01-31",
+        "end_label": "공급망 정상화",
+        "ongoing": false
+      },
+      "takeaway": "노정 충돌은 정치 사건이지만 자본시장 영향은 업종별로 매크로 사건처럼 작동한다."
     }
   }
 ]

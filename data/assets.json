@@ -331,5 +331,158 @@
     "yahoo_symbol": "LIT",
     "data_start": "2010-07-22",
     "description": "리튬/배터리 ETF — EV 전환, 에너지 전환 수혜"
+  },
+  {
+    "symbol": "004170.KS",
+    "name_ko": "신세계",
+    "name_en": "Shinsegae",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "004170.KS",
+    "data_start": "2010-01-04",
+    "description": "신세계그룹 지주격 (백화점·스타벅스 등)"
+  },
+  {
+    "symbol": "139480.KS",
+    "name_ko": "이마트",
+    "name_en": "E-Mart",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "139480.KS",
+    "data_start": "2011-06-10",
+    "description": "신세계에서 2011년 분할 상장"
+  },
+  {
+    "symbol": "023530.KS",
+    "name_ko": "롯데쇼핑",
+    "name_en": "Lotte Shopping",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "023530.KS",
+    "data_start": "2010-01-04",
+    "description": "롯데그룹 유통 (백화점·마트)"
+  },
+  {
+    "symbol": "069960.KS",
+    "name_ko": "현대백화점",
+    "name_en": "Hyundai Department Store",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "069960.KS",
+    "data_start": "2010-01-04",
+    "description": "현대백화점그룹"
+  },
+  {
+    "symbol": "180640.KS",
+    "name_ko": "한진칼",
+    "name_en": "Hanjin KAL",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "180640.KS",
+    "data_start": "2013-09-16",
+    "description": "한진그룹 지주사 (2013년 분할 상장)"
+  },
+  {
+    "symbol": "003490.KS",
+    "name_ko": "대한항공",
+    "name_en": "Korean Air",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "003490.KS",
+    "data_start": "2010-01-04",
+    "description": "한진그룹 항공"
+  },
+  {
+    "symbol": "020560.KS",
+    "name_ko": "아시아나항공",
+    "name_en": "Asiana Airlines",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "020560.KS",
+    "data_start": "2010-01-04",
+    "description": "아시아나항공 (2020년 대한항공 자회사화)"
+  },
+  {
+    "symbol": "089590.KS",
+    "name_ko": "제주항공",
+    "name_en": "Jeju Air",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "089590.KS",
+    "data_start": "2010-01-04",
+    "description": "애경그룹 LCC"
+  },
+  {
+    "symbol": "003920.KS",
+    "name_ko": "남양유업",
+    "name_en": "Namyang Dairy",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "003920.KS",
+    "data_start": "2010-01-04",
+    "description": "남양유업 (갑질·사모펀드 매각 분쟁)"
+  },
+  {
+    "symbol": "005180.KS",
+    "name_ko": "빙그레",
+    "name_en": "Binggrae",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "005180.KS",
+    "data_start": "2010-01-04",
+    "description": "빙그레 (유제품·아이스크림)"
+  },
+  {
+    "symbol": "097950.KS",
+    "name_ko": "CJ제일제당",
+    "name_en": "CJ CheilJedang",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "097950.KS",
+    "data_start": "2010-01-04",
+    "description": "CJ그룹 식품 (비교용 대형 식품주)"
+  },
+  {
+    "symbol": "035720.KS",
+    "name_ko": "카카오",
+    "name_en": "Kakao",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "035720.KS",
+    "data_start": "2010-01-04",
+    "description": "카카오 (구 다음)"
+  },
+  {
+    "symbol": "323410.KS",
+    "name_ko": "카카오뱅크",
+    "name_en": "KakaoBank",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "323410.KS",
+    "data_start": "2021-08-06",
+    "description": "카카오뱅크 (2021년 상장)"
+  },
+  {
+    "symbol": "377300.KS",
+    "name_ko": "카카오페이",
+    "name_en": "KakaoPay",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "377300.KS",
+    "data_start": "2021-11-03",
+    "description": "카카오페이 (2021년 상장)"
+  },
+  {
+    "symbol": "035420.KS",
+    "name_ko": "네이버",
+    "name_en": "NAVER",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "035420.KS",
+    "data_start": "2010-01-04",
+    "description": "네이버 (M004 비교군)"
+  },
+  {
+    "symbol": "005490.KS",
+    "name_ko": "포스코홀딩스",
+    "name_en": "POSCO Holdings",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "005490.KS",
+    "data_start": "2010-01-04",
+    "description": "포스코 (2022년 지주사 전환)"
+  },
+  {
+    "symbol": "003410.KS",
+    "name_ko": "쌍용C&E",
+    "name_en": "Ssangyong C&E",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "003410.KS",
+    "data_start": "2010-01-04",
+    "description": "쌍용C&E (시멘트 — 파업 직접 영향)"
   }
 ]
