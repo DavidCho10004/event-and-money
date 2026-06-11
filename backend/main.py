@@ -182,6 +182,82 @@ def event_detail(request: Request, event_id: str):
     })
 
 
+@app.get("/api/timeline/{event_id}")
+def api_timeline(event_id: str):
+    """마이크로 사건의 직접영향·비교군 자산 가격 추이를 한 번에 반환 (인라인 차트용).
+
+    윈도우:
+      - 기본: 사건일 -45 ~ +30
+      - announce_date가 사건일 7일 이상 앞이면 announce_date - 7부터 시작 (트랙C 사전반응)
+    값: 사건일(D=0) 가격 = 0%, 이후 일별 누적수익률 (%)
+    """
+    db = SessionLocal()
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        db.close()
+        return JSONResponse({"error": "event not found"}, status_code=404)
+
+    affected = json.loads(event.affected_entities) if event.affected_entities else []
+    comparable = json.loads(event.comparable_universe) if event.comparable_universe else []
+    all_symbols = list(dict.fromkeys(affected + comparable))  # 순서 유지 + 중복 제거
+    if not all_symbols:
+        db.close()
+        return JSONResponse({
+            "event_id": event_id,
+            "event_date": str(event.event_date),
+            "announce_date": str(event.announce_date) if event.announce_date else None,
+            "series": [],
+        })
+
+    # 윈도우 결정
+    default_start = event.event_date - timedelta(days=45)
+    if event.announce_date and event.announce_date < event.event_date - timedelta(days=7):
+        start = event.announce_date - timedelta(days=7)
+    else:
+        start = default_start
+    end = event.event_date + timedelta(days=30)
+
+    assets_map = {a.symbol: a for a in db.query(Asset).filter(Asset.symbol.in_(all_symbols)).all()}
+
+    series = []
+    for symbol in all_symbols:
+        prices = (
+            db.query(Price)
+            .filter(Price.symbol == symbol, Price.trade_date >= start, Price.trade_date <= end)
+            .order_by(Price.trade_date)
+            .all()
+        )
+        if not prices:
+            continue
+
+        # 기준가 = 사건일 당일 또는 직전 거래일 (정상화 기준)
+        base = None
+        for p in prices:
+            if p.trade_date <= event.event_date:
+                base = float(p.adj_close)
+        if not base:
+            continue
+
+        asset = assets_map.get(symbol)
+        series.append({
+            "symbol": symbol,
+            "name": asset.name_ko if asset else symbol,
+            "role": "affected" if symbol in affected else "comparable",
+            "data": [
+                {"date": str(p.trade_date), "value": round((float(p.adj_close) / base - 1) * 100, 2)}
+                for p in prices
+            ],
+        })
+
+    db.close()
+    return JSONResponse({
+        "event_id": event_id,
+        "event_date": str(event.event_date),
+        "announce_date": str(event.announce_date) if event.announce_date else None,
+        "series": series,
+    })
+
+
 @app.get("/api/prices/{event_id}/{symbol}")
 def api_prices(event_id: str, symbol: str):
     """사건 기준 D-30~D+365 가격 데이터를 JSON으로 반환"""
