@@ -152,7 +152,15 @@
 {% if not table %}
 <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px; padding:12px 16px; margin:15px 0; font-size:13px; color:#795548;">
     ⏳ 이 사건의 가격 데이터가 아직 수집되지 않았습니다.
-    로컬에서 <code>python scripts/fetch_all_prices.py</code> → <code>python scripts/calc_all_returns.py</code> 실행 후 반영됩니다.
+    {% if missing_affected %}
+    <br><strong>직접영향 자산:</strong> {{ missing_affected|join(', ') }}
+    {% endif %}
+    <br>로컬에서 <code>python scripts/fetch_all_prices.py</code> → <code>python scripts/calc_all_returns.py</code> 실행 후 반영됩니다.
+</div>
+{% elif missing_affected %}
+<div style="background:#eaf2f8; border:1px solid #aed6f1; border-radius:6px; padding:10px 14px; margin:12px 0; font-size:12px; color:#1f618d;">
+    💡 이 사건의 직접영향 자산({{ missing_affected|join(', ') }})은 가격 데이터가 아직 없어 표·차트에 표시되지 않습니다.
+    로컬 가격 수집 후 자동 추가됩니다.
 </div>
 {% endif %}
 

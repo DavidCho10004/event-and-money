@@ -24,7 +24,8 @@
     </div>
     <div class="hm-filter-group">
         <span class="hm-label">자산</span>
-        <a href="?{% if scale %}scale={{ scale }}&{% endif %}period={{ period }}&assets=summary" class="hm-chip {% if assets_mode=='summary' %}active{% endif %}">요약 (주요 10종)</a>
+        <a href="?{% if scale %}scale={{ scale }}&{% endif %}period={{ period }}&assets=summary" class="hm-chip {% if assets_mode=='summary' %}active{% endif %}">🌐 글로벌 요약</a>
+        <a href="?{% if scale %}scale={{ scale }}&{% endif %}period={{ period }}&assets=korea" class="hm-chip {% if assets_mode=='korea' %}active{% endif %}">🇰🇷 한국 요약</a>
         <a href="?{% if scale %}scale={{ scale }}&{% endif %}period={{ period }}&assets=all" class="hm-chip {% if assets_mode=='all' %}active{% endif %}">전체</a>
     </div>
 </form>
