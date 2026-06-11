@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block title %}히트맵 — Event & Money{% endblock %}
+{% block og_title %}수익률 히트맵 ({{ period }}) — Event & Money{% endblock %}
+{% block og_description %}사건 × 자산 수익률 매트릭스 — 한눈에 보는 충격과 회복 패턴{% endblock %}
 {% block content %}
 <h1>수익률 히트맵 <span style="font-weight:normal; font-size:14px; color:#888;">({{ rows|length }}건 × {{ asset_list|length }}자산)</span></h1>
 <p style="color:#666; font-size:13px; margin-bottom:10px;">
