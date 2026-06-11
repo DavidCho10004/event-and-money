@@ -574,5 +574,23 @@
     "yahoo_symbol": "138930.KS",
     "data_start": "2011-03-30",
     "description": "은행 비교군 (지방은행)"
+  },
+  {
+    "symbol": "096770.KS",
+    "name_ko": "SK이노베이션",
+    "name_en": "SK Innovation",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "096770.KS",
+    "data_start": "2010-01-04",
+    "description": "SK그룹 에너지·배터리 (SK온 물적분할 모회사)"
+  },
+  {
+    "symbol": "138040.KS",
+    "name_ko": "메리츠금융지주",
+    "name_en": "Meritz Financial Group",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "138040.KS",
+    "data_start": "2011-05-02",
+    "description": "메리츠금융 (2022년 화재·증권 완전자회사 편입)"
   }
 ]

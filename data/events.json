@@ -954,5 +954,185 @@
       },
       "takeaway": "자회사 상장 초기 프리미엄은 락업 해제 일정과 함께 빠르게 소멸한다."
     }
+  },
+  {
+    "id": "M013",
+    "name_ko": "삼성전자 50:1 액면분할",
+    "name_en": "Samsung Electronics 50:1 Stock Split",
+    "event_date": "2018-05-04",
+    "announce_date": "2018-01-31",
+    "category": "capital_event",
+    "sub_type": "stock_split",
+    "description_ko": "삼성전자가 50:1 액면분할 후 거래 재개. '국민주' 접근성 확대 명분이었으나 이후 반도체 다운사이클과 겹치며 1년간 부진. 액면분할 효과 검증의 대표 사례.",
+    "description_en": "Samsung Electronics resumed trading after a 50:1 stock split. Touted as making the 'national stock' accessible, but the following year coincided with a semiconductor downcycle.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 0,
+      "corporate": 60,
+      "macro": 40
+    },
+    "attribution_rationale": "자본 정책 이벤트(기업 60%) + 반도체 사이클(거시 40%). 정치 무관.",
+    "affected_entities": [
+      "005930.KS"
+    ],
+    "comparable_universe": [
+      "^KS11"
+    ],
+    "summary": {
+      "what": "삼성전자 50:1 액면분할, 265만원 → 5.3만원.",
+      "why": "접근성 명분의 액면분할이 실제 주가 부양으로 이어지는지 검증 가능한 사례.",
+      "duration": {
+        "start": "2018-01-31",
+        "bottom": "2019-01-04",
+        "bottom_label": "반도체 다운사이클 저점",
+        "end": "2019-12-31",
+        "end_label": "사이클 회복",
+        "ongoing": false
+      },
+      "takeaway": "액면분할은 이벤트일 뿐 펀더멘털을 바꾸지 않는다."
+    }
+  },
+  {
+    "id": "M014",
+    "name_ko": "카카오 5:1 액면분할",
+    "name_en": "Kakao 5:1 Stock Split",
+    "event_date": "2021-04-15",
+    "announce_date": "2021-02-25",
+    "category": "capital_event",
+    "sub_type": "stock_split",
+    "description_ko": "카카오 5:1 액면분할 후 거래 재개. 개인 매수세 유입으로 단기 상승했으나 이후 자회사 쪼개기 상장·금리 인상과 겹치며 장기 하락 시작점이 됨.",
+    "description_en": "Kakao resumed trading after a 5:1 split. Retail inflows lifted shares short-term, but it marked the start of a long decline amid subsidiary listings and rate hikes.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 55,
+      "macro": 40
+    },
+    "attribution_rationale": "자본 정책(기업 55%) + 성장주 금리 민감 거시(40%) + 플랫폼 규제 초기 신호(정치 5%).",
+    "affected_entities": [
+      "035720.KS"
+    ],
+    "comparable_universe": [
+      "035420.KS",
+      "^KS11"
+    ],
+    "summary": {
+      "what": "카카오 5:1 액면분할 → 개인 순매수 1위 '국민주' 등극.",
+      "why": "분할 직후 고점이 이후 3년 최고가가 됨 — 액면분할 매수의 위험 사례.",
+      "duration": {
+        "start": "2021-04-15",
+        "bottom": "2022-10-17",
+        "bottom_label": "데이터센터 화재 + 금리 충격",
+        "ongoing": false
+      },
+      "takeaway": "액면분할 랠리는 수급 이벤트 — 고점 신호일 수 있다."
+    }
+  },
+  {
+    "id": "M015",
+    "name_ko": "대한항공 아시아나 인수 + 2.5조 유상증자 발표",
+    "name_en": "Korean Air Announces Asiana Acquisition + ₩2.5T Rights Offering",
+    "event_date": "2020-11-16",
+    "category": "capital_event",
+    "sub_type": "rights_offering",
+    "description_ko": "대한항공이 아시아나항공 인수와 2.5조 원 유상증자를 동시 발표. 주주가치 희석 우려와 항공 통합 기대가 충돌. 산업은행 주도 빅딜의 대표 사례.",
+    "description_en": "Korean Air announced acquiring Asiana Airlines with a ₩2.5T rights offering. Dilution fears clashed with consolidation hopes in a KDB-led mega-deal.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 35,
+      "corporate": 45,
+      "macro": 20
+    },
+    "attribution_rationale": "산업은행 주도·정책 딜(정치 35%) + 유증 희석·인수 리스크(기업 45%) + 코로나 항공업 거시(20%).",
+    "affected_entities": [
+      "003490.KS",
+      "180640.KS"
+    ],
+    "comparable_universe": [
+      "089590.KS",
+      "^KS11"
+    ],
+    "summary": {
+      "what": "아시아나 인수 + 2.5조 유증 동시 발표.",
+      "why": "유상증자 = 기존 주주 희석. 발표일 충격과 회복 패턴이 유증 이벤트의 전형.",
+      "duration": {
+        "start": "2020-11-16",
+        "end": "2021-03-12",
+        "end_label": "유증 납입 완료",
+        "ongoing": false
+      },
+      "takeaway": "유증 발표일이 단기 저점인 경우가 많다 — 희석 공포의 과잉반응 검증 사례."
+    }
+  },
+  {
+    "id": "M016",
+    "name_ko": "SK이노베이션 배터리 분할 발표 (SK온)",
+    "name_en": "SK Innovation Announces Battery Spin-off (SK On)",
+    "event_date": "2021-07-01",
+    "category": "capital_event",
+    "sub_type": "spin_off",
+    "description_ko": "SK이노베이션이 '스토리데이'에서 배터리 사업 분할 계획 공식화. LG화학 사례 학습으로 시장이 즉각 디스카운트 반응. 물적분할 디스카운트의 재현 사례.",
+    "description_en": "SK Innovation formalized its battery spin-off at 'Story Day'. Markets discounted immediately, having learned from the LG Chem case.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 10,
+      "corporate": 70,
+      "macro": 20
+    },
+    "attribution_rationale": "물적분할 자본 정책(기업 70%) + 2차전지 사이클(거시 20%) + 물적분할 규제 논의 촉발(정치 10%).",
+    "affected_entities": [
+      "096770.KS"
+    ],
+    "comparable_universe": [
+      "051910.KS",
+      "^KS11"
+    ],
+    "summary": {
+      "what": "SK이노베이션 배터리 분할 공식화 — 발표 당일 급락.",
+      "why": "LG화학 학습효과로 시장 반응이 더 빨라졌는지 비교 가능 (M010과 직접 비교).",
+      "duration": {
+        "start": "2021-07-01",
+        "ongoing": false
+      },
+      "takeaway": "같은 유형 이벤트의 2번째는 시장 반응 속도가 다르다 — M010 vs M016 비교."
+    }
+  },
+  {
+    "id": "M017",
+    "name_ko": "메리츠금융 완전자회사 편입 (주주환원 선언)",
+    "name_en": "Meritz Financial Consolidation (Shareholder Return Pledge)",
+    "event_date": "2022-11-21",
+    "category": "capital_event",
+    "sub_type": "buyback_consolidation",
+    "description_ko": "메리츠금융지주가 화재·증권을 포괄적 주식교환으로 완전자회사 편입 + 배당·자사주 소각 중심 주주환원 선언. 발표 다음날 3사 동반 상한가. 한국 주주환원 정책의 모범 사례로 회자.",
+    "description_en": "Meritz Financial announced consolidating its insurance and securities arms via stock swap, pledging dividends and buyback-cancellations. All three stocks hit the daily limit-up next day.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 0,
+      "corporate": 90,
+      "macro": 10
+    },
+    "attribution_rationale": "자발적 주주환원·지배구조 단순화(기업 90%) + 금리 환경(거시 10%). 정치 무관.",
+    "affected_entities": [
+      "138040.KS"
+    ],
+    "comparable_universe": [
+      "086790.KS",
+      "^KS11"
+    ],
+    "summary": {
+      "what": "완전자회사 편입 + 주주환원 선언 → 상한가.",
+      "why": "쪼개기 상장의 정반대 행보가 받은 시장 보상 — M010/M016과 대척점.",
+      "duration": {
+        "start": "2022-11-21",
+        "ongoing": true
+      },
+      "takeaway": "자본 이벤트의 방향(쪼개기 vs 합치기)이 밸류에이션 재평가를 가른다."
+    }
   }
 ]
