@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block title %}사건 비교 — Event & Money{% endblock %}
+{% block content %}
+<h1>사건 비교</h1>
+<p style="color:#666; font-size:13px; margin-bottom:10px;">
+    두 사건을 골라 어트리뷰션·시점별 수익률·가격 추이를 나란히 비교합니다.
+    유사 사건 간 차이(예: 9/11 vs 이란 전쟁, 와병 vs 별세)를 한눈에.
+</p>
+
+<form method="get" class="compare-form">
+    <div class="compare-pickers">
+        <div class="picker">
+            <label>사건 A</label>
+            <select name="a">
+                <option value="">— 선택 —</option>
+                {% for e in events_all %}
+                <option value="{{ e.id }}" {% if e.id == a %}selected{% endif %}>
+                    {{ e.id }} · {{ e.event_date }} · {{ e.name_ko[:42] }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="picker">
+            <label>사건 B</label>
+            <select name="b">
+                <option value="">— 선택 —</option>
+                {% for e in events_all %}
+                <option value="{{ e.id }}" {% if e.id == b %}selected{% endif %}>
+                    {{ e.id }} · {{ e.event_date }} · {{ e.name_ko[:42] }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit">비교 →</button>
+    </div>
+</form>
+
+{% if side_a and side_b %}
+<div class="compare-grid">
+    {% for side in [side_a, side_b] %}
+    {% set is_a = loop.first %}
+    {% set side_letter = 'A' if is_a else 'B' %}
+    <div class="compare-col">
+        <div class="col-header">
+            <span class="col-label">사건 {{ side_letter }}</span>
+            <h2 style="margin-top:4px;">{{ side.event.id }} {{ side.event.name_ko }}</h2>
+            <p style="margin:4px 0;">
+                <span class="badge badge-{{ side.event.category }}">
+                    {{ category_names.get(side.event.category, side.event.category) }}
+                </span>
+                {{ side.event.event_date }}
+                {% if side.event.announce_date and side.event.announce_date != side.event.event_date %}
+                <span style="color:#888; font-size:12px;">| 📢 {{ side.event.announce_date }}</span>
+                {% endif %}
+            </p>
+            <p style="font-size:12px; color:#666;">{{ side.event.description_ko[:140] }}{% if side.event.description_ko|length > 140 %}…{% endif %}</p>
+            <p style="font-size:11px; color:#888; margin-top:4px;">
+                <a href="/event/{{ side.event.id }}">→ 상세 보기</a>
+            </p>
+        </div>
+
+        {% if side.attribution %}
+        <div class="attribution-box compact">
+            <div class="attr-bar">
+                {% if side.attribution.political %}
+                <div class="attr-seg attr-political" style="width:{{ side.attribution.political }}%;">정치 {{ side.attribution.political }}</div>
+                {% endif %}
+                {% if side.attribution.corporate %}
+                <div class="attr-seg attr-corporate" style="width:{{ side.attribution.corporate }}%;">기업 {{ side.attribution.corporate }}</div>
+                {% endif %}
+                {% if side.attribution.macro %}
+                <div class="attr-seg attr-macro" style="width:{{ side.attribution.macro }}%;">시장 {{ side.attribution.macro }}</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="symbol-picker">
+            <strong style="font-size:12px;">대표 자산:</strong>
+            <select onchange="onSymbolChange('{{ side_letter|lower }}', this.value)">
+                {% for sym in side.available_symbols %}
+                <option value="{{ sym }}" {% if sym == side.symbol %}selected{% endif %}>{{ sym }}</option>
+                {% endfor %}
+            </select>
+            <span style="color:#777; font-size:12px;">{{ side.asset_name }}</span>
+        </div>
+
+        <div class="returns-mini">
+            <table>
+                <thead><tr><th>시점</th><th>수익률</th></tr></thead>
+                <tbody>
+                {% for p in periods %}
+                    {% set r = side.periods_data.get(p) %}
+                    {% set cls = ' class="pre-row"' if loop.index0 < pre_event_count else '' %}
+                    {% set sep = ' boundary-row' if loop.index == pre_event_count else '' %}
+                    <tr class="{{ 'pre-row' if loop.index0 < pre_event_count else '' }}{{ ' boundary-row' if loop.index == pre_event_count else '' }}">
+                        <td>{{ p }}</td>
+                        {% if r %}
+                            {% if r.return_pct > 0 %}
+                            <td class="positive">+{{ '%.2f'|format(r.return_pct) }}%</td>
+                            {% else %}
+                            <td class="negative">{{ '%.2f'|format(r.return_pct) }}%</td>
+                            {% endif %}
+                        {% else %}
+                            <td style="color:#ccc;">—</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<h2 style="margin-top:30px;">가격 추이 비교 <span style="font-weight:normal; font-size:12px; color:#999;">(각 사건의 D=0 가격 = 0%)</span></h2>
+<div class="compare-chart-wrap">
+    <canvas id="compareChart"></canvas>
+    <div id="compareEmpty" style="display:none;"></div>
+</div>
+
+{% elif a or b %}
+<p style="color:#999; margin-top:30px;">두 사건을 모두 선택하면 비교 화면이 나옵니다.</p>
+{% else %}
+<p style="color:#999; margin-top:30px;">위에서 사건 A·B를 선택해 주세요.</p>
+{% endif %}
+
+<style>
+    .compare-form { background:#fff; padding:14px; border:1px solid #ddd; border-radius:6px; margin-bottom:15px; }
+    .compare-pickers { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; }
+    .compare-pickers .picker { flex:1 1 300px; }
+    .compare-pickers label { display:block; font-size:11px; color:#666; margin-bottom:3px; font-weight:600; }
+    .compare-pickers select { width:100%; padding:6px 8px; font-size:13px; border:1px solid #ccc; border-radius:4px; }
+    .compare-pickers button {
+        padding:8px 18px; font-size:14px; background:#1a1a2e; color:#fff;
+        border:none; border-radius:4px; cursor:pointer; font-weight:600;
+    }
+    .compare-pickers button:hover { background:#16213e; }
+
+    .compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:15px; }
+    .compare-col { background:#fff; padding:14px; border:1px solid #e0e0e0; border-radius:6px; }
+    .col-header { border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px; }
+    .col-label {
+        display:inline-block; padding:2px 10px; background:#1a1a2e; color:#fff;
+        font-size:11px; font-weight:600; border-radius:3px;
+    }
+    .attribution-box.compact { padding:8px 10px; margin-bottom:10px; }
+    .attribution-box.compact .attr-bar { height:22px; font-size:11px; }
+    .symbol-picker { margin:10px 0; font-size:12px; }
+    .symbol-picker select { padding:3px 6px; font-size:12px; margin:0 6px; }
+    .returns-mini table { width:100%; }
+    .returns-mini td, .returns-mini th { padding:5px 8px; font-size:12px; }
+    .returns-mini tr.pre-row td { background:#fafafa; }
+    .returns-mini tr.boundary-row td { border-top:2px solid #1a1a2e; }
+
+    .attr-bar { display:flex; height:24px; border-radius:4px; overflow:hidden; font-size:11px; color:#fff; font-weight:600; }
+    .attr-seg { display:flex; align-items:center; justify-content:center; white-space:nowrap; }
+    .attr-political { background:#c0392b; }
+    .attr-corporate { background:#8e44ad; }
+    .attr-macro { background:#2980b9; }
+
+    .compare-chart-wrap {
+        position:relative; height:340px; background:#fff;
+        padding:10px; border:1px solid #e0e0e0; border-radius:6px;
+    }
+
+    @media (max-width:640px) {
+        .compare-grid { grid-template-columns:1fr; gap:12px; }
+        .compare-chart-wrap { height:260px; }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+<script>
+const CMP_EVENT_A = "{{ a or '' }}";
+const CMP_EVENT_B = "{{ b or '' }}";
+const CMP_SYMBOL_A = "{{ (side_a.symbol if side_a else '') }}";
+const CMP_SYMBOL_B = "{{ (side_b.symbol if side_b else '') }}";
+
+function onSymbolChange(side, value) {
+    const url = new URL(window.location);
+    url.searchParams.set('s' + side, value);
+    window.location = url.toString();
+}
+
+async function loadCompareChart() {
+    const canvas = document.getElementById("compareChart");
+    if (!canvas || !CMP_EVENT_A || !CMP_EVENT_B || !CMP_SYMBOL_A || !CMP_SYMBOL_B) return;
+
+    const empty = document.getElementById("compareEmpty");
+
+    const [resA, resB] = await Promise.all([
+        fetch(`/api/prices/${CMP_EVENT_A}/${encodeURIComponent(CMP_SYMBOL_A)}`).then(r => r.json()),
+        fetch(`/api/prices/${CMP_EVENT_B}/${encodeURIComponent(CMP_SYMBOL_B)}`).then(r => r.json()),
+    ]);
+
+    if (resA.error || resB.error || !resA.dates || !resB.dates || resA.dates.length === 0 || resB.dates.length === 0) {
+        canvas.style.display = "none";
+        empty.style.display = "block";
+        empty.style.cssText = "color:#999; font-size:13px; text-align:center; padding:120px 20px;";
+        empty.textContent = "두 사건 모두에 가격 데이터가 있어야 차트가 표시됩니다.";
+        return;
+    }
+
+    // 각 시리즈를 사건일 기준 D값으로 변환 (공통 X축)
+    function toD(serie) {
+        const eMs = new Date(serie.event_date).getTime();
+        return serie.dates.map((d, i) => ({
+            d: Math.round((new Date(d).getTime() - eMs) / 86400000),
+            v: serie.returns[i],
+        }));
+    }
+    const ptsA = toD(resA);
+    const ptsB = toD(resB);
+
+    const allD = [...new Set([...ptsA.map(p => p.d), ...ptsB.map(p => p.d)])].sort((x, y) => x - y);
+    const mapA = Object.fromEntries(ptsA.map(p => [p.d, p.v]));
+    const mapB = Object.fromEntries(ptsB.map(p => [p.d, p.v]));
+
+    new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: {
+            labels: allD,
+            datasets: [
+                {
+                    label: `A: ${resA.event_name} · ${resA.symbol}`,
+                    data: allD.map(d => mapA[d] ?? null),
+                    borderColor: "#c0392b", backgroundColor: "#c0392b20",
+                    borderWidth: 2.5, pointRadius: 0, pointHitRadius: 6, tension: 0.1, spanGaps: true,
+                },
+                {
+                    label: `B: ${resB.event_name} · ${resB.symbol}`,
+                    data: allD.map(d => mapB[d] ?? null),
+                    borderColor: "#2980b9", backgroundColor: "#2980b920",
+                    borderWidth: 2.5, pointRadius: 0, pointHitRadius: 6, tension: 0.1, spanGaps: true,
+                },
+            ],
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            scales: {
+                x: {
+                    title: { display: true, text: "사건일 기준 경과일 (D)" },
+                    ticks: {
+                        callback: (val, idx) => {
+                            const day = allD[idx];
+                            if (day % 30 === 0 || day === 0 || day === 1 || day === 7 || day === -7) return `D${day >= 0 ? '+' : ''}${day}`;
+                            return null;
+                        },
+                        maxRotation: 0,
+                    },
+                },
+                y: {
+                    title: { display: true, text: "사건일 대비 수익률 (%)" },
+                    ticks: { callback: v => `${v > 0 ? '+' : ''}${v}%` },
+                },
+            },
+            plugins: {
+                annotation: {
+                    annotations: {
+                        eventLine: {
+                            type: "line", xMin: allD.indexOf(0), xMax: allD.indexOf(0),
+                            borderColor: "#e74c3c", borderWidth: 2, borderDash: [6, 3],
+                            label: { display: true, content: "D=0", position: "start", backgroundColor: "#e74c3c", font: { size: 10 } },
+                        },
+                        zeroLine: { type: "line", yMin: 0, yMax: 0, borderColor: "#999", borderWidth: 1 },
+                    },
+                },
+                legend: { position: "bottom", labels: { font: { size: 11 } } },
+            },
+        },
+    });
+}
+
+loadCompareChart();
+</script>
+{% endblock %}
