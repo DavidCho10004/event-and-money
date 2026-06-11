@@ -484,5 +484,95 @@
     "yahoo_symbol": "003410.KS",
     "data_start": "2010-01-04",
     "description": "쌍용C&E (시멘트 — 파업 직접 영향)"
+  },
+  {
+    "symbol": "005930.KS",
+    "name_ko": "삼성전자",
+    "name_en": "Samsung Electronics",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "005930.KS",
+    "data_start": "2010-01-04",
+    "description": "삼성그룹 핵심 사업회사"
+  },
+  {
+    "symbol": "028260.KS",
+    "name_ko": "삼성물산",
+    "name_en": "Samsung C&T",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "028260.KS",
+    "data_start": "2015-09-02",
+    "description": "2015년 제일모직-삼성물산 합병 후 통합법인 (사실상 그룹 지주)"
+  },
+  {
+    "symbol": "207940.KS",
+    "name_ko": "삼성바이오로직스",
+    "name_en": "Samsung Biologics",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "207940.KS",
+    "data_start": "2016-11-10",
+    "description": "삼성그룹 바이오 사업"
+  },
+  {
+    "symbol": "267250.KS",
+    "name_ko": "HD현대",
+    "name_en": "HD Hyundai",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "267250.KS",
+    "data_start": "2017-05-10",
+    "description": "HD현대그룹 지주사 (구 현대중공업지주)"
+  },
+  {
+    "symbol": "010140.KS",
+    "name_ko": "삼성중공업",
+    "name_en": "Samsung Heavy Industries",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "010140.KS",
+    "data_start": "2010-01-04",
+    "description": "조선 비교군"
+  },
+  {
+    "symbol": "042660.KS",
+    "name_ko": "한화오션",
+    "name_en": "Hanwha Ocean",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "042660.KS",
+    "data_start": "2010-01-04",
+    "description": "구 대우조선해양 (2023년 한화 인수)"
+  },
+  {
+    "symbol": "051910.KS",
+    "name_ko": "LG화학",
+    "name_en": "LG Chem",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "051910.KS",
+    "data_start": "2010-01-04",
+    "description": "LG그룹 화학 (배터리 분할 전 모회사)"
+  },
+  {
+    "symbol": "373220.KS",
+    "name_ko": "LG에너지솔루션",
+    "name_en": "LG Energy Solution",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "373220.KS",
+    "data_start": "2022-01-27",
+    "description": "LG화학에서 물적분할, 2022년 상장 (한국 사상 최대 IPO)"
+  },
+  {
+    "symbol": "086790.KS",
+    "name_ko": "하나금융지주",
+    "name_en": "Hana Financial Group",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "086790.KS",
+    "data_start": "2010-01-04",
+    "description": "은행 비교군"
+  },
+  {
+    "symbol": "138930.KS",
+    "name_ko": "BNK금융지주",
+    "name_en": "BNK Financial Group",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "138930.KS",
+    "data_start": "2011-03-30",
+    "description": "은행 비교군 (지방은행)"
   }
 ]
