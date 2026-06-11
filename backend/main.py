@@ -20,6 +20,7 @@ from sqlalchemy import func
 
 from backend.db.database import SessionLocal
 from backend.models import Event, Asset, Price, Return
+from backend.services.hypothesis import run_all as run_hypotheses
 
 app = FastAPI(title="Event & Money")
 
@@ -461,6 +462,18 @@ def _event_compare_data(db, event_id, override_symbol=None):
         "attribution": attribution,
         "available_symbols": sorted(returns_by_symbol.keys()),
     }
+
+
+@app.get("/hypothesis", response_class=HTMLResponse)
+def hypothesis(request: Request):
+    """5대 가설 검증 결과 페이지 — Return 테이블에서 실시간 산출"""
+    db = SessionLocal()
+    results = run_hypotheses(db)
+    db.close()
+    return templates.TemplateResponse("hypothesis.html", {
+        "request": request,
+        "r": results,
+    })
 
 
 @app.get("/compare", response_class=HTMLResponse)
