@@ -95,6 +95,18 @@
             {% endif %}
         </div>
 
+        {% if side.affected_entities or side.comparable_universe %}
+        <div class="intent-box">
+            {% if side.is_korean %}<span class="kr-flag">🇰🇷 한국 사건</span>{% endif %}
+            {% if side.affected_entities %}
+            <div><span class="intent-label">🎯 직접영향:</span> {{ side.affected_entities|join(', ') }}</div>
+            {% endif %}
+            {% if side.comparable_universe %}
+            <div><span class="intent-label">⚖️ 비교군:</span> {{ side.comparable_universe|join(', ') }}</div>
+            {% endif %}
+        </div>
+        {% endif %}
+
         <div class="returns-mini">
             <table>
                 <thead><tr><th>시점</th><th>수익률</th></tr></thead>
@@ -158,6 +170,18 @@
     .attribution-box.compact .attr-bar { height:22px; font-size:11px; }
     .symbol-picker { margin:10px 0; font-size:12px; }
     .symbol-picker select { padding:3px 6px; font-size:12px; margin:0 6px; }
+    .intent-box {
+        background:#fafafa; border:1px solid #e8e8e8; border-radius:4px;
+        padding:6px 10px; font-size:11px; color:#555; margin-bottom:10px;
+        font-family:monospace; word-break:break-all;
+    }
+    .intent-box > div { margin:2px 0; }
+    .intent-label { font-family:'Malgun Gothic',sans-serif; color:#333; font-weight:600; }
+    .kr-flag {
+        display:inline-block; padding:1px 6px; background:#fdecea; color:#c0392b;
+        border:1px solid #f5b7b1; border-radius:3px; font-family:'Malgun Gothic',sans-serif;
+        font-size:10px; font-weight:600; margin-bottom:3px;
+    }
     .returns-mini table { width:100%; }
     .returns-mini td, .returns-mini th { padding:5px 8px; font-size:12px; }
     .returns-mini tr.pre-row td { background:#fafafa; }

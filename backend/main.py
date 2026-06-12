@@ -164,6 +164,18 @@ def event_detail(request: Request, key: str):
                 "rationale": event.attr_rationale,
             }
 
+        # 데이터가 아직 없는 affected/comparable도 placeholder 행으로 추가
+        # → 사건의 구조(어떤 한국 주식이 영향받는지)가 화면에서 즉시 보임
+        for s in (affected + comparable):
+            if s not in table:
+                asset = assets_map.get(s)
+                table[s] = {
+                    "name_ko": asset.name_ko if asset else s,
+                    "asset_class": asset.asset_class if asset else "",
+                    "role": None,
+                    "periods": {},  # 빈 dict → 모든 시점 셀이 —로 렌더
+                }
+
         # 직접영향 → 비교군 → 나머지 순으로 테이블 재정렬 + role 태그
         for s in affected:
             if s in table:
@@ -419,6 +431,10 @@ def heatmap(request: Request,
         asset_list = [a for a in asset_list if a.symbol in preset]
         order = {s: i for i, s in enumerate(preset)}
         asset_list.sort(key=lambda a: order.get(a.symbol, 999))
+    elif assets == "all" and scale == "micro":
+        # 마이크로 사건 + 전체 자산: 한국 종목을 앞으로 배치
+        asset_list.sort(key=lambda a: (0 if a.asset_class == "stock_kr" else 1,
+                                       a.asset_class, a.symbol))
 
     # 수익률 매트릭스 한 번에 로드
     event_ids = [e.id for e in events]
@@ -516,6 +532,9 @@ def _event_compare_data(db, event_id, override_symbol=None):
             "rationale": event.attr_rationale,
         }
 
+    affected = json.loads(event.affected_entities) if event.affected_entities else []
+    comparable = json.loads(event.comparable_universe) if event.comparable_universe else []
+
     return {
         "event": event,
         "symbol": symbol,
@@ -524,6 +543,9 @@ def _event_compare_data(db, event_id, override_symbol=None):
         "periods_data": periods_data,
         "attribution": attribution,
         "available_symbols": sorted(returns_by_symbol.keys()),
+        "affected_entities": affected,
+        "comparable_universe": comparable,
+        "is_korean": any(".KS" in s for s in (affected + comparable)),
     }
 
 
