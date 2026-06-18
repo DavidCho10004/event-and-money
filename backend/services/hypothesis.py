@@ -10,8 +10,9 @@ scipy 의존 없이 표준 라이브러리로 계산 (웹 배포 경량 유지).
 """
 import statistics
 from collections import defaultdict
+from datetime import timedelta
 
-from backend.models import Event, Return
+from backend.models import Event, Price, Return
 
 # 기준 자산: 글로벌 대표 지수
 BENCH = "^GSPC"
@@ -125,27 +126,138 @@ def h2_energy_dependence(db, matrix):
     return {"groups": out, "verdict": verdict}
 
 
-def h3_chain_lag(db, matrix):
-    """가설 3: 1차→2차 변인 사이에 일관된 시차가 존재하는가?
+def _daily_returns_series(db, symbol, start, end):
+    """일별 로그 수익률 시리즈 반환 (날짜 정렬, 결측 무시).
 
-    프록시: 전 사건에서 유가(CL=F) D+7과 S&P500 D+30의 상관.
-    유가가 먼저 움직이고 주가가 따라온다면 양(+)의 상관 기대.
-    ※ 일별 lead-lag 분석은 아니므로 참고용.
+    반환: list[(date, log_return)]
+    """
+    import math
+    rows = (
+        db.query(Price)
+        .filter(Price.symbol == symbol,
+                Price.trade_date >= start,
+                Price.trade_date <= end)
+        .order_by(Price.trade_date)
+        .all()
+    )
+    series = []
+    prev = None
+    for p in rows:
+        price = float(p.adj_close)
+        if prev is not None and prev > 0 and price > 0:
+            series.append((p.trade_date, math.log(price / prev)))
+        prev = price
+    return series
+
+
+def _ccf(xs, ys, max_lag):
+    """교차상관함수 (Cross-Correlation Function).
+
+    lag k에서 corr(xs[t], ys[t+k]) 계산. k>0 = xs가 ys보다 k일 선행.
+    표준 라이브러리만으로.
+    반환: dict[lag] = (corr, n_valid)
+    """
+    out = {}
+    n = min(len(xs), len(ys))
+    for lag in range(-max_lag, max_lag + 1):
+        # xs[i] vs ys[i + lag]
+        if lag >= 0:
+            a = xs[: n - lag]
+            b = ys[lag : n]
+        else:
+            a = xs[-lag : n]
+            b = ys[: n + lag]
+        if len(a) < 5:
+            out[lag] = (None, len(a))
+            continue
+        try:
+            out[lag] = (round(statistics.correlation(a, b), 3), len(a))
+        except statistics.StatisticsError:
+            out[lag] = (None, len(a))
+    return out
+
+
+def h3_chain_lag(db, matrix):
+    """가설 3 (정밀): 1차→2차 변인 사이의 일별 lead-lag.
+
+    방법:
+    - 각 매크로 사건 D-30 ~ D+30 윈도우에서 유가(CL=F)·S&P500(^GSPC) 일별 로그수익률 추출
+    - 각 사건별 CCF 계산 (lag -10 ~ +10일)
+    - 모든 사건 평균 → 평균 best lag 식별
+    - lag > 0 = 유가가 주가에 선행 (가설 지지)
     """
     events = db.query(Event).filter(Event.scale == "macro").all()
-    pairs = []
-    for e in events:
-        oil7 = _ret(matrix, e.id, OIL, "D+7")
-        spx30 = _ret(matrix, e.id, BENCH, "D+30")
-        if oil7 is not None and spx30 is not None:
-            pairs.append((e.id, oil7, spx30))
+    max_lag = 10
+    per_event = []   # 사건별 (best_lag, best_corr)
+    accum = {lag: [] for lag in range(-max_lag, max_lag + 1)}
 
-    corr = _pearson([p[1] for p in pairs], [p[2] for p in pairs])
+    for e in events:
+        start = e.event_date - timedelta(days=45)
+        end = e.event_date + timedelta(days=45)
+
+        oil_series = _daily_returns_series(db, OIL, start, end)
+        spx_series = _daily_returns_series(db, BENCH, start, end)
+        # 두 시리즈를 공통 거래일 기준으로 정렬
+        oil_map = dict(oil_series)
+        spx_map = dict(spx_series)
+        common_dates = sorted(set(oil_map.keys()) & set(spx_map.keys()))
+        if len(common_dates) < 15:
+            continue
+
+        xs = [oil_map[d] for d in common_dates]  # 유가
+        ys = [spx_map[d] for d in common_dates]  # S&P
+        ccf = _ccf(xs, ys, max_lag)
+
+        # 사건별 가장 강한 상관 lag
+        best = None
+        for lag, (corr, n_v) in ccf.items():
+            if corr is None:
+                continue
+            if best is None or abs(corr) > abs(best[1]):
+                best = (lag, corr)
+        if best is not None:
+            per_event.append({"id": e.id, "year": e.event_date.year,
+                              "best_lag": best[0], "best_corr": best[1]})
+
+        for lag, (corr, _) in ccf.items():
+            if corr is not None:
+                accum[lag].append(corr)
+
+    # 모든 사건 평균 상관 (lag별)
+    avg_ccf = []
+    for lag in range(-max_lag, max_lag + 1):
+        avg_ccf.append({"lag": lag,
+                        "avg_corr": _mean(accum[lag]),
+                        "n": len(accum[lag])})
+
+    # 모든 사건 평균에서 가장 강한 양의 상관 lag 찾기
+    candidates = [r for r in avg_ccf if r["avg_corr"] is not None and r["n"] >= 5]
+    if candidates:
+        peak = max(candidates, key=lambda r: r["avg_corr"])
+    else:
+        peak = None
+
+    # 판정: peak lag > 0 + 상관이 +0.15 이상 + 표본 충분
+    if peak and peak["avg_corr"] is not None:
+        if peak["avg_corr"] > 0.15 and peak["lag"] > 0:
+            verdict = "지지"
+        elif peak["avg_corr"] > 0.1:
+            verdict = "혼재"
+        else:
+            verdict = "기각 방향"
+    else:
+        verdict = "데이터 부족"
+
     return {
-        "n": len(pairs),
-        "corr_oil7_spx30": corr,
-        "verdict": "보류 (정밀 lead-lag 분석 필요)",
-        "note": "현재는 시점 수익률 간 단순 상관. 일별 시계열 교차상관(CCF) 분석은 추후 과제.",
+        "n_events": len(per_event),
+        "max_lag": max_lag,
+        "avg_ccf": avg_ccf,             # 차트용 (lag, avg_corr, n)
+        "peak": peak,                    # 가장 강한 양의 상관
+        "per_event": per_event,          # 사건별 best lag
+        "verdict": verdict,
+        "note": ("lag>0 = 유가가 주가에 선행 (가설 지지). "
+                 "lag=0 = 동시 반응. lag<0 = 주가가 유가에 선행. "
+                 "표본은 사건별 D±45 거래일 일별 로그수익률."),
     }
 
 

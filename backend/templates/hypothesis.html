@@ -72,15 +72,64 @@
     <p class="hyp-note">에너지 차질 사건의 1년 후 수익률이 일반 사건보다 낮으면 가설 지지.</p>
 </div>
 
-<!-- 가설 3 -->
+<!-- 가설 3 (정밀: 일별 lead-lag CCF) -->
 <div class="hyp-card">
     <h2>가설 3. 파급 체인 시차 {{ verdict_badge(r.h3.verdict) }}</h2>
     <p class="hyp-q">1차 변인(유가) → 2차 변인(주가) 사이에 일관된 시차가 존재하는가?</p>
-    <p>현재 프록시 분석: 유가(WTI) D+7 수익률과 S&P 500 D+30 수익률의 상관계수
-        = <strong>{{ r.h3.corr_oil7_spx30 if r.h3.corr_oil7_spx30 is not none else '계산 불가' }}</strong>
-        (n={{ r.h3.n }})
+    <p class="hyp-method">방법: 각 매크로 사건 D±45 거래일 윈도우에서 유가(CL=F)·S&P500(^GSPC)의 일별 로그수익률 → 교차상관함수(CCF) 계산. 사건 {{ r.h3.n_events }}건 평균.</p>
+
+    {% if r.h3.peak %}
+    <p>
+        가장 강한 평균 상관:
+        <strong>lag = {% if r.h3.peak.lag > 0 %}+{% endif %}{{ r.h3.peak.lag }}일</strong>,
+        평균 상관계수 = <strong>{{ '%+.3f'|format(r.h3.peak.avg_corr) }}</strong>
     </p>
-    <p class="hyp-note">⚠ {{ r.h3.note }}</p>
+
+    <div class="ccf-chart">
+        <div class="ccf-y-label">평균 상관 (사건 평균, lag별)</div>
+        {% set max_abs = namespace(v=0.01) %}
+        {% for row in r.h3.avg_ccf %}{% if row.avg_corr is not none %}{% if row.avg_corr|abs > max_abs.v %}{% set max_abs.v = row.avg_corr|abs %}{% endif %}{% endif %}{% endfor %}
+        <div class="ccf-bars">
+            {% for row in r.h3.avg_ccf %}
+            <div class="ccf-bar-col">
+                {% if row.avg_corr is none %}
+                <div class="ccf-bar-na"></div>
+                {% else %}
+                {% set h = ((row.avg_corr|abs) / max_abs.v * 100)|round(0) %}
+                {% set is_peak = row.lag == r.h3.peak.lag %}
+                {% if row.avg_corr >= 0 %}
+                <div class="ccf-bar-pos {{ 'ccf-peak' if is_peak else '' }}" style="height:{{ h }}%;"
+                     title="lag={{ row.lag }}일 corr={{ '%+.3f'|format(row.avg_corr) }}"></div>
+                {% else %}
+                <div class="ccf-bar-neg {{ 'ccf-peak' if is_peak else '' }}" style="height:{{ h }}%;"
+                     title="lag={{ row.lag }}일 corr={{ '%+.3f'|format(row.avg_corr) }}"></div>
+                {% endif %}
+                {% endif %}
+                <div class="ccf-x-tick">{% if row.lag == 0 %}0{% elif row.lag in [-10, -5, 5, 10] %}{{ row.lag }}{% endif %}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="ccf-x-label">lag (일) — 음수: 주가 선행 | 양수: 유가 선행</div>
+    </div>
+
+    <table class="hyp-table" style="margin-top:14px;">
+        <thead><tr><th>lag (일)</th><th>평균 상관</th><th>n</th></tr></thead>
+        <tbody>
+        {% for row in r.h3.avg_ccf %}
+            {% if row.avg_corr is not none and (row.lag == r.h3.peak.lag or row.lag in [-5, 0, 5]) %}
+            <tr {% if row.lag == r.h3.peak.lag %}style="font-weight:600;background:#fef9e7;"{% endif %}>
+                <td>{% if row.lag > 0 %}+{% endif %}{{ row.lag }}</td>
+                <td class="{{ 'positive' if row.avg_corr > 0 else 'negative' }}">{{ '%+.3f'|format(row.avg_corr) }}</td>
+                <td>{{ row.n }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#999;">데이터 부족</p>
+    {% endif %}
+    <p class="hyp-note">{{ r.h3.note }}</p>
 </div>
 
 <!-- 가설 4 -->
@@ -279,5 +328,17 @@
     .vd-reject { background:#fdedec; color:#c0392b; border:1px solid #f5b7b1; }
     .vd-mixed { background:#fef9e7; color:#9a7d0a; border:1px solid #f9e79f; }
     .vd-na { background:#f4f6f6; color:#7f8c8d; border:1px solid #d5dbdb; }
+
+    /* CCF 차트 (H3 lead-lag) */
+    .ccf-chart { background:#fafafa; border:1px solid #e0e0e0; border-radius:4px; padding:10px 14px; margin-top:10px; }
+    .ccf-y-label { font-size:10px; color:#888; margin-bottom:4px; }
+    .ccf-x-label { font-size:10px; color:#888; text-align:center; margin-top:4px; }
+    .ccf-bars { display:flex; align-items:flex-end; justify-content:center; height:120px; gap:3px; border-bottom:1px solid #aaa; position:relative; }
+    .ccf-bar-col { flex:1; max-width:30px; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; position:relative; }
+    .ccf-bar-pos { width:100%; background:#c0392b; min-height:1px; border-radius:2px 2px 0 0; }
+    .ccf-bar-neg { width:100%; background:#2980b9; min-height:1px; border-radius:0 0 2px 2px; align-self:flex-start; }
+    .ccf-bar-na { width:100%; height:1px; background:#ddd; }
+    .ccf-peak { box-shadow:0 0 0 2px #f39c12; }
+    .ccf-x-tick { font-size:9px; color:#888; margin-top:2px; height:12px; }
 </style>
 {% endblock %}
