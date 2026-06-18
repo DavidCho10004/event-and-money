@@ -592,5 +592,158 @@
     "yahoo_symbol": "138040.KS",
     "data_start": "2011-05-02",
     "description": "메리츠금융 (2022년 화재·증권 완전자회사 편입)"
+  },
+  {
+    "symbol": "^KQ11",
+    "name_ko": "KOSDAQ",
+    "name_en": "KOSDAQ Composite",
+    "asset_class": "equity_index",
+    "yahoo_symbol": "^KQ11",
+    "data_start": "2001-01-02",
+    "description": "한국 코스닥 종합지수 — 기술·바이오 중심"
+  },
+  {
+    "symbol": "069500.KS",
+    "name_ko": "KODEX 200",
+    "name_en": "KODEX 200 ETF",
+    "asset_class": "etf_kr_index",
+    "yahoo_symbol": "069500.KS",
+    "data_start": "2002-10-14",
+    "description": "KOSPI 200 추종, 한국 ETF 시총 1위"
+  },
+  {
+    "symbol": "102110.KS",
+    "name_ko": "TIGER 200",
+    "name_en": "TIGER 200 ETF",
+    "asset_class": "etf_kr_index",
+    "yahoo_symbol": "102110.KS",
+    "data_start": "2008-04-03",
+    "description": "KOSPI 200 추종 (미래에셋)"
+  },
+  {
+    "symbol": "232080.KS",
+    "name_ko": "TIGER 코스닥150",
+    "name_en": "TIGER KOSDAQ150 ETF",
+    "asset_class": "etf_kr_index",
+    "yahoo_symbol": "232080.KS",
+    "data_start": "2015-11-12",
+    "description": "KOSDAQ 150 추종"
+  },
+  {
+    "symbol": "122630.KS",
+    "name_ko": "KODEX 레버리지",
+    "name_en": "KODEX Leverage ETF",
+    "asset_class": "etf_kr_inverse",
+    "yahoo_symbol": "122630.KS",
+    "data_start": "2010-02-22",
+    "description": "KOSPI 200 일일 2배 추종"
+  },
+  {
+    "symbol": "114800.KS",
+    "name_ko": "KODEX 인버스",
+    "name_en": "KODEX Inverse ETF",
+    "asset_class": "etf_kr_inverse",
+    "yahoo_symbol": "114800.KS",
+    "data_start": "2009-09-16",
+    "description": "KOSPI 200 일일 −1배"
+  },
+  {
+    "symbol": "251340.KS",
+    "name_ko": "KODEX 코스닥150선물인버스",
+    "name_en": "KODEX KOSDAQ150 Futures Inverse",
+    "asset_class": "etf_kr_inverse",
+    "yahoo_symbol": "251340.KS",
+    "data_start": "2016-08-10",
+    "description": "KOSDAQ 150 선물 −1배 (개인 인기)"
+  },
+  {
+    "symbol": "091160.KS",
+    "name_ko": "KODEX 반도체",
+    "name_en": "KODEX Semiconductor ETF",
+    "asset_class": "etf_kr_sector",
+    "yahoo_symbol": "091160.KS",
+    "data_start": "2006-06-27",
+    "description": "KRX 반도체 지수 — 삼성전자·SK하이닉스 중심"
+  },
+  {
+    "symbol": "091170.KS",
+    "name_ko": "KODEX 은행",
+    "name_en": "KODEX Banks ETF",
+    "asset_class": "etf_kr_sector",
+    "yahoo_symbol": "091170.KS",
+    "data_start": "2006-06-27",
+    "description": "KRX 은행 지수"
+  },
+  {
+    "symbol": "091180.KS",
+    "name_ko": "KODEX 자동차",
+    "name_en": "KODEX Autos ETF",
+    "asset_class": "etf_kr_sector",
+    "yahoo_symbol": "091180.KS",
+    "data_start": "2006-06-27",
+    "description": "KRX 자동차 지수 — 현대차·기아 중심"
+  },
+  {
+    "symbol": "117460.KS",
+    "name_ko": "KODEX 에너지화학",
+    "name_en": "KODEX Energy & Chemicals ETF",
+    "asset_class": "etf_kr_sector",
+    "yahoo_symbol": "117460.KS",
+    "data_start": "2009-10-12",
+    "description": "KRX 에너지화학 — 정유·화학 대형주"
+  },
+  {
+    "symbol": "244620.KS",
+    "name_ko": "KODEX 운송",
+    "name_en": "KODEX Transportation ETF",
+    "asset_class": "etf_kr_sector",
+    "yahoo_symbol": "244620.KS",
+    "data_start": "2016-05-13",
+    "description": "KRX 운송 — 해운·항공·물류"
+  },
+  {
+    "symbol": "102780.KS",
+    "name_ko": "KODEX 삼성그룹",
+    "name_en": "KODEX Samsung Group ETF",
+    "asset_class": "etf_kr_sector",
+    "yahoo_symbol": "102780.KS",
+    "data_start": "2008-04-30",
+    "description": "삼성그룹 주요 5사 (이재용 승계·지배구조 분석용)"
+  },
+  {
+    "symbol": "305720.KS",
+    "name_ko": "KODEX 2차전지산업",
+    "name_en": "KODEX Secondary Battery Industry ETF",
+    "asset_class": "etf_kr_theme",
+    "yahoo_symbol": "305720.KS",
+    "data_start": "2018-09-12",
+    "description": "LG에너지솔루션·삼성SDI·SK이노 등 (트랙C 사전반응 분석용)"
+  },
+  {
+    "symbol": "364980.KS",
+    "name_ko": "TIGER KRX BBIG K-뉴딜",
+    "name_en": "TIGER KRX BBIG K-New Deal ETF",
+    "asset_class": "etf_kr_theme",
+    "yahoo_symbol": "364980.KS",
+    "data_start": "2020-10-07",
+    "description": "배터리·바이오·인터넷·게임 종합 (2020 K-뉴딜)"
+  },
+  {
+    "symbol": "152380.KS",
+    "name_ko": "KODEX 국고채3년",
+    "name_en": "KODEX 3Y KTB ETF",
+    "asset_class": "etf_kr_bond",
+    "yahoo_symbol": "152380.KS",
+    "data_start": "2011-12-08",
+    "description": "한국 국고채 3년물 — 한국 금리 충격 추적"
+  },
+  {
+    "symbol": "411060.KS",
+    "name_ko": "KODEX 미국나스닥100",
+    "name_en": "KODEX US NASDAQ100 ETF",
+    "asset_class": "etf_kr_global",
+    "yahoo_symbol": "411060.KS",
+    "data_start": "2021-09-30",
+    "description": "나스닥100 (한국 원화) — 한국인 해외투자 대표 ETF"
   }
 ]
