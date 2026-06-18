@@ -12,7 +12,8 @@
     <meta property="og:title" content="{% block og_title %}Event & Money — 사건과 돈의 데이터{% endblock %}">
     <meta property="og:description" content="{% block og_description %}주요 사건 발생 시 자산군별 가격 반응을 데이터로 분석하는 투자 매뉴얼{% endblock %}">
     <meta property="og:url" content="{{ request.url }}">
-    <meta name="twitter:card" content="summary">
+    {% block og_image %}{% endblock %}
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ self.og_title() }}">
     <meta name="twitter:description" content="{{ self.og_description() }}">
     <meta name="description" content="{{ self.og_description() }}">
