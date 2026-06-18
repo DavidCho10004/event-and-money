@@ -1181,5 +1181,389 @@
       "takeaway": "자본 이벤트의 방향(쪼개기 vs 합치기)이 밸류에이션 재평가를 가른다."
     },
     "slug": "meritz-financial-consolidation-2022"
+  },
+  {
+    "id": "M018",
+    "name_ko": "SK바이오팜 IPO 따상상상",
+    "name_en": "SK Biopharm IPO Triple Limit-Up",
+    "event_date": "2020-07-02",
+    "announce_date": "2020-06-19",
+    "category": "listing_event",
+    "sub_type": "ipo_subsidiary",
+    "description_ko": "SK바이오팜 코스피 상장. 시초가 +100% 후 상한가 마감(따상), 7월 3·6일 연속 상한가까지 추가(따상상상). 모회사 SK홀딩스 구주매출. 2020년 코로나 IPO 광풍의 신호탄.",
+    "description_en": "SK Biopharm listed on KOSPI with three consecutive daily limit-ups. Marked the start of the 2020 COVID IPO frenzy.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 0,
+      "corporate": 70,
+      "macro": 30
+    },
+    "attribution_rationale": "자회사 분할 상장 + 구주매출(기업 70%) + 코로나 시기 유동성 광풍(거시 30%).",
+    "affected_entities": [
+      "326030.KS",
+      "034730.KS"
+    ],
+    "comparable_universe": [
+      "^KS11",
+      "069500.KS"
+    ],
+    "summary": {
+      "what": "SK바이오팜 따상상상 — 공모가 49,000원 → 3일 만에 214,500원.",
+      "why": "코로나 시기 유동성 폭증 + 신약 모멘텀의 결합. 모회사 SK도 구주매출 차익.",
+      "duration": {
+        "start": "2020-06-19",
+        "bottom": "2020-07-08",
+        "bottom_label": "고점",
+        "end": "2021-12-31",
+        "end_label": "고점 대비 -65% 조정",
+        "ongoing": false
+      },
+      "takeaway": "따상상상의 끝은 평균 회귀 — IPO 광풍은 짧다."
+    },
+    "slug": "sk-biopharm-ipo-triple-limit-up-2020"
+  },
+  {
+    "id": "M019",
+    "name_ko": "카카오게임즈 IPO 따상",
+    "name_en": "Kakao Games IPO Limit-Up",
+    "event_date": "2020-09-10",
+    "announce_date": "2020-08-26",
+    "category": "listing_event",
+    "sub_type": "ipo_subsidiary",
+    "description_ko": "카카오게임즈 코스닥 상장. 첫날 따상, 다음날도 상한가(따상상). 모회사 카카오와 카카오뱅크·페이 분리 상장 시리즈의 시작.",
+    "description_en": "Kakao Games listed on KOSDAQ with consecutive limit-ups. Beginning of Kakao Group's subsidiary listing cascade.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 0,
+      "corporate": 65,
+      "macro": 35
+    },
+    "attribution_rationale": "카카오 자회사 분할(기업 65%) + 코로나 IPO 광풍·게임주 수혜(거시 35%).",
+    "affected_entities": [
+      "293490.KS",
+      "035720.KS"
+    ],
+    "comparable_universe": [
+      "^KQ11",
+      "232080.KS"
+    ],
+    "summary": {
+      "what": "카카오게임즈 따상 — 공모가 24,000원 → 81,100원.",
+      "why": "카카오 그룹 자회사 분리 상장 시리즈의 본격 시작.",
+      "duration": {
+        "start": "2020-08-26",
+        "ongoing": false
+      },
+      "takeaway": "그룹 자회사 IPO는 모회사 가치 분리의 시작점이다."
+    },
+    "slug": "kakao-games-ipo-limit-up-2020"
+  },
+  {
+    "id": "M020",
+    "name_ko": "하이브(빅히트) 상장 — 따상 후 급락",
+    "name_en": "HYBE (Big Hit) IPO — Limit-Up then Crash",
+    "event_date": "2020-10-15",
+    "announce_date": "2020-09-25",
+    "category": "listing_event",
+    "sub_type": "ipo_celebrity",
+    "description_ko": "BTS 모회사 빅히트 상장. 첫날 따상 351,000원 마감, 그러나 둘째 날부터 하락. 한국 IPO 시장에 '따상 트라우마'를 각인. BTS 의존도 리스크가 부각되는 계기.",
+    "description_en": "BTS's agency Big Hit listed with a limit-up, but plunged from day 2 — etching the 'limit-up trauma' into Korean IPO market lore.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 70,
+      "macro": 25
+    },
+    "attribution_rationale": "BTS 의존도·기관 차익실현(기업 70%) + 코로나 IPO 광풍 꺾임(거시 25%) + 엔터 규제 우려(정치 5%).",
+    "affected_entities": [
+      "352820.KS"
+    ],
+    "comparable_universe": [
+      "^KS11",
+      "069500.KS"
+    ],
+    "summary": {
+      "what": "빅히트(하이브) 따상 후 6일 연속 하락 → 공모가 부근까지.",
+      "why": "기관 차익실현·BTS 단일 IP 의존 리스크가 한꺼번에 표출.",
+      "duration": {
+        "start": "2020-10-15",
+        "bottom": "2020-12-18",
+        "bottom_label": "공모가 부근 저점",
+        "end": "2021-11-17",
+        "end_label": "메타버스 테마로 재상승",
+        "ongoing": false
+      },
+      "takeaway": "따상 마감 = 단기 고점 신호일 수 있다 — '따상 트라우마'의 원조."
+    },
+    "slug": "hybe-2020"
+  },
+  {
+    "id": "M021",
+    "name_ko": "SK바이오사이언스 IPO 따상",
+    "name_en": "SK Bioscience IPO Limit-Up",
+    "event_date": "2021-03-18",
+    "announce_date": "2021-03-03",
+    "category": "listing_event",
+    "sub_type": "ipo_subsidiary",
+    "description_ko": "SK바이오사이언스 코스피 상장. 첫날 따상 169,000원. 코로나 백신 CMO(위탁생산) 모멘텀. 모회사 SK케미칼 구주매출.",
+    "description_en": "SK Bioscience listed on KOSPI with a limit-up, riding COVID vaccine CMO momentum.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 10,
+      "corporate": 60,
+      "macro": 30
+    },
+    "attribution_rationale": "분할 상장(기업 60%) + 백신 사이클 거시(30%) + 정부 백신 정책 후광(정치 10%).",
+    "affected_entities": [
+      "302440.KS",
+      "285130.KS"
+    ],
+    "comparable_universe": [
+      "^KS11",
+      "069500.KS"
+    ],
+    "summary": {
+      "what": "SK바이오사이언스 따상 — 공모가 65,000원 → 169,000원.",
+      "why": "백신 CMO 모멘텀 + SK 그룹 분할 상장 시리즈.",
+      "duration": {
+        "start": "2021-03-03",
+        "ongoing": false
+      },
+      "takeaway": "정책 모멘텀+분할 상장은 따상의 공식이지만 1년 후 평균 회귀."
+    },
+    "slug": "sk-bioscience-ipo-limit-up-2021"
+  },
+  {
+    "id": "M022",
+    "name_ko": "크래프톤 IPO 첫날 약세 (4.3조 빅딜)",
+    "name_en": "Krafton IPO Debut Disappointment (₩4.3T)",
+    "event_date": "2021-08-10",
+    "announce_date": "2021-07-27",
+    "category": "listing_event",
+    "sub_type": "ipo_mega",
+    "description_ko": "배틀그라운드 개발사 크래프톤 상장. 공모가 498,000원으로 역대 최고가, 시초가 448,500원으로 공모가 하회. **따상 시대의 종언을 알린 IPO** — 시장 침체 신호로 해석.",
+    "description_en": "Krafton (PUBG developer) listed at then-record offering price ₩498,000 but opened below it — marking the end of Korea's IPO mania.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 0,
+      "corporate": 50,
+      "macro": 50
+    },
+    "attribution_rationale": "고평가 공모(기업 50%) + IPO 광풍 피로감·금리 인상 경고(거시 50%).",
+    "affected_entities": [
+      "259960.KS"
+    ],
+    "comparable_universe": [
+      "^KS11",
+      "069500.KS"
+    ],
+    "summary": {
+      "what": "크래프톤 IPO — 첫날 공모가 -8.8% 하락 마감.",
+      "why": "고평가 + 게임주 피로감 + 2021 후반 시장 둔화의 결합.",
+      "duration": {
+        "start": "2021-07-27",
+        "bottom": "2022-10-13",
+        "bottom_label": "공모가 -64% 저점",
+        "end": "2024-03-31",
+        "end_label": "공모가 회복",
+        "ongoing": false
+      },
+      "takeaway": "역대 최고 공모가는 종종 시장 고점의 후행 신호이다."
+    },
+    "slug": "krafton-ipo-debut-disappointment-2021"
+  },
+  {
+    "id": "M023",
+    "name_ko": "카카오페이 IPO + 경영진 스톡옵션 매도 논란",
+    "name_en": "KakaoPay IPO + Executive Stock-Option Sale Scandal",
+    "event_date": "2021-11-03",
+    "announce_date": "2021-10-25",
+    "category": "listing_event",
+    "sub_type": "ipo_subsidiary",
+    "description_ko": "카카오페이 코스피 상장. 12/10 류영준 대표 등 경영진 8명이 스톡옵션 행사 후 약 900억 매도 → 도덕적 해이·먹튀 논란. 카카오 그룹 신뢰 위기의 시작.",
+    "description_en": "KakaoPay listed on KOSPI. On Dec 10, eight executives sold ~₩90B in stock options shortly after listing — sparking outrage and damaging Kakao Group's trust.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 10,
+      "corporate": 70,
+      "macro": 20
+    },
+    "attribution_rationale": "경영진 도덕적 해이(기업 70%) + 빅테크 규제 강화(정치 10%) + 성장주 금리 민감(거시 20%).",
+    "affected_entities": [
+      "377300.KS",
+      "035720.KS"
+    ],
+    "comparable_universe": [
+      "086790.KS",
+      "^KS11"
+    ],
+    "summary": {
+      "what": "상장 한달여 만에 경영진 스톡옵션 매도 → 카카오 신뢰 위기.",
+      "why": "자회사 분리 상장의 정점에서 도덕적 해이가 그룹 전체 디스카운트로 전이.",
+      "duration": {
+        "start": "2021-11-03",
+        "bottom": "2022-10-28",
+        "bottom_label": "데이터센터 화재+금리+신뢰 위기 삼중타",
+        "ongoing": false
+      },
+      "takeaway": "IPO 직후 내부자 매도는 신뢰 자본을 영구 훼손한다."
+    },
+    "slug": "kakaopay-ipo-executive-stock-option-sale-2021"
+  },
+  {
+    "id": "M024",
+    "name_ko": "두산밥캣 IPO (사모펀드 회수)",
+    "name_en": "Doosan Bobcat IPO (PE Exit)",
+    "event_date": "2016-11-18",
+    "announce_date": "2016-10-31",
+    "category": "listing_event",
+    "sub_type": "ipo_pe_exit",
+    "description_ko": "두산인프라코어 미국 자회사 두산밥캣 코스피 상장. MBK파트너스 등 사모펀드 구주매출 통한 회수. 한국 사모펀드 IPO 회수의 대표 사례.",
+    "description_en": "Doosan Bobcat (US subsidiary of Doosan Infracore) listed on KOSPI. A landmark PE-led IPO exit.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 75,
+      "macro": 20
+    },
+    "attribution_rationale": "사모펀드 회수 구조(기업 75%) + 글로벌 인프라 사이클(거시 20%) + 중국 의존도 정치 리스크(5%).",
+    "affected_entities": [
+      "241560.KS",
+      "000150.KS"
+    ],
+    "comparable_universe": [
+      "^KS11",
+      "069500.KS"
+    ],
+    "summary": {
+      "what": "두산밥캣 IPO — 공모가 30,000원, 첫날 -7% 약세.",
+      "why": "사모펀드 차익실현이 신주 발행보다 컸음 — 신규 투자자 차익 제한.",
+      "duration": {
+        "start": "2016-11-18",
+        "ongoing": false
+      },
+      "takeaway": "사모펀드 회수형 IPO는 구주매출 비중을 확인하라."
+    },
+    "slug": "doosan-bobcat-ipo-2016"
+  },
+  {
+    "id": "M025",
+    "name_ko": "두산로보틱스 IPO 따상 후 급락",
+    "name_en": "Doosan Robotics IPO Limit-Up then Crash",
+    "event_date": "2023-10-05",
+    "announce_date": "2023-09-21",
+    "category": "listing_event",
+    "sub_type": "ipo_theme",
+    "description_ko": "두산로보틱스 코스피 상장. 첫날 시초가 +126% 후 상한가 마감, 둘째 날부터 급락 시작. 협동로봇 테마 거품 정점의 신호.",
+    "description_en": "Doosan Robotics listed with a +126% open and limit-up close, then plunged from day 2 — signaling peak hype in cobot theme.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 0,
+      "corporate": 60,
+      "macro": 40
+    },
+    "attribution_rationale": "공모가 적정성 논란(기업 60%) + 협동로봇 테마 광풍(거시 40%).",
+    "affected_entities": [
+      "454910.KS",
+      "000150.KS"
+    ],
+    "comparable_universe": [
+      "^KS11",
+      "069500.KS"
+    ],
+    "summary": {
+      "what": "두산로보틱스 따상 후 6주 만에 공모가 부근까지 -55%.",
+      "why": "고평가 + 테마주 단기 쏠림의 결합 — M020 하이브 패턴 반복.",
+      "duration": {
+        "start": "2023-10-05",
+        "bottom": "2023-11-15",
+        "bottom_label": "-55% 저점",
+        "ongoing": false
+      },
+      "takeaway": "테마형 IPO 따상 후 6주는 위험 — 두산로보틱스가 패턴을 재증명."
+    },
+    "slug": "doosan-robotics-ipo-limit-up-then-2023"
+  },
+  {
+    "id": "M026",
+    "name_ko": "에코프로머티리얼즈 IPO (2차전지 분할)",
+    "name_en": "Ecopro Materials IPO (Battery Spin-off Listing)",
+    "event_date": "2023-11-17",
+    "announce_date": "2023-11-08",
+    "category": "listing_event",
+    "sub_type": "ipo_subsidiary",
+    "description_ko": "에코프로 양극재 전구체 자회사 에코프로머티리얼즈 코스피 상장. 2차전지 사이클 정점 직후 등장 — 모회사 에코프로의 분할 상장 시리즈.",
+    "description_en": "Ecopro's cathode precursor subsidiary listed at the peak of the battery cycle.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 65,
+      "macro": 30
+    },
+    "attribution_rationale": "물적분할 상장(기업 65%) + 2차전지 사이클 후반(거시 30%) + 물적분할 규제 논의(정치 5%).",
+    "affected_entities": [
+      "450080.KS",
+      "086520.KS"
+    ],
+    "comparable_universe": [
+      "305720.KS",
+      "^KS11"
+    ],
+    "summary": {
+      "what": "에코프로머티리얼즈 IPO — 2차전지 사이클 정점 직후.",
+      "why": "분할 상장 + 테마 사이클 후반 = 모회사 디스카운트와 신주 변동성 동반.",
+      "duration": {
+        "start": "2023-11-17",
+        "ongoing": false
+      },
+      "takeaway": "M010(LG화학)·M016(SK이노) 물적분할 패턴의 2차전지판 반복."
+    },
+    "slug": "ecopro-materials-ipo-2023"
+  },
+  {
+    "id": "M027",
+    "name_ko": "HD현대마린솔루션 IPO (HD현대 분할 시리즈)",
+    "name_en": "HD Hyundai Marine Solution IPO",
+    "event_date": "2024-05-08",
+    "announce_date": "2024-04-22",
+    "category": "listing_event",
+    "sub_type": "ipo_subsidiary",
+    "description_ko": "HD현대그룹 선박 AS 자회사 HD현대마린솔루션 코스피 상장. 첫날 +97.97% 마감. M009(정기선 부회장 승진) 직후 그룹 가치 재평가 흐름과 연계.",
+    "description_en": "HD Hyundai Marine Solution (after-sales subsidiary) listed with +97.97% on debut, riding HD Hyundai's value re-rating after M009 succession news.",
+    "energy_impact": false,
+    "scale": "micro",
+    "attribution": {
+      "political": 5,
+      "corporate": 70,
+      "macro": 25
+    },
+    "attribution_rationale": "자회사 분할 상장(기업 70%) + 조선 슈퍼사이클(거시 25%) + 정부 조선업 지원(정치 5%).",
+    "affected_entities": [
+      "443060.KS",
+      "267250.KS"
+    ],
+    "comparable_universe": [
+      "010140.KS",
+      "^KS11"
+    ],
+    "summary": {
+      "what": "HD현대마린솔루션 상장 — 시초가 100,000원, 첫날 +97.97%.",
+      "why": "M009 승계와 슈퍼사이클이 동시 진행 — 그룹 가치 재평가의 일환.",
+      "duration": {
+        "start": "2024-04-22",
+        "ongoing": true
+      },
+      "takeaway": "승계 + 분할 상장 결합은 한국형 가치 재평가의 공식."
+    },
+    "slug": "hd-hyundai-marine-solution-ipo-2024"
   }
 ]

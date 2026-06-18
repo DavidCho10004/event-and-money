@@ -745,5 +745,122 @@
     "yahoo_symbol": "411060.KS",
     "data_start": "2021-09-30",
     "description": "나스닥100 (한국 원화) — 한국인 해외투자 대표 ETF"
+  },
+  {
+    "symbol": "326030.KS",
+    "name_ko": "SK바이오팜",
+    "name_en": "SK Biopharmaceuticals",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "326030.KS",
+    "data_start": "2020-07-02",
+    "description": "SK홀딩스 자회사, 2020년 따상상상의 상징"
+  },
+  {
+    "symbol": "293490.KS",
+    "name_ko": "카카오게임즈",
+    "name_en": "Kakao Games",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "293490.KS",
+    "data_start": "2020-09-10",
+    "description": "코스닥 상장, 카카오 자회사"
+  },
+  {
+    "symbol": "352820.KS",
+    "name_ko": "하이브",
+    "name_en": "HYBE (Big Hit)",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "352820.KS",
+    "data_start": "2020-10-15",
+    "description": "BTS 모회사 — 따상 후 하락 (따상 트라우마의 시작)"
+  },
+  {
+    "symbol": "302440.KS",
+    "name_ko": "SK바이오사이언스",
+    "name_en": "SK Bioscience",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "302440.KS",
+    "data_start": "2021-03-18",
+    "description": "SK케미칼 자회사, 백신 CMO"
+  },
+  {
+    "symbol": "259960.KS",
+    "name_ko": "크래프톤",
+    "name_en": "Krafton",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "259960.KS",
+    "data_start": "2021-08-10",
+    "description": "배틀그라운드, 4.3조원 — 첫날 공모가 하회"
+  },
+  {
+    "symbol": "241560.KS",
+    "name_ko": "두산밥캣",
+    "name_en": "Doosan Bobcat",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "241560.KS",
+    "data_start": "2016-11-18",
+    "description": "두산인프라코어 자회사, 사모펀드 회수 케이스"
+  },
+  {
+    "symbol": "454910.KS",
+    "name_ko": "두산로보틱스",
+    "name_en": "Doosan Robotics",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "454910.KS",
+    "data_start": "2023-10-05",
+    "description": "협동로봇 — 따상 후 급락"
+  },
+  {
+    "symbol": "450080.KS",
+    "name_ko": "에코프로머티리얼즈",
+    "name_en": "Ecopro Materials",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "450080.KS",
+    "data_start": "2023-11-17",
+    "description": "에코프로 양극재 전구체, 2차전지 분할 상장"
+  },
+  {
+    "symbol": "443060.KS",
+    "name_ko": "HD현대마린솔루션",
+    "name_en": "HD Hyundai Marine Solution",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "443060.KS",
+    "data_start": "2024-05-08",
+    "description": "HD현대 분리 상장 — M009 정기선 승계 연계"
+  },
+  {
+    "symbol": "034730.KS",
+    "name_ko": "SK",
+    "name_en": "SK Holdings",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "034730.KS",
+    "data_start": "2010-01-04",
+    "description": "SK그룹 지주사 (SK바이오팜·SK바이오사이언스 자회사 분할 상장 모회사)"
+  },
+  {
+    "symbol": "285130.KS",
+    "name_ko": "SK케미칼",
+    "name_en": "SK Chemicals",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "285130.KS",
+    "data_start": "2017-12-05",
+    "description": "SK바이오사이언스 모회사 (분할 상장 디스카운트 비교군)"
+  },
+  {
+    "symbol": "000150.KS",
+    "name_ko": "두산",
+    "name_en": "Doosan",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "000150.KS",
+    "data_start": "2010-01-04",
+    "description": "두산그룹 지주사 (밥캣·로보틱스 분리 상장 모회사)"
+  },
+  {
+    "symbol": "086520.KS",
+    "name_ko": "에코프로",
+    "name_en": "Ecopro",
+    "asset_class": "stock_kr",
+    "yahoo_symbol": "086520.KS",
+    "data_start": "2010-01-04",
+    "description": "에코프로그룹 지주사 (에코프로비엠·머티리얼즈 모회사)"
   }
 ]
