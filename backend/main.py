@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from datetime import timedelta
 
 from fastapi import FastAPI, Request, Query
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
@@ -399,6 +399,23 @@ def _heatmap_cell_class(v):
     if v > -10: return "cell-neg-3"
     if v > -20: return "cell-neg-4"
     return "cell-neg-5"
+
+
+@app.get("/og/{key}.png")
+def og_image(key: str):
+    """사건별 OG 이미지(1200x630 PNG) 동적 생성. 30분 캐시."""
+    from backend.services.og_image import render_event_og
+
+    db = SessionLocal()
+    event = db.query(Event).filter((Event.slug == key) | (Event.id == key)).first()
+    db.close()
+
+    if not event:
+        return Response(status_code=404)
+
+    png = render_event_og(event)
+    return Response(content=png, media_type="image/png",
+                    headers={"Cache-Control": "public, max-age=1800"})
 
 
 @app.get("/heatmap", response_class=HTMLResponse)

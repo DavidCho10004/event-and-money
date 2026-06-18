@@ -12,3 +12,6 @@ python-dotenv==1.0.1
 
 # DART OpenAPI (트랙D 자본 이벤트 자동 수집, 로컬 실행용)
 requests==2.32.3
+
+# OG 이미지 동적 생성 (사건별 카카오톡/SNS 공유 카드)
+Pillow==12.2.0
