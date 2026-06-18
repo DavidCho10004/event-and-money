@@ -226,10 +226,153 @@ def h5_korea_premium(db, matrix):
             "amp_ratio": ratio, "verdict": verdict}
 
 
+def m1_split_listing_discount(db, matrix):
+    """마이크로 가설 1: 물적분할(자회사 분할 상장)이 모회사 주가를 디스카운트시키는가?
+
+    방법: M010(LG화학)·M016(SK이노)·M026(에코프로머티리얼즈) 3건의 모회사가
+    KOSPI 대비 D+1, D+7, D+30, D+180에서 얼마나 underperform 했는가.
+
+    한국 자본시장의 핵심 논쟁 — 책의 킬러 챕터 후보.
+    """
+    cases = [
+        ("M010", "051910.KS", "LG화학"),
+        ("M016", "096770.KS", "SK이노베이션"),
+        ("M026", "086520.KS", "에코프로"),
+    ]
+    benchmark = KOSPI
+
+    rows = []
+    excess_by_period = {p: [] for p in ("D+1", "D+7", "D+30", "D+180")}
+    for eid, parent_sym, parent_name in cases:
+        row = {"id": eid, "parent": parent_name, "symbol": parent_sym, "periods": {}}
+        for p in ("D+1", "D+7", "D+30", "D+180"):
+            r_parent = _ret(matrix, eid, parent_sym, p)
+            r_bench = _ret(matrix, eid, benchmark, p)
+            excess = (r_parent - r_bench) if (r_parent is not None and r_bench is not None) else None
+            row["periods"][p] = {
+                "parent": r_parent, "bench": r_bench, "excess": excess,
+            }
+            if excess is not None:
+                excess_by_period[p].append(excess)
+        rows.append(row)
+
+    avg_excess = {p: _mean(xs) for p, xs in excess_by_period.items()}
+    # D+30 평균 초과수익률이 음수면 가설 지지
+    d30 = avg_excess.get("D+30")
+    n_avail = len(excess_by_period.get("D+30", []))
+    if n_avail >= 2 and d30 is not None:
+        verdict = "지지" if d30 < -1.0 else ("기각 방향" if d30 > 1.0 else "혼재")
+    else:
+        verdict = "데이터 부족"
+    return {
+        "rows": rows, "avg_excess": avg_excess,
+        "benchmark": benchmark, "verdict": verdict,
+        "note": "음수 = 모회사가 KOSPI보다 약세. 책에서 다룰 '물적분할 디스카운트'의 정량 근거.",
+    }
+
+
+def m2_limit_up_trauma(db, matrix):
+    """마이크로 가설 2: 따상 마감 IPO는 D+30에 평균 회귀하는가?
+
+    가설: 첫날 따상으로 마감한 IPO 5건(M018·M019·M020·M021·M025)은
+    D+30 시점에 KOSPI 대비 underperform. 따상 실패(M022 크래프톤)는 오히려 안정.
+    """
+    limit_up = [
+        ("M018", "326030.KS", "SK바이오팜"),
+        ("M019", "293490.KS", "카카오게임즈"),
+        ("M020", "352820.KS", "하이브"),
+        ("M021", "302440.KS", "SK바이오사이언스"),
+        ("M025", "454910.KS", "두산로보틱스"),
+    ]
+    no_limit_up = [
+        ("M022", "259960.KS", "크래프톤"),
+    ]
+    benchmark = KOSPI
+
+    def _group(cases, label):
+        out = []
+        ex30 = []
+        for eid, sym, name in cases:
+            r30 = _ret(matrix, eid, sym, "D+30")
+            b30 = _ret(matrix, eid, benchmark, "D+30")
+            excess = (r30 - b30) if (r30 is not None and b30 is not None) else None
+            out.append({"id": eid, "name": name, "symbol": sym,
+                        "d30_stock": r30, "d30_bench": b30, "excess": excess})
+            if excess is not None:
+                ex30.append(excess)
+        return {"label": label, "cases": out,
+                "avg_excess_d30": _mean(ex30), "n": len(ex30)}
+
+    g_up = _group(limit_up, "따상 마감")
+    g_no = _group(no_limit_up, "따상 실패(대조군)")
+
+    # 따상 그룹 평균이 대조군보다 낮으면 트라우마 지지
+    if g_up["avg_excess_d30"] is not None and g_up["n"] >= 3:
+        verdict = "지지" if g_up["avg_excess_d30"] < -2.0 else (
+            "혼재" if g_up["avg_excess_d30"] < 0 else "기각 방향")
+    else:
+        verdict = "데이터 부족"
+
+    return {
+        "limit_up": g_up, "no_limit_up": g_no,
+        "benchmark": benchmark, "verdict": verdict,
+        "note": "음수 = KOSPI 대비 underperform. 책의 핵심 인사이트 후보 — '따상 마감 = 단기 고점 신호'.",
+    }
+
+
+def m3_owner_risk_recovery(db, matrix):
+    """마이크로 가설 3: 오너 리스크 사건의 회복 시간 — D+30 충격 대비 D+180 회복률.
+
+    오너/기업 책임 비중 70%+ 사건의 직접영향 자산이 어떻게 회복하는가.
+    """
+    cases = [
+        ("M002", "180640.KS", "한진 조현민 (한진칼)"),
+        ("M003", "003920.KS", "남양유업"),
+        ("M004", "035720.KS", "카카오 데이터센터 화재 (카카오)"),
+        ("M005", "005490.KS", "화물연대 (포스코홀딩스)"),
+    ]
+    benchmark = KOSPI
+
+    rows = []
+    excess_d30, excess_d180, recovered = [], [], 0
+    for eid, sym, name in cases:
+        d30 = _ret(matrix, eid, sym, "D+30")
+        d180 = _ret(matrix, eid, sym, "D+180")
+        b30 = _ret(matrix, eid, benchmark, "D+30")
+        b180 = _ret(matrix, eid, benchmark, "D+180")
+        ex30 = (d30 - b30) if (d30 is not None and b30 is not None) else None
+        ex180 = (d180 - b180) if (d180 is not None and b180 is not None) else None
+        # 회복 = D+180 초과수익률이 D+30보다 개선됨 + D+180 자체가 양수에 가까움
+        recovery = None
+        if ex30 is not None and ex180 is not None:
+            recovery = "회복" if ex180 > ex30 + 2.0 else ("부진 지속" if ex180 < ex30 - 1.0 else "정체")
+            if recovery == "회복":
+                recovered += 1
+            excess_d30.append(ex30)
+            excess_d180.append(ex180)
+        rows.append({"id": eid, "name": name, "symbol": sym,
+                     "d30": d30, "d180": d180,
+                     "ex30": ex30, "ex180": ex180, "recovery": recovery})
+
+    n = len(excess_d30)
+    avg_ex30 = _mean(excess_d30)
+    avg_ex180 = _mean(excess_d180)
+    if n >= 3 and avg_ex30 is not None and avg_ex180 is not None:
+        verdict = "지지" if avg_ex180 > avg_ex30 + 2.0 else (
+            "혼재" if avg_ex180 > avg_ex30 - 1.0 else "기각 방향")
+    else:
+        verdict = "데이터 부족"
+    return {
+        "rows": rows, "n": n, "recovered": recovered,
+        "avg_ex30": avg_ex30, "avg_ex180": avg_ex180,
+        "benchmark": benchmark, "verdict": verdict,
+        "note": "초과수익률이 D+30 → D+180으로 개선되면 회복. KOSPI 기준.",
+    }
+
+
 def run_all(db):
-    """5대 가설 전체 실행 → 템플릿용 dict"""
+    """5대 가설 + 마이크로 3대 가설 전체 실행 → 템플릿용 dict"""
     matrix = _load_matrix(db)
-    # 사건 카운트 (현재 가설 분석은 매크로 전용 — 마이크로는 한국 주식 가격 데이터 필요)
     macro_n = db.query(Event).filter(Event.scale == "macro").count()
     micro_n = db.query(Event).filter(Event.scale == "micro").count()
     return {
@@ -240,4 +383,7 @@ def run_all(db):
         "h3": h3_chain_lag(db, matrix),
         "h4": h4_learning_effect(db, matrix),
         "h5": h5_korea_premium(db, matrix),
+        "m1": m1_split_listing_discount(db, matrix),
+        "m2": m2_limit_up_trauma(db, matrix),
+        "m3": m3_owner_risk_recovery(db, matrix),
     }

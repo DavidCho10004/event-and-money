@@ -10,8 +10,8 @@
     기준 자산: S&P 500 (^GSPC), Adjusted Close.
 </p>
 <p style="background:#eaf2f8; border:1px solid #aed6f1; border-radius:4px; padding:8px 12px; font-size:12px; color:#1f618d; margin-bottom:18px;">
-    🏢 마이크로 사건 <strong>{{ r.micro_n }}건</strong>(승계·자본 이벤트·오너 리스크 등)은
-    한국 주식 가격 데이터 수집 후 별도 가설(물적분할 디스카운트 정량화, 오너 리스크 회복 시간 등)로 분석할 예정입니다.
+    🏢 마이크로 사건 <strong>{{ r.micro_n }}건</strong>은 페이지 하단의
+    <a href="#micro">마이크로 가설 3종</a>(물적분할 디스카운트·따상 트라우마·오너 리스크 회복)으로 별도 분석합니다.
 </p>
 
 {% macro verdict_badge(v) %}
@@ -135,7 +135,128 @@
     <p class="hyp-note">건수 기준 50%지만 진폭 비율이 1을 크게 넘으면 "움직일 때는 크게 움직인다"는 부분 지지로 해석 가능.</p>
 </div>
 
+<hr id="micro" style="margin:30px 0; border:none; border-top:2px solid #e0e0e0;">
+<h2 style="margin-bottom:6px;">🏢 마이크로 가설 (한국 사건)</h2>
+<p style="color:#666; font-size:13px; margin-bottom:15px;">
+    마이크로 사건 {{ r.micro_n }}건 중 한국 자본시장 핵심 패턴 3가지를 검증.
+    기준 벤치마크: KOSPI (^KS11). 한국 개별주 가격이 채워지면 자동 갱신됩니다.
+</p>
+
+<!-- 마이크로 가설 1: 물적분할 디스카운트 -->
+<div class="hyp-card hyp-micro">
+    <h2>마이크로 가설 1. 물적분할 디스카운트 {{ verdict_badge(r.m1.verdict) }}</h2>
+    <p class="hyp-q">자회사 분할 상장 발표는 모회사 주가를 KOSPI 대비 디스카운트시키는가?</p>
+    <p class="hyp-method">방법: 분할 발표일 기준 모회사의 KOSPI 대비 초과수익률을 D+1·D+7·D+30·D+180에서 평균.</p>
+    <div class="hyp-scroll">
+    <table class="hyp-table">
+        <thead><tr><th>사건</th><th>모회사</th><th>D+1 초과</th><th>D+7 초과</th><th>D+30 초과</th><th>D+180 초과</th></tr></thead>
+        <tbody>
+        {% for row in r.m1.rows %}
+        <tr>
+            <td style="text-align:left;"><a href="/event/{{ row.id }}">{{ row.id }}</a></td>
+            <td style="text-align:left;">{{ row.parent }}</td>
+            {% for p in ["D+1","D+7","D+30","D+180"] %}
+                {% set v = row.periods[p].excess %}
+                {% if v is none %}
+                <td style="color:#ccc;">—</td>
+                {% elif v > 0 %}
+                <td class="positive">+{{ '%.2f'|format(v) }}%</td>
+                {% else %}
+                <td class="negative">{{ '%.2f'|format(v) }}%</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        <tr style="font-weight:600; background:#f8f8f8;">
+            <td colspan="2">평균 (n={{ r.m1.rows|length }})</td>
+            {% for p in ["D+1","D+7","D+30","D+180"] %}
+                {% set v = r.m1.avg_excess[p] %}
+                {% if v is none %}
+                <td style="color:#ccc;">—</td>
+                {% elif v > 0 %}
+                <td class="positive">+{{ '%.2f'|format(v) }}%</td>
+                {% else %}
+                <td class="negative">{{ '%.2f'|format(v) }}%</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    <p class="hyp-note">{{ r.m1.note }}</p>
+</div>
+
+<!-- 마이크로 가설 2: 따상 트라우마 -->
+<div class="hyp-card hyp-micro">
+    <h2>마이크로 가설 2. 따상 트라우마 {{ verdict_badge(r.m2.verdict) }}</h2>
+    <p class="hyp-q">첫날 따상 마감 IPO는 D+30 시점에 평균 회귀(KOSPI 대비 underperform)하는가?</p>
+    <p class="hyp-method">방법: 따상 그룹 5건과 따상 실패 대조군(크래프톤) 1건의 D+30 초과수익률(IPO 종목 − KOSPI) 비교.</p>
+
+    <h3 style="font-size:14px; margin:10px 0 4px;">따상 마감 그룹 (avg D+30 초과: {% if r.m2.limit_up.avg_excess_d30 is not none %}{{ '%+.2f'|format(r.m2.limit_up.avg_excess_d30) }}%{% else %}—{% endif %})</h3>
+    <div class="hyp-scroll">
+    <table class="hyp-table compact">
+        <tbody>
+        {% for c in r.m2.limit_up.cases %}
+        <tr>
+            <td style="text-align:left;"><a href="/event/{{ c.id }}">{{ c.id }}</a> {{ c.name }}</td>
+            <td>종목 D+30: {% if c.d30_stock is not none %}{{ '%+.2f'|format(c.d30_stock) }}%{% else %}—{% endif %}</td>
+            <td>KOSPI: {% if c.d30_bench is not none %}{{ '%+.2f'|format(c.d30_bench) }}%{% else %}—{% endif %}</td>
+            <td>{% if c.excess is none %}<span style="color:#ccc;">—</span>{% elif c.excess > 0 %}<span class="positive">+{{ '%.2f'|format(c.excess) }}%p</span>{% else %}<span class="negative">{{ '%.2f'|format(c.excess) }}%p</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <h3 style="font-size:14px; margin:10px 0 4px;">대조군 — 따상 실패</h3>
+    <div class="hyp-scroll">
+    <table class="hyp-table compact">
+        <tbody>
+        {% for c in r.m2.no_limit_up.cases %}
+        <tr>
+            <td style="text-align:left;"><a href="/event/{{ c.id }}">{{ c.id }}</a> {{ c.name }}</td>
+            <td>종목 D+30: {% if c.d30_stock is not none %}{{ '%+.2f'|format(c.d30_stock) }}%{% else %}—{% endif %}</td>
+            <td>KOSPI: {% if c.d30_bench is not none %}{{ '%+.2f'|format(c.d30_bench) }}%{% else %}—{% endif %}</td>
+            <td>{% if c.excess is none %}<span style="color:#ccc;">—</span>{% elif c.excess > 0 %}<span class="positive">+{{ '%.2f'|format(c.excess) }}%p</span>{% else %}<span class="negative">{{ '%.2f'|format(c.excess) }}%p</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <p class="hyp-note">{{ r.m2.note }}</p>
+</div>
+
+<!-- 마이크로 가설 3: 오너 리스크 회복 시간 -->
+<div class="hyp-card hyp-micro">
+    <h2>마이크로 가설 3. 오너 리스크 회복 시간 {{ verdict_badge(r.m3.verdict) }}</h2>
+    <p class="hyp-q">오너/기업 책임 비중 70%+ 사건의 초기 충격은 D+180에 회복되는가?</p>
+    <p class="hyp-method">방법: 직접영향 자산의 KOSPI 대비 초과수익률 D+30 → D+180 변화량 측정. 평균 +2%p 이상 개선 시 회복.</p>
+    <p>회복 사례: <strong>{{ r.m3.recovered }} / {{ r.m3.n }}</strong>건 (평균 초과: D+30 {% if r.m3.avg_ex30 is not none %}{{ '%+.2f'|format(r.m3.avg_ex30) }}%p{% else %}—{% endif %} → D+180 {% if r.m3.avg_ex180 is not none %}{{ '%+.2f'|format(r.m3.avg_ex180) }}%p{% else %}—{% endif %})</p>
+    <div class="hyp-scroll">
+    <table class="hyp-table">
+        <thead><tr><th>사건</th><th>D+30 초과</th><th>D+180 초과</th><th>판정</th></tr></thead>
+        <tbody>
+        {% for row in r.m3.rows %}
+        <tr>
+            <td style="text-align:left;"><a href="/event/{{ row.id }}">{{ row.id }}</a> {{ row.name }}</td>
+            <td>{% if row.ex30 is none %}<span style="color:#ccc;">—</span>{% elif row.ex30 > 0 %}<span class="positive">+{{ '%.2f'|format(row.ex30) }}%p</span>{% else %}<span class="negative">{{ '%.2f'|format(row.ex30) }}%p</span>{% endif %}</td>
+            <td>{% if row.ex180 is none %}<span style="color:#ccc;">—</span>{% elif row.ex180 > 0 %}<span class="positive">+{{ '%.2f'|format(row.ex180) }}%p</span>{% else %}<span class="negative">{{ '%.2f'|format(row.ex180) }}%p</span>{% endif %}</td>
+            <td>
+                {% if row.recovery == '회복' %}<span class="vd vd-support">회복</span>
+                {% elif row.recovery == '정체' %}<span class="vd vd-mixed">정체</span>
+                {% elif row.recovery == '부진 지속' %}<span class="vd vd-reject">부진 지속</span>
+                {% else %}<span style="color:#ccc;">—</span>{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <p class="hyp-note">{{ r.m3.note }}</p>
+</div>
+
 <style>
+    .hyp-micro { border-left:3px solid #8e44ad; }
     .hyp-card {
         background:#fff; border:1px solid #e0e0e0; border-radius:6px;
         padding:16px 18px; margin-bottom:18px;
