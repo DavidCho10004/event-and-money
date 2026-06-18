@@ -9,3 +9,6 @@ sqlalchemy==2.0.35
 
 # Utilities
 python-dotenv==1.0.1
+
+# DART OpenAPI (트랙D 자본 이벤트 자동 수집, 로컬 실행용)
+requests==2.32.3
