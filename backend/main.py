@@ -21,7 +21,6 @@ from sqlalchemy import func
 from backend.db.database import SessionLocal
 from backend.models import Event, Asset, Price, Return
 from backend.services.hypothesis import run_all as run_hypotheses
-from backend.services.supply_demand import get_supply_demand
 
 app = FastAPI(title="Event & Money")
 
@@ -579,24 +578,6 @@ def hypothesis(request: Request):
         "request": request,
         "r": results,
     })
-
-
-@app.get("/supply-demand", response_class=HTMLResponse)
-def supply_demand_page(request: Request,
-                       market: str = Query("KOSPI"),
-                       freq: str = Query("W")):
-    """코스피/코스닥 투자자별 수급(개인·외국인·기관) 시계열 + 지수 등락 뷰어"""
-    data = get_supply_demand(market, freq)
-    return templates.TemplateResponse("supply_demand.html", {
-        "request": request,
-        "data": data,
-    })
-
-
-@app.get("/api/supply-demand")
-def api_supply_demand(market: str = Query("KOSPI"), freq: str = Query("W")):
-    """수급 시계열 + 상관계수 JSON (탭/주기 토글 시 재조회용)"""
-    return JSONResponse(get_supply_demand(market, freq))
 
 
 @app.get("/compare", response_class=HTMLResponse)

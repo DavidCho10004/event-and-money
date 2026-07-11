@@ -16,12 +16,5 @@ requests==2.32.3
 # OG 이미지 동적 생성 (사건별 카카오톡/SNS 공유 카드)
 Pillow==12.2.0
 
-# 코스피/코스닥 투자자별 수급 분석 (역할 1·2·3, 로컬 실행용)
-#   fetch_supply_demand.py / analyze_supply_demand.py 에서 사용.
-#   Railway 배포에는 불필요 — 데이터 수집/차트는 로컬에서 돌려 산출물만 커밋.
-pykrx==1.2.8
-pandas==2.3.3
-matplotlib==3.11.0
-
 # 테스트 (역할 5 검증자)
 pytest==8.3.3
