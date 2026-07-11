@@ -1,0 +1,6 @@
+# 자동 수집 캐시 (실행 시 네이버 금융에서 재수집됨)
+data/*.csv
+
+# Python
+__pycache__/
+*.py[cod]
