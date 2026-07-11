@@ -9,3 +9,7 @@ sqlalchemy==2.0.35
 
 # Utilities
 python-dotenv==1.0.1
+
+# Data (수급 데이터 수집)
+pykrx==1.2.4
+pandas==2.3.3
