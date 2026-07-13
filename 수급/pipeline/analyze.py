@@ -20,6 +20,10 @@ logger = logging.getLogger(__name__)
 ROOT = store.BASE_DIR.parent            # 저장소 루트 (event-and-money/)
 OUT_DIR = ROOT / "data" / "processed"   # Railway가 읽는 위치
 
+# 주식수 변동 의심 판정 기준 (조정 가능)
+SUSPECT_DELTA_MIN = 1.0    # 이 이상 지분율이 움직였는데 (%p)
+SUSPECT_NETBUY_EOK = 50    # 순매수가 이 금액(억) 이하로 미미하거나, 방향이 반대면 의심
+
 BASE_LABELS = {"기준_25년말": "2025-12-30", "기준_전월": None, "기준_최근": None}
 
 
@@ -63,6 +67,19 @@ def build(market: str) -> pd.DataFrame:
     # 강도(%): 거래량·상장주식수 확보 전 — 빈 값 (지어내지 않음)
     df["강도_외국인_26누계"] = pd.NA
     df["수급동행"] = pd.NA   # 2단계 예약 컬럼
+
+    # 플래그
+    delta = df["변화폭_25년말比"]
+    nb_frgn = df["순매수억_외국인_26누계"]
+    # 주식수 변동 의심: 지분율이 유의미하게 움직였는데(±SUSPECT_DELTA_MIN 이상)
+    #   ① 외인 순매수 방향이 반대이거나 ② 순매수가 ±SUSPECT_NETBUY_EOK 이하로 미미
+    #   → 유상증자/소각 등 주식수 변동 착시 가능성 (데이터 오류로 단정하지 않음)
+    moved = delta.abs() >= SUSPECT_DELTA_MIN
+    opposite = (delta * nb_frgn) < 0
+    negligible = nb_frgn.abs() <= SUSPECT_NETBUY_EOK
+    df["플래그_주식수변동의심"] = (moved & (opposite | negligible)).fillna(False)
+    df["플래그_기관동반"] = (df["순매수억_기관_26누계"] > 0).fillna(False)
+    df["플래그_개인순매도"] = (df["순매수억_개인_26누계"] < 0).fillna(False)
 
     # 시장별 변화폭 순위 (전 종목 저장)
     df["변화폭순위"] = df["변화폭_25년말比"].rank(ascending=False, method="min").astype("Int64")
