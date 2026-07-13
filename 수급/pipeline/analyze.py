@@ -112,6 +112,39 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
     return df[cols], {"기준일": latest, "종목수": len(df), "periods": meta_periods}
 
 
+def build_detail() -> int:
+    """종목 상세용 일별 시계열 → data/processed/detail/detail_{코드 앞2자리}.csv
+
+    샤딩 이유: 종목당 개별 파일(~5,500개)은 저장소 비대, 단일 파일(~40MB)은
+    요청마다 전체 파싱 → 앞 2자리 샤드(~100파일, 각 수백KB)로 절충.
+    컬럼: 날짜, 코드, 종가, 외인지분율, 외인_억, 기관_억, 개인_억
+    (종가는 일별 수집분이 있는 날만 값 존재 — 지어내지 않음)
+    """
+    flow = store.read_flows()
+    flow = flow[(flow["해상도"] == "D") & (flow["투자자"].isin(["외국인", "기관합계", "개인"]))]
+    pivot = (flow.pivot_table(index=["날짜", "코드"], columns="투자자",
+                              values="거래대금", aggfunc="sum") / 1e8).round(1)
+    pivot = pivot.rename(columns={"외국인": "외인_억", "기관합계": "기관_억", "개인": "개인_억"})
+
+    snap = store.read_snapshots()
+    snap = snap[snap["날짜"] >= flow["날짜"].min()]
+    snap = snap.set_index(["날짜", "코드"])[["종가", "외인지분율"]]
+    snap["외인지분율"] = snap["외인지분율"].astype(float).round(2)
+
+    detail = snap.join(pivot, how="outer").reset_index()
+    detail = detail[["날짜", "코드", "종가", "외인지분율", "외인_억", "기관_억", "개인_억"]]
+    detail = detail.sort_values(["코드", "날짜"])
+
+    out = OUT_DIR / "detail"
+    out.mkdir(parents=True, exist_ok=True)
+    for shard, part in detail.groupby(detail["코드"].str[:2]):
+        part.to_csv(out / f"detail_{shard}.csv", index=False, encoding="utf-8-sig")
+    logger.info("상세 시계열: %d행 → 샤드 %d개 (%s ~ %s)",
+                len(detail), detail["코드"].str[:2].nunique(),
+                detail["날짜"].min(), detail["날짜"].max())
+    return len(detail)
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     meta = {}
@@ -121,6 +154,9 @@ def main():
         df.to_csv(out, index=False, encoding="utf-8-sig")
         meta[market] = m
         logger.info("[%s] 저장: %s (%d종목) periods=%s", market, out.name, len(df), m["periods"])
+    detail_rows = build_detail()
+    meta["detail"] = {"rows": detail_rows, "shard": "코드 앞 2자리",
+                      "path": "data/processed/detail/detail_{XX}.csv"}
     (OUT_DIR / "buy_review_meta.json").write_text(
         json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
 

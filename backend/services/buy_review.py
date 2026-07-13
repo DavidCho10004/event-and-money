@@ -34,6 +34,11 @@ def _flag(v):
     return str(v).strip().lower() == "true"
 
 
+def naver_chart_url(code: str) -> str:
+    """네이버 금융 종목 페이지 링크 (카드의 '네이버 차트 ↗' 버튼용)."""
+    return f"https://finance.naver.com/item/main.naver?code={code}"
+
+
 def _load(market: str, p: str):
     path = PROCESSED_DIR / f"buy_review_{market}.csv"
     if not path.exists():
@@ -44,6 +49,7 @@ def _load(market: str, p: str):
             rank = r.get(f"순위_{p}")
             rows.append({
                 "code": str(r["코드"]).zfill(6),
+                "naver_url": naver_chart_url(str(r["코드"]).zfill(6)),
                 "name": r["회사명"],
                 "frgn_base": _num(r.get(f"지분율기준_{p}")),
                 "frgn_now": _num(r["외인지분율_최근"]),

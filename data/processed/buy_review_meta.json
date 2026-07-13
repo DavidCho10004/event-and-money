@@ -42,5 +42,10 @@
     "기준일": "2026-07-07"
    }
   }
+ },
+ "detail": {
+  "rows": 676996,
+  "shard": "코드 앞 2자리",
+  "path": "data/processed/detail/detail_{XX}.csv"
  }
 }
