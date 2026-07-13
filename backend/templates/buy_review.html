@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}매수 검토 — Event & Money{% endblock %}
+{% block og_title %}매수 검토 스크리너{% endblock %}
+{% block og_description %}외국인 지분율 변화폭 기준 매수 후보 스크리닝{% endblock %}
+
+{% block content %}
+<h1>매수 검토</h1>
+<p style="color:#666; font-size:13px; margin-bottom:6px;">
+    <b>외국인 지분율 변화폭</b>('25년말 → 최근) 상위 종목입니다.
+    수급이 주가에 선행한다는 가설은 추후 백테스트로 검증 예정입니다.
+</p>
+
+{% if data.is_empty %}
+<div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px;
+            padding:10px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
+    ⚠️ 데이터가 아직 없습니다. 로컬 PC에서 수집 후 커밋하면 표시됩니다.
+</div>
+{% else %}
+
+<div class="filter-bar" style="margin:10px 0;">
+    {% for m, label in [("KOSPI","코스피"), ("KOSDAQ","코스닥")] %}
+    <a href="/buy-review?market={{ m }}"
+       class="{{ 'active' if data.market == m else '' }}">{{ label }}</a>
+    {% endfor %}
+    <span style="font-size:12px; color:#888; margin-left:12px;">
+        데이터 기준일 <b>{{ data.as_of or "미상" }}</b> ·
+        변화폭 상위 {{ data.shown }} / {{ "{:,}".format(data.total) }}종목
+    </span>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:8px; max-width:640px;">
+    {% for r in data.rows %}
+    <div style="border:1px solid #e0e0e0; border-radius:10px; padding:12px 14px; background:#fff;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-weight:bold; font-size:15px;">
+                {{ r.name }}
+                <span style="color:#999; font-size:11px; font-weight:normal;">{{ r.code }}</span>
+            </span>
+            <span style="font-weight:bold; font-size:15px;
+                         color:{{ '#d32f2f' if r.delta > 0 else '#1565c0' }};">
+                {{ "%+.1f"|format(r.delta) }}%p
+                <span style="color:#999; font-size:11px; font-weight:normal;">(변화폭 {{ r.rank }}위)</span>
+            </span>
+        </div>
+        <div style="font-size:12px; color:#555; margin-top:4px;">
+            외인 지분율 {{ "%.1f"|format(r.frgn_now) if r.frgn_now is not none else "—" }}%
+            {% if r.delta_mom is not none %}
+              · 전월比 {{ "%+.1f"|format(r.delta_mom) }}%p
+            {% endif %}
+        </div>
+        <div style="font-size:12px; color:#555; margin-top:2px;">
+            '26년 순매수: 외국인 {{ "{:+,.0f}".format(r.netbuy_frgn) if r.netbuy_frgn is not none else "—" }}억
+            · 기관 {{ "{:+,.0f}".format(r.netbuy_inst) if r.netbuy_inst is not none else "—" }}억
+            {% if r.pbr is not none %}
+            <span style="background:#f0f0f5; border-radius:4px; padding:1px 6px; margin-left:6px;">PBR {{ "%.2f"|format(r.pbr) }}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

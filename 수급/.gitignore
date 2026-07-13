@@ -1,6 +1,11 @@
 # 자동 수집 캐시 (실행 시 네이버 금융에서 재수집됨)
 data/*.csv
 
+# 원본 누적 저장소 — 로컬 전용 (Railway는 data/processed/의 CSV만 읽음)
+data/snapshots/
+data/flows/
+data/_checkpoints/
+
 # Python
 __pycache__/
 *.py[cod]
