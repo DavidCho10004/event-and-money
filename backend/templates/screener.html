@@ -10,15 +10,13 @@
     (순매수 = 매수 − 매도, 단위: 억원 · 음수는 순매도)
 </p>
 
-{% if data.is_demo %}
+{% if data.is_empty %}
 <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px;
-            padding:10px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
-    ⚠️ <b>데모(샘플) 데이터입니다.</b> KRX 접속이 아직 열리지 않아 UI 확인용 합성 순위를 표시 중입니다.<br>
-    실데이터 반영: 환경 네트워크 정책에서 <code>data.krx.co.kr</code> 허용 후
-    <code>python scripts/fetch_screener.py</code> 실행(또는 KRX 허용 환경에서 자동 수집) →
-    <code>data/processed/</code> CSV 생성 시 자동 전환됩니다.
+            padding:12px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
+    ⚠️ <b>데이터 준비 중입니다.</b> 이 탭의 실데이터는 아직 수집되지 않았습니다.<br>
+    실데이터 기반 수급 분석은 <a href="/buy-review" style="color:#1a56b0; font-weight:bold;">매수 검토 탭</a>에서 이용하세요.
 </div>
-{% endif %}
+{% else %}
 
 <!-- 필터: 시장 / 기간 / 투자자 -->
 <div class="filter-bar">
@@ -85,4 +83,5 @@
 <p style="font-size:11px; color:#aaa; margin-top:14px;">
     Source: KRX (pykrx) · 순매수는 거래대금(원) 기준 · "보기"는 네이버 금융 종목 페이지로 이동
 </p>
+{% endif %}
 {% endblock %}

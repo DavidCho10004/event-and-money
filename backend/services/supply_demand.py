@@ -4,13 +4,12 @@
 데이터 우선순위:
   1) data/processed/supply_demand_{MARKET}_{FREQ}.csv 가 있으면 그것을 읽음 (실데이터)
      → scripts/fetch_supply_demand.py + analyze_supply_demand.py 로 로컬 생성/커밋
-  2) 없으면 결정론적 데모(샘플) 데이터를 생성 (is_demo=True) → 웹에서 UI만 확인용
+  2) 없으면 빈 상태 반환 (합성 데이터 생성 금지)
 
 의존성: 파이썬 표준 라이브러리만 사용 (pandas/matplotlib 불필요 → Railway 배포 가볍게).
 """
 import csv
 import math
-import random
 from pathlib import Path
 from datetime import date, timedelta
 
@@ -167,36 +166,6 @@ def _load_processed_daily(market):
 
 
 # ──────────────────────────────────────────────────────────
-# 2) 데모(샘플) 데이터 — 결정론적 생성
-# ──────────────────────────────────────────────────────────
-def _demo_daily(market):
-    """UI 확인용 합성 일별 데이터. 시장별 고정 시드로 항상 동일하게 생성."""
-    rng = random.Random(hash(market) & 0xFFFF)
-    start = date(2022, 1, 3)
-    days = []
-    d = start
-    while d <= date(2024, 12, 31):
-        if d.weekday() < 5:  # 평일만
-            days.append(d)
-        d += timedelta(days=1)
-
-    base = 2500 if market == "KOSPI" else 850  # 코스피/코스닥 대략적 레벨
-    daily = []
-    logret_cum = 0.0
-    for d in days:
-        foreign = rng.gauss(0, 3000e8)
-        inst = rng.gauss(0, 2000e8)
-        indiv = -(foreign + inst) + rng.gauss(0, 1000e8)  # 개인은 반대 방향 경향
-        # 외국인 순매수가 지수를 이끄는 구조 (데모용 명시적 상관)
-        ret = 4e-14 * foreign + rng.gauss(0, 0.008)
-        logret_cum += ret
-        close = base * math.exp(logret_cum)
-        daily.append({"date": d, "close": close,
-                      "개인": indiv, "외국인": foreign, "기관": inst})
-    return daily
-
-
-# ──────────────────────────────────────────────────────────
 # 공개 함수
 # ──────────────────────────────────────────────────────────
 def get_supply_demand(market, freq):
@@ -207,9 +176,14 @@ def get_supply_demand(market, freq):
         freq = "W"
 
     daily = _load_processed_daily(market)
-    is_demo = daily is None
-    if is_demo:
-        daily = _demo_daily(market)
+    # 실데이터가 없으면 빈 상태로 반환 — 합성/데모 데이터를 생성하지 않는다 (CLAUDE.md 규칙)
+    if daily is None:
+        return {
+            "market": market, "market_name": MARKET_NAME[market],
+            "freq": freq, "freq_name": FREQ_NAME[freq],
+            "is_empty": True, "dates": [], "close": [],
+            "netbuy": {}, "cum": {}, "corr": {},
+        }
 
     agg = _aggregate(daily, freq)
     corr = _correlations(agg["netbuy"], agg["returns"])
@@ -219,7 +193,7 @@ def get_supply_demand(market, freq):
         "market_name": MARKET_NAME[market],
         "freq": freq,
         "freq_name": FREQ_NAME[freq],
-        "is_demo": is_demo,
+        "is_empty": False,
         "dates": agg["dates"],
         "close": agg["close"],
         "netbuy": agg["netbuy"],
