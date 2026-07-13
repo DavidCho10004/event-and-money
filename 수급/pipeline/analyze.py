@@ -53,6 +53,12 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
     snap = snap[snap["시장"] == market]
     flow = flow[flow["시장"] == market]
 
+    # 이중계산 방지: 일별(D)이 커버하는 구간에서는 월별(M) 행 제외
+    d_rows = flow[flow["해상도"] == "D"]
+    if not d_rows.empty:
+        d_start = d_rows["날짜"].min()
+        flow = flow[(flow["해상도"] == "D") | (flow["날짜"] < d_start)]
+
     # 지분율이 있는 날짜만 기준 후보로 사용
     frgn_dates = sorted(snap[snap["외인지분율"].notna()]["날짜"].unique())
     latest = frgn_dates[-1]
