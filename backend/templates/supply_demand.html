@@ -10,15 +10,13 @@
     어떻게 연결되는지 확인합니다. (순매수 = 매수 − 매도, 단위: 억원)
 </p>
 
-{% if data.is_demo %}
+{% if data.is_empty %}
 <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px;
-            padding:10px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
-    ⚠️ <b>데모(샘플) 데이터입니다.</b> 실제 KRX 수급 데이터가 아직 없어 UI 확인용 합성 데이터를 표시 중입니다.<br>
-    실데이터 반영: 로컬에서 <code>python scripts/fetch_supply_demand.py</code> →
-    <code>python scripts/analyze_supply_demand.py</code> 실행 후
-    <code>data/processed/</code> CSV를 커밋하면 자동 전환됩니다.
+            padding:12px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
+    ⚠️ <b>데이터 준비 중입니다.</b> 이 탭의 실데이터는 아직 수집되지 않았습니다.<br>
+    실데이터 기반 수급 분석은 <a href="/buy-review" style="color:#1a56b0; font-weight:bold;">매수 검토 탭</a>에서 이용하세요.
 </div>
-{% endif %}
+{% else %}
 
 <!-- 시장 / 주기 토글 -->
 <div class="filter-bar">
@@ -147,4 +145,5 @@ new Chart(document.getElementById("netbuyChart").getContext("2d"), {
     },
 });
 </script>
+{% endif %}
 {% endblock %}
