@@ -117,3 +117,53 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
 
     return {**base, "as_of": mmeta.get("기준일"), "total": total,
             "matched": matched, "shown": len(shown), "rows": shown, "is_empty": False}
+
+
+def get_stock_detail(code: str, p: str = DEFAULT_PERIOD) -> dict:
+    """종목 상세 (뼈대) — 스크리너 행 + detail 샤드 1개 로드.
+
+    detail 샤드: data/processed/detail/detail_{코드 앞2자리}.csv
+    차트용 시계열(rows)은 다음 단계에서 사용 — 지금은 로드·범위 확인까지.
+    """
+    code = str(code).zfill(6)
+
+    # 스크리너 행에서 상단 정보 (양 시장에서 탐색)
+    head, market = None, None
+    for m in MARKET_NAME:
+        rows = _load(m, p) or []
+        found = next((x for x in rows if x["code"] == code), None)
+        if found:
+            head, market = found, m
+            break
+
+    # detail 샤드 1개만 읽기
+    series = []
+    shard = PROCESSED_DIR / "detail" / f"detail_{code[:2]}.csv"
+    if shard.exists():
+        with open(shard, encoding="utf-8-sig") as f:
+            for r in csv.DictReader(f):
+                if str(r["코드"]).zfill(6) != code:
+                    continue
+                series.append({
+                    "date": r["날짜"],
+                    "close": _num(r["종가"]),
+                    "frgn_rate": _num(r["외인지분율"]),
+                    "frgn": _num(r["외인_억"]),
+                    "inst": _num(r["기관_억"]),
+                    "indiv": _num(r["개인_억"]),
+                })
+
+    return {
+        "code": code,
+        "found": head is not None,
+        "market": market,
+        "market_name": MARKET_NAME.get(market, ""),
+        "p": p if p in PERIOD_NAME else DEFAULT_PERIOD,
+        "p_name": PERIOD_NAME.get(p, PERIOD_NAME[DEFAULT_PERIOD]),
+        "head": head,
+        "naver_url": naver_chart_url(code),
+        "series_count": len(series),
+        "series_from": series[0]["date"] if series else None,
+        "series_to": series[-1]["date"] if series else None,
+        "series": series,
+    }
