@@ -58,16 +58,82 @@
         </div>
     </div>
 
-    {# 차트 자리 — 다음 단계 #}
-    <div style="border:1px dashed #ccc; border-radius:10px; padding:20px; margin-top:12px;
-                text-align:center; color:#aaa; font-size:13px;">
-        주가·지분율 / 순매수 차트 (준비 중)
-        {% if data.series_count %}
-        <div style="font-size:11px; margin-top:4px;">
-            일별 시계열 {{ data.series_count }}건 로드됨 ({{ data.series_from }} ~ {{ data.series_to }})
+    <div style="border:1px solid #e0e0e0; border-radius:10px; padding:12px; margin-top:12px; background:#fff;">
+        <div style="font-size:13px; font-weight:bold; margin-bottom:6px;">주가 · 외인 지분율 (일별, 최근 1년)</div>
+        <div style="position:relative; height:220px;"><canvas id="priceFrgnChart"></canvas></div>
+        <div style="font-size:11px; color:#aaa; margin-top:4px;">
+            주가는 수집된 날만 표시됩니다 (빈 구간은 보간하지 않음 · 종가 백필 후 채워짐)
         </div>
-        {% endif %}
     </div>
+
+    <div style="border:1px solid #e0e0e0; border-radius:10px; padding:12px; margin-top:12px; background:#fff;">
+        <div style="font-size:13px; font-weight:bold; margin-bottom:6px;">투자자별 순매수 (주간 합산, 억원)</div>
+        <div style="position:relative; height:220px;"><canvas id="netbuyChart"></canvas></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script>
+    const S = {{ data.series | tojson }};
+    const W = {{ data.weekly | tojson }};
+
+    // 차트 1: 주가(선/점) + 외인 지분율(선, 보조축)
+    new Chart(document.getElementById("priceFrgnChart"), {
+        type: "line",
+        data: {
+            labels: S.map(r => r.date),
+            datasets: [
+                {
+                    label: "종가(원)", yAxisID: "y",
+                    data: S.map(r => r.close),
+                    borderColor: "#d32f2f", backgroundColor: "#d32f2f",
+                    spanGaps: false,           // 값 없는 구간을 잇지 않음 (보간 금지)
+                    pointRadius: 2, borderWidth: 1.5, tension: 0,
+                },
+                {
+                    label: "외인 지분율(%)", yAxisID: "y1",
+                    data: S.map(r => r.frgn_rate),
+                    borderColor: "#1a56b0", backgroundColor: "#1a56b0",
+                    spanGaps: false, pointRadius: 0, borderWidth: 1.5, tension: 0,
+                },
+            ],
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: { legend: { labels: { boxWidth: 12, font: { size: 11 } } } },
+            scales: {
+                x: { ticks: { maxTicksLimit: 6, font: { size: 10 } } },
+                y: { position: "left", ticks: { font: { size: 10 },
+                        callback: v => v.toLocaleString() } },
+                y1: { position: "right", grid: { drawOnChartArea: false },
+                      ticks: { font: { size: 10 }, callback: v => v + "%" } },
+            },
+        },
+    });
+
+    // 차트 2: 투자자별 순매수 주간 합산 (누적 바)
+    new Chart(document.getElementById("netbuyChart"), {
+        type: "bar",
+        data: {
+            labels: W.map(r => r.label),
+            datasets: [
+                { label: "외국인", data: W.map(r => r.frgn), backgroundColor: "#e94560" },
+                { label: "기관",   data: W.map(r => r.inst), backgroundColor: "#1a56b0" },
+                { label: "개인",   data: W.map(r => r.indiv), backgroundColor: "#9e9e9e" },
+            ],
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: { legend: { labels: { boxWidth: 12, font: { size: 11 } } } },
+            scales: {
+                x: { stacked: true, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
+                y: { stacked: true, ticks: { font: { size: 10 },
+                        callback: v => v.toLocaleString() } },
+            },
+        },
+    });
+    </script>
     {% endif %}
 </div>
 {% endblock %}

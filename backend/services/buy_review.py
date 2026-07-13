@@ -153,9 +153,24 @@ def get_stock_detail(code: str, p: str = DEFAULT_PERIOD) -> dict:
                     "indiv": _num(r["개인_억"]),
                 })
 
+    # 주 단위 순매수 합산 (ISO 주 — 라벨은 그 주의 마지막 거래일)
+    weekly = []
+    bucket = {}
+    for row in series:
+        y, w, _ = __import__("datetime").date.fromisoformat(row["date"]).isocalendar()
+        key = (y, w)
+        b = bucket.setdefault(key, {"label": row["date"], "frgn": 0.0, "inst": 0.0, "indiv": 0.0})
+        b["label"] = row["date"]  # 정렬된 시계열이므로 마지막 날짜가 주말 거래일
+        for k, col in (("frgn", "frgn"), ("inst", "inst"), ("indiv", "indiv")):
+            v = row[col]
+            if v is not None:
+                b[k] = round(b[k] + v, 1)
+    weekly = [bucket[k] for k in sorted(bucket)]
+
     return {
         "code": code,
         "found": head is not None,
+        "weekly": weekly,
         "market": market,
         "market_name": MARKET_NAME.get(market, ""),
         "p": p if p in PERIOD_NAME else DEFAULT_PERIOD,
