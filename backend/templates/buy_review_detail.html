@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ data.head.name if data.found else data.code }} — 매수 검토{% endblock %}
+{% block og_title %}{{ data.head.name if data.found else data.code }} 수급 상세{% endblock %}
+{% block og_description %}외국인 지분율·투자자별 순매수 상세{% endblock %}
+
+{% block content %}
+<div style="max-width:640px;">
+    <a href="/buy-review?p={{ data.p }}" style="font-size:13px; color:#888; text-decoration:none;">← 매수 검토 목록</a>
+
+    {% if not data.found %}
+    <h1 style="margin-top:8px;">{{ data.code }}</h1>
+    <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px;
+                padding:10px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
+        ⚠️ 스크리너 데이터에 없는 종목코드입니다. (상장폐지/우선주 미수집 등)
+    </div>
+    {% else %}
+
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:8px;">
+        <h1 style="margin:0;">{{ data.head.name }}
+            <span style="color:#999; font-size:13px; font-weight:normal;">{{ data.code }} · {{ data.market_name }}</span>
+        </h1>
+    </div>
+
+    <div style="border:1px solid #e0e0e0; border-radius:10px; padding:14px; margin-top:12px; background:#fff;">
+        <div style="display:flex; flex-wrap:wrap; gap:18px;">
+            <div>
+                <div style="font-size:11px; color:#888;">현재 외인 지분율</div>
+                <div style="font-size:20px; font-weight:bold;">
+                    {{ "%.2f"|format(data.head.frgn_now) if data.head.frgn_now is not none else "—" }}%</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888;">{{ data.p_name }} 변화폭</div>
+                <div style="font-size:20px; font-weight:bold;
+                            color:{{ '#d32f2f' if data.head.delta and data.head.delta > 0 else '#1565c0' }};">
+                    {{ "%+.2f"|format(data.head.delta) if data.head.delta is not none else "—" }}%p
+                    <span style="font-size:11px; color:#999; font-weight:normal;">({{ data.head.rank }}위)</span>
+                </div>
+            </div>
+            {% if data.head.pbr is not none %}
+            <div>
+                <div style="font-size:11px; color:#888;">PBR</div>
+                <div style="font-size:20px; font-weight:bold;">{{ "%.2f"|format(data.head.pbr) }}</div>
+            </div>
+            {% endif %}
+        </div>
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+            {% if data.head.suspect %}
+            <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 주식수 변동 의심</span>
+            {% endif %}
+            {% if data.head.inst_buy %}
+            <span style="background:#e8f0fe; color:#1a56b0; border-radius:4px; padding:1px 6px; font-size:11px;">기관 동반</span>
+            {% endif %}
+            {% if data.head.indiv_sell %}
+            <span style="background:#f0f0f5; color:#555; border-radius:4px; padding:1px 6px; font-size:11px;">개인 순매도</span>
+            {% endif %}
+            <a href="{{ data.naver_url }}" target="_blank" rel="noopener"
+               style="margin-left:auto; background:#03c75a; color:#fff; border-radius:4px; padding:2px 10px; font-size:12px; text-decoration:none;">네이버 차트 ↗</a>
+        </div>
+    </div>
+
+    {# 차트 자리 — 다음 단계 #}
+    <div style="border:1px dashed #ccc; border-radius:10px; padding:20px; margin-top:12px;
+                text-align:center; color:#aaa; font-size:13px;">
+        주가·지분율 / 순매수 차트 (준비 중)
+        {% if data.series_count %}
+        <div style="font-size:11px; margin-top:4px;">
+            일별 시계열 {{ data.series_count }}건 로드됨 ({{ data.series_from }} ~ {{ data.series_to }})
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

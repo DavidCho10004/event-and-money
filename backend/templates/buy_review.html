@@ -74,9 +74,11 @@
 
 <div style="display:flex; flex-direction:column; gap:8px; max-width:640px;">
     {% for r in data.rows %}
-    <div style="border:1px solid {{ '#f0b429' if r.suspect else '#e0e0e0' }};
-                border-radius:10px; padding:12px 14px;
-                background:{{ '#fffbf0' if r.suspect else '#fff' }};">
+    <a href="/buy-review/{{ r.code }}?p={{ data.p }}"
+       style="display:block; text-decoration:none; color:inherit;
+              border:1px solid {{ '#f0b429' if r.suspect else '#e0e0e0' }};
+              border-radius:10px; padding:12px 14px;
+              background:{{ '#fffbf0' if r.suspect else '#fff' }};">
         <div style="display:flex; justify-content:space-between; align-items:baseline;">
             <span style="font-weight:bold; font-size:15px;">
                 {{ r.name }}
@@ -115,10 +117,9 @@
             {% if r.pbr is not none %}
             <span style="background:#f0f0f5; color:#555; border-radius:4px; padding:1px 6px; font-size:11px;">PBR {{ "%.2f"|format(r.pbr) }}</span>
             {% endif %}
-            <a href="{{ r.naver_url }}" target="_blank" rel="noopener"
-               style="margin-left:auto; background:#03c75a; color:#fff; border-radius:4px; padding:1px 8px; font-size:11px; text-decoration:none;">네이버 차트 ↗</a>
+            <span style="margin-left:auto; color:#999; font-size:11px;">상세 →</span>
         </div>
-    </div>
+    </a>
     {% endfor %}
 </div>
 {% endif %}

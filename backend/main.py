@@ -23,7 +23,7 @@ from backend.models import Event, Asset, Price, Return
 from backend.services.hypothesis import run_all as run_hypotheses
 from backend.services.supply_demand import get_supply_demand
 from backend.services.screener import get_screener
-from backend.services.buy_review import get_buy_review
+from backend.services.buy_review import get_buy_review, get_stock_detail
 
 app = FastAPI(title="Event & Money")
 
@@ -604,6 +604,16 @@ def api_buy_review(market: str = Query("KOSPI"), p: str = Query("3m"),
                    indiv: bool = Query(False)):
     """매수 검토 스크리너 JSON"""
     return JSONResponse(get_buy_review(market, p=p, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv))
+
+
+@app.get("/buy-review/{code}", response_class=HTMLResponse)
+def buy_review_detail_page(request: Request, code: str, p: str = Query("3m")):
+    """매수 검토 — 종목 상세 (뼈대: 상단 정보 + 시계열 로드)"""
+    data = get_stock_detail(code, p)
+    return templates.TemplateResponse("buy_review_detail.html", {
+        "request": request,
+        "data": data,
+    })
 
 
 @app.get("/supply-demand", response_class=HTMLResponse)

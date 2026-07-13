@@ -9,3 +9,6 @@ data/_checkpoints/
 # Python
 __pycache__/
 *.py[cod]
+
+# 친구분 프로토타입 엑셀 (개인 파일)
+TalkFile*.xlsx
