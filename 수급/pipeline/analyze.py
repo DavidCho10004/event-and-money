@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-스크리너 테이블 생성 (MVP판) — 저장소 → 루트 data/processed/buy_review_{시장}.csv
+스크리너 테이블 생성 — 저장소 → 루트 data/processed/buy_review_{시장}.csv
 
-MVP 범위: 이중 지표(금액 / 강도) + 외인지분율 변화폭 + 시장별 변화폭 순위만.
-  - 강도(%) = 순매수 주식수 ÷ 상장주식수 — 현 저장소에 거래량·상장주식수가 없어
-    지금은 전부 빈 값 (일별 층 수집 후 채워짐). 지어내지 않는다.
-필터 칩·플래그·배지 색단계는 다음 라운드.
+기간 구조: 상대 기간(6m/3m/1m/1w)별로 지분율 변화폭·순위·순매수·플래그를 각각 계산.
+  - 기준 시점 지분율은 해당 시점 스냅샷에서 직접 조회 (역산 금지)
+  - 기준 스냅샷이 허용 오차 내에 없으면 그 기간은 '미제공' (meta에 기록, 지어내지 않음)
+  - 1w는 일별 지분율 스냅샷이 쌓인 뒤에 자동 활성화
+강도(%)는 거래량·상장주식수 확보 후. 수급동행은 2단계 예약.
 """
 import json
 import logging
-from pathlib import Path
 
 import pandas as pd
 import store
@@ -20,93 +20,103 @@ logger = logging.getLogger(__name__)
 ROOT = store.BASE_DIR.parent            # 저장소 루트 (event-and-money/)
 OUT_DIR = ROOT / "data" / "processed"   # Railway가 읽는 위치
 
+# 기간 정의: (일수, 기준 스냅샷 허용 오차 일수)
+PERIODS = {"6m": (182, 25), "3m": (91, 25), "1m": (30, 25), "1w": (7, 3)}
+
 # 주식수 변동 의심 판정 기준 (조정 가능)
 SUSPECT_DELTA_MIN = 1.0    # 이 이상 지분율이 움직였는데 (%p)
 SUSPECT_NETBUY_EOK = 50    # 순매수가 이 금액(억) 이하로 미미하거나, 방향이 반대면 의심
 
-BASE_LABELS = {"기준_25년말": "2025-12-30", "기준_전월": None, "기준_최근": None}
+
+def pick_base_date(dates: list, latest: str, days: int, tol: int) -> str | None:
+    """latest - days 에 가장 가까운 스냅샷 날짜 선택 (오차 tol일 초과 시 None).
+
+    거리가 5일 이내로 비슷한 후보가 둘이면 더 최근 쪽을 선택
+    (예: '1개월'이 45일 전 스냅샷보다 직전 월말을 가리키도록).
+    """
+    target = pd.Timestamp(latest) - pd.Timedelta(days=days)
+    cands = [(abs((pd.Timestamp(d) - target).days), d) for d in dates if d < latest]
+    cands.sort()
+    if not cands or cands[0][0] > tol:
+        return None
+    best_diff, best = cands[0]
+    for diff, d in cands[1:]:
+        if diff - best_diff <= 5 and d > best:
+            best = d
+        break
+    return best
 
 
-def build(market: str) -> pd.DataFrame:
+def build(market: str) -> tuple[pd.DataFrame, dict]:
     snap = store.read_snapshots()
     flow = store.read_flows()
     snap = snap[snap["시장"] == market]
     flow = flow[flow["시장"] == market]
 
-    dates = sorted(snap["날짜"].unique())
-    latest, prev_month = dates[-1], dates[-2]
-    base = "2025-12-30"
-
-    def frgn_at(d):
-        s = snap[snap["날짜"] == d].set_index("코드")["외인지분율"]
-        return s
-
-    f_base, f_prev, f_latest = frgn_at(base), frgn_at(prev_month), frgn_at(latest)
+    # 지분율이 있는 날짜만 기준 후보로 사용
+    frgn_dates = sorted(snap[snap["외인지분율"].notna()]["날짜"].unique())
+    latest = frgn_dates[-1]
     latest_snap = snap[snap["날짜"] == latest].set_index("코드")
 
+    def frgn_at(d):
+        s = snap[(snap["날짜"] == d) & (snap["외인지분율"].notna())]
+        return s.set_index("코드")["외인지분율"]
+
+    f_latest = frgn_at(latest)
     df = pd.DataFrame(index=f_latest.index)
-    df["외인지분율_25년말"] = f_base
-    df["외인지분율_전월"] = f_prev
     df["외인지분율_최근"] = f_latest
-    df["변화폭_25년말比"] = (f_latest - f_base).round(2)
-    df["변화폭_전월比"] = (f_latest - f_prev).round(2)
     df["PBR_최근"] = latest_snap["PBR"]
     df["시가총액_억"] = (latest_snap["시가총액"] / 1e8).round(0)
     df["종가_최근"] = latest_snap["종가"]
+    df["강도_외국인"] = pd.NA   # 거래량·상장주식수 확보 후
+    df["수급동행"] = pd.NA      # 2단계 예약
 
-    # 순매수 금액: '26년 누계 (M행, 2026년 구간 합) — 투자자별
-    f26 = flow[(flow["날짜"] >= "2026-01-01")]
-    pivot = f26.pivot_table(index="코드", columns="투자자", values="거래대금", aggfunc="sum")
-    for inv in ["외국인", "기관합계", "개인", "사모"]:
-        label = "기관" if inv == "기관합계" else inv
-        if inv in pivot.columns:
-            df[f"순매수억_{label}_26누계"] = (pivot[inv] / 1e8).round(1)
-        else:
-            df[f"순매수억_{label}_26누계"] = pd.NA
+    meta_periods = {}
+    for p, (days, tol) in PERIODS.items():
+        base = pick_base_date(frgn_dates, latest, days, tol)
+        if base is None:
+            meta_periods[p] = {"available": False, "기준일": None}
+            continue
+        f_base = frgn_at(base)
+        delta = (f_latest - f_base).round(2)
+        df[f"지분율기준_{p}"] = f_base
+        df[f"변화폭_{p}"] = delta
+        df[f"순위_{p}"] = delta.rank(ascending=False, method="min").astype("Int64")
 
-    # 강도(%): 거래량·상장주식수 확보 전 — 빈 값 (지어내지 않음)
-    df["강도_외국인_26누계"] = pd.NA
-    df["수급동행"] = pd.NA   # 2단계 예약 컬럼
+        # 기간 순매수 (기준일 이후의 flows 합, M/D 중복 없음 전제: M은 일별 커버 이전 구간만)
+        fp = flow[(flow["날짜"] > base) & (flow["날짜"] <= latest)]
+        pivot = fp.pivot_table(index="코드", columns="투자자", values="거래대금", aggfunc="sum")
+        for inv in ["외국인", "기관합계", "개인", "사모"]:
+            label = "기관" if inv == "기관합계" else inv
+            df[f"순매수억_{label}_{p}"] = ((pivot[inv] / 1e8).round(1)
+                                          if inv in pivot.columns else pd.NA)
 
-    # 플래그
-    delta = df["변화폭_25년말比"]
-    nb_frgn = df["순매수억_외국인_26누계"]
-    # 주식수 변동 의심: 지분율이 유의미하게 움직였는데(±SUSPECT_DELTA_MIN 이상)
-    #   ① 외인 순매수 방향이 반대이거나 ② 순매수가 ±SUSPECT_NETBUY_EOK 이하로 미미
-    #   → 유상증자/소각 등 주식수 변동 착시 가능성 (데이터 오류로 단정하지 않음)
-    moved = delta.abs() >= SUSPECT_DELTA_MIN
-    opposite = (delta * nb_frgn) < 0
-    negligible = nb_frgn.abs() <= SUSPECT_NETBUY_EOK
-    df["플래그_주식수변동의심"] = (moved & (opposite | negligible)).fillna(False)
-    df["플래그_기관동반"] = (df["순매수억_기관_26누계"] > 0).fillna(False)
-    df["플래그_개인순매도"] = (df["순매수억_개인_26누계"] < 0).fillna(False)
+        # 플래그 (기간 정합: 같은 기간의 변화폭 vs 순매수)
+        nb = df[f"순매수억_외국인_{p}"]
+        moved = delta.abs() >= SUSPECT_DELTA_MIN
+        df[f"플래그_주식수변동의심_{p}"] = (moved & (((delta * nb) < 0) | (nb.abs() <= SUSPECT_NETBUY_EOK))).fillna(False)
+        df[f"플래그_기관동반_{p}"] = (df[f"순매수억_기관_{p}"] > 0).fillna(False)
+        df[f"플래그_개인순매도_{p}"] = (df[f"순매수억_개인_{p}"] < 0).fillna(False)
+        meta_periods[p] = {"available": True, "기준일": base}
 
-    # 시장별 변화폭 순위 (전 종목 저장)
-    df["변화폭순위"] = df["변화폭_25년말比"].rank(ascending=False, method="min").astype("Int64")
-
-    # 종목명
     names = pd.read_csv(store.PROCESSED_DIR / f"names_{market}.csv", dtype={"코드": str})
     names["코드"] = names["코드"].str.zfill(6)
     df = df.join(names.set_index("코드")["회사명"]).reset_index().rename(columns={"index": "코드"})
-    df = df[["코드", "회사명"] + [c for c in df.columns if c not in ("코드", "회사명")]]
-    df = df.sort_values("변화폭_25년말比", ascending=False)
-
-    df.attrs["기준일"] = latest
-    return df
+    cols = ["코드", "회사명"] + [c for c in df.columns if c not in ("코드", "회사명")]
+    return df[cols], {"기준일": latest, "종목수": len(df), "periods": meta_periods}
 
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     meta = {}
     for market in ["KOSPI", "KOSDAQ"]:
-        df = build(market)
+        df, m = build(market)
         out = OUT_DIR / f"buy_review_{market}.csv"
         df.to_csv(out, index=False, encoding="utf-8-sig")
-        meta[market] = {"기준일": df.attrs["기준일"], "종목수": len(df)}
-        logger.info("[%s] 저장: %s (%d종목)", market, out, len(df))
+        meta[market] = m
+        logger.info("[%s] 저장: %s (%d종목) periods=%s", market, out.name, len(df), m["periods"])
     (OUT_DIR / "buy_review_meta.json").write_text(
         json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
-    logger.info("meta: %s", meta)
 
 
 if __name__ == "__main__":

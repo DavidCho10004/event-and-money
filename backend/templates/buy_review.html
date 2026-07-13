@@ -6,7 +6,7 @@
 {% block content %}
 <h1>매수 검토</h1>
 <p style="color:#666; font-size:13px; margin-bottom:6px;">
-    <b>외국인 지분율 변화폭</b>('25년말 → 최근) 상위 종목입니다.
+    선택한 기간의 <b>외국인 지분율 변화폭</b> 상위 종목입니다.
     수급이 주가에 선행한다는 가설은 추후 백테스트로 검증 예정입니다.
 </p>
 
@@ -17,9 +17,10 @@
 </div>
 {% else %}
 
-{# 필터 상태를 유지한 채 특정 파라미터만 바꾼 URL 생성 #}
-{% macro url(market=None, f3=None, f5=None, pbr=None, inst=None, indiv=None) -%}
+{# 필터/기간 상태를 유지한 채 특정 파라미터만 바꾼 URL 생성 #}
+{% macro url(market=None, p=None, f3=None, f5=None, pbr=None, inst=None, indiv=None) -%}
 /buy-review?market={{ market if market is not none else data.market
+  }}&p={{ p if p is not none else data.p
   }}{% if (f3 if f3 is not none else data.filters.f3) %}&f3=1{% endif
   %}{% if (f5 if f5 is not none else data.filters.f5) %}&f5=1{% endif
   %}{% if (pbr if pbr is not none else data.filters.pbr) %}&pbr=1{% endif
@@ -33,6 +34,22 @@
     {% endfor %}
 </div>
 
+{# 기간 토글 #}
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 4px;">
+    {% set seg_on = "background:#1a1a2e; color:#fff; border:1px solid #1a1a2e;" %}
+    {% set seg_off = "background:#fff; color:#555; border:1px solid #ccc;" %}
+    {% set seg_dis = "background:#f5f5f5; color:#bbb; border:1px solid #e0e0e0; cursor:default;" %}
+    {% set seg = "border-radius:6px; padding:4px 12px; font-size:12px; text-decoration:none;" %}
+    {% for key, info in data.periods.items() %}
+      {% if info.available %}
+      <a href="{{ url(p=key) }}" style="{{ seg }}{{ seg_on if data.p == key else seg_off }}">{{ info.name }}</a>
+      {% else %}
+      <span style="{{ seg }}{{ seg_dis }}" title="일별 데이터 수집 후 제공">{{ info.name }}</span>
+      {% endif %}
+    {% endfor %}
+</div>
+
+{# 필터 칩 #}
 <div style="display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 10px;">
     {% set chip_on = "background:#e94560; color:#fff; border:1px solid #e94560;" %}
     {% set chip_off = "background:#fff; color:#555; border:1px solid #ccc;" %}
@@ -51,7 +68,7 @@
 
 <div style="font-size:12px; color:#888; margin-bottom:10px;">
     조건 충족 <b style="color:#333;">{{ "{:,}".format(data.matched) }} / {{ "{:,}".format(data.total) }}</b>종목
-    · 데이터 기준일 <b>{{ data.as_of or "미상" }}</b>
+    · 기준 {{ data.base_date }} → {{ data.as_of or "미상" }} ({{ data.p_name }})
     {% if data.matched > data.shown %} · 상위 {{ data.shown }}개 표시{% endif %}
 </div>
 
@@ -68,15 +85,20 @@
             <span style="font-weight:bold; font-size:15px;
                          color:{{ '#d32f2f' if r.delta > 0 else '#1565c0' }};">
                 {{ "%+.1f"|format(r.delta) }}%p
-                <span style="color:#999; font-size:11px; font-weight:normal;">(변화폭 {{ r.rank }}위)</span>
+                <span style="color:#999; font-size:11px; font-weight:normal;">({{ data.p_name }} 변화폭 {{ r.rank }}위)</span>
             </span>
         </div>
         <div style="font-size:12px; color:#555; margin-top:4px;">
-            외인 지분율 {{ "%.1f"|format(r.frgn_now) if r.frgn_now is not none else "—" }}%
-            {% if r.delta_mom is not none %} · 전월比 {{ "%+.1f"|format(r.delta_mom) }}%p{% endif %}
+            외인 지분율 {{ "%.1f"|format(r.frgn_base) if r.frgn_base is not none else "—" }}%
+            → {{ "%.1f"|format(r.frgn_now) if r.frgn_now is not none else "—" }}%
+        </div>
+        <div style="font-size:12px; color:#888; margin-top:2px;">
+            최근 1주일:
+            {% if r.delta_1w is not none %}{{ "%+.2f"|format(r.delta_1w) }}%p
+            {% else %}<span style="color:#bbb;">일별 데이터 수집 후 제공</span>{% endif %}
         </div>
         <div style="font-size:12px; color:#555; margin-top:2px;">
-            '26년 순매수: 외국인 {{ "{:+,.0f}".format(r.netbuy_frgn) if r.netbuy_frgn is not none else "—" }}억
+            {{ data.p_name }} 순매수: 외국인 {{ "{:+,.0f}".format(r.netbuy_frgn) if r.netbuy_frgn is not none else "—" }}억
             · 기관 {{ "{:+,.0f}".format(r.netbuy_inst) if r.netbuy_inst is not none else "—" }}억
             · 개인 {{ "{:+,.0f}".format(r.netbuy_indiv) if r.netbuy_indiv is not none else "—" }}억
         </div>

@@ -170,6 +170,18 @@ def main():
             logger.warning("%s: 순매수 데이터 없음 — 건너뜀", day)
             continue
         store.upsert_flows(flows)
+        # 외국인 지분율은 일별로도 수집 (1주일 변화폭 토글용 — 하루 2회 호출 추가)
+        frgn_rows = []
+        for market in MARKETS:
+            frgn = _retry(stock.get_exhaustion_rates_of_foreign_investment, day, market=market)
+            if frgn is not None and not frgn.empty:
+                frgn_rows.append(pd.DataFrame({
+                    "날짜": day, "시장": market, "코드": frgn.index.astype(str),
+                    "종가": pd.NA, "시가총액": pd.NA, "상장주식수": pd.NA,
+                    "PER": pd.NA, "PBR": pd.NA, "외인지분율": frgn["지분율"].values,
+                }))
+        if frgn_rows:
+            store.upsert_snapshots(pd.concat(frgn_rows, ignore_index=True))
         logger.info("(%d/%d) %s 저장 — %d행", i, len(days), day, len(flows))
 
     # 스냅샷: 구간 내 월말 거래일 + 최신 거래일
