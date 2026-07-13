@@ -17,20 +17,49 @@
 </div>
 {% else %}
 
-<div class="filter-bar" style="margin:10px 0;">
+{# 필터 상태를 유지한 채 특정 파라미터만 바꾼 URL 생성 #}
+{% macro url(market=None, f3=None, f5=None, pbr=None, inst=None, indiv=None) -%}
+/buy-review?market={{ market if market is not none else data.market
+  }}{% if (f3 if f3 is not none else data.filters.f3) %}&f3=1{% endif
+  %}{% if (f5 if f5 is not none else data.filters.f5) %}&f5=1{% endif
+  %}{% if (pbr if pbr is not none else data.filters.pbr) %}&pbr=1{% endif
+  %}{% if (inst if inst is not none else data.filters.inst) %}&inst=1{% endif
+  %}{% if (indiv if indiv is not none else data.filters.indiv) %}&indiv=1{% endif %}
+{%- endmacro %}
+
+<div class="filter-bar" style="margin:10px 0 4px;">
     {% for m, label in [("KOSPI","코스피"), ("KOSDAQ","코스닥")] %}
-    <a href="/buy-review?market={{ m }}"
-       class="{{ 'active' if data.market == m else '' }}">{{ label }}</a>
+    <a href="{{ url(market=m) }}" class="{{ 'active' if data.market == m else '' }}">{{ label }}</a>
     {% endfor %}
-    <span style="font-size:12px; color:#888; margin-left:12px;">
-        데이터 기준일 <b>{{ data.as_of or "미상" }}</b> ·
-        변화폭 상위 {{ data.shown }} / {{ "{:,}".format(data.total) }}종목
-    </span>
+</div>
+
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 10px;">
+    {% set chip_on = "background:#e94560; color:#fff; border:1px solid #e94560;" %}
+    {% set chip_off = "background:#fff; color:#555; border:1px solid #ccc;" %}
+    {% set chip = "border-radius:14px; padding:4px 10px; font-size:12px; text-decoration:none;" %}
+    <a href="{{ url(f3=(not data.filters.f3), f5=false) }}"
+       style="{{ chip }}{{ chip_on if data.filters.f3 else chip_off }}">외인 +3%p↑</a>
+    <a href="{{ url(f5=(not data.filters.f5), f3=false) }}"
+       style="{{ chip }}{{ chip_on if data.filters.f5 else chip_off }}">외인 +5%p↑</a>
+    <a href="{{ url(pbr=(not data.filters.pbr)) }}"
+       style="{{ chip }}{{ chip_on if data.filters.pbr else chip_off }}">PBR ≤ {{ data.pbr_max }}</a>
+    <a href="{{ url(inst=(not data.filters.inst)) }}"
+       style="{{ chip }}{{ chip_on if data.filters.inst else chip_off }}">기관 동반</a>
+    <a href="{{ url(indiv=(not data.filters.indiv)) }}"
+       style="{{ chip }}{{ chip_on if data.filters.indiv else chip_off }}">개인 순매도</a>
+</div>
+
+<div style="font-size:12px; color:#888; margin-bottom:10px;">
+    조건 충족 <b style="color:#333;">{{ "{:,}".format(data.matched) }} / {{ "{:,}".format(data.total) }}</b>종목
+    · 데이터 기준일 <b>{{ data.as_of or "미상" }}</b>
+    {% if data.matched > data.shown %} · 상위 {{ data.shown }}개 표시{% endif %}
 </div>
 
 <div style="display:flex; flex-direction:column; gap:8px; max-width:640px;">
     {% for r in data.rows %}
-    <div style="border:1px solid #e0e0e0; border-radius:10px; padding:12px 14px; background:#fff;">
+    <div style="border:1px solid {{ '#f0b429' if r.suspect else '#e0e0e0' }};
+                border-radius:10px; padding:12px 14px;
+                background:{{ '#fffbf0' if r.suspect else '#fff' }};">
         <div style="display:flex; justify-content:space-between; align-items:baseline;">
             <span style="font-weight:bold; font-size:15px;">
                 {{ r.name }}
@@ -44,15 +73,25 @@
         </div>
         <div style="font-size:12px; color:#555; margin-top:4px;">
             외인 지분율 {{ "%.1f"|format(r.frgn_now) if r.frgn_now is not none else "—" }}%
-            {% if r.delta_mom is not none %}
-              · 전월比 {{ "%+.1f"|format(r.delta_mom) }}%p
-            {% endif %}
+            {% if r.delta_mom is not none %} · 전월比 {{ "%+.1f"|format(r.delta_mom) }}%p{% endif %}
         </div>
         <div style="font-size:12px; color:#555; margin-top:2px;">
             '26년 순매수: 외국인 {{ "{:+,.0f}".format(r.netbuy_frgn) if r.netbuy_frgn is not none else "—" }}억
             · 기관 {{ "{:+,.0f}".format(r.netbuy_inst) if r.netbuy_inst is not none else "—" }}억
+            · 개인 {{ "{:+,.0f}".format(r.netbuy_indiv) if r.netbuy_indiv is not none else "—" }}억
+        </div>
+        <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
+            {% if r.suspect %}
+            <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 주식수 변동 의심</span>
+            {% endif %}
+            {% if r.inst_buy %}
+            <span style="background:#e8f0fe; color:#1a56b0; border-radius:4px; padding:1px 6px; font-size:11px;">기관 동반</span>
+            {% endif %}
+            {% if r.indiv_sell %}
+            <span style="background:#f0f0f5; color:#555; border-radius:4px; padding:1px 6px; font-size:11px;">개인 순매도</span>
+            {% endif %}
             {% if r.pbr is not none %}
-            <span style="background:#f0f0f5; border-radius:4px; padding:1px 6px; margin-left:6px;">PBR {{ "%.2f"|format(r.pbr) }}</span>
+            <span style="background:#f0f0f5; color:#555; border-radius:4px; padding:1px 6px; font-size:11px;">PBR {{ "%.2f"|format(r.pbr) }}</span>
             {% endif %}
         </div>
     </div>

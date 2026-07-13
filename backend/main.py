@@ -584,9 +584,12 @@ def hypothesis(request: Request):
 
 
 @app.get("/buy-review", response_class=HTMLResponse)
-def buy_review_page(request: Request, market: str = Query("KOSPI")):
-    """매수 검토 스크리너 — 외국인 지분율 변화폭 기준 카드 리스트 (MVP)"""
-    data = get_buy_review(market)
+def buy_review_page(request: Request, market: str = Query("KOSPI"),
+                    f3: bool = Query(False), f5: bool = Query(False),
+                    pbr: bool = Query(False), inst: bool = Query(False),
+                    indiv: bool = Query(False)):
+    """매수 검토 스크리너 — 외인 지분율 변화폭 카드 리스트 + 필터 칩"""
+    data = get_buy_review(market, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv)
     return templates.TemplateResponse("buy_review.html", {
         "request": request,
         "data": data,
@@ -594,9 +597,11 @@ def buy_review_page(request: Request, market: str = Query("KOSPI")):
 
 
 @app.get("/api/buy-review")
-def api_buy_review(market: str = Query("KOSPI")):
+def api_buy_review(market: str = Query("KOSPI"), f3: bool = Query(False),
+                   f5: bool = Query(False), pbr: bool = Query(False),
+                   inst: bool = Query(False), indiv: bool = Query(False)):
     """매수 검토 스크리너 JSON"""
-    return JSONResponse(get_buy_review(market))
+    return JSONResponse(get_buy_review(market, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv))
 
 
 @app.get("/supply-demand", response_class=HTMLResponse)
