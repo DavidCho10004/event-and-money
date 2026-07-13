@@ -57,17 +57,27 @@ def _year_of(date_str: str) -> int:
     return int(str(date_str)[:4])
 
 
-def _upsert(df_new: pd.DataFrame, dir_path: Path, prefix: str, keys: list) -> None:
-    """연도별 parquet 파일에 upsert (키 중복 시 새 행으로 교체)."""
+def _upsert(df_new: pd.DataFrame, dir_path: Path, prefix: str, keys: list,
+            merge_na: bool = False) -> None:
+    """연도별 parquet 파일에 upsert (키 중복 시 새 행으로 교체).
+
+    merge_na=True: 새 행의 NA 셀은 기존 값으로 보존 (부분 컬럼 upsert 지원 —
+    예: 일별 외인지분율만 추가할 때 월말 전체 스냅샷의 종가/PER를 지우지 않음).
+    """
     _ensure_dirs()
     df_new = _normalize(df_new)
     for year, part in df_new.groupby(df_new["날짜"].map(_year_of)):
         path = dir_path / f"{prefix}_{year}.parquet"
+        part = part.drop_duplicates(subset=keys, keep="last")
         if path.exists():
             old = pd.read_parquet(path)
-            # 기존 행 중 새 데이터와 키가 겹치는 행 제거 후 결합
-            merged = pd.concat([old, part], ignore_index=True)
-            merged = merged.drop_duplicates(subset=keys, keep="last")
+            if merge_na:
+                merged = (part.set_index(keys)
+                          .combine_first(old.set_index(keys))
+                          .reset_index())
+            else:
+                merged = pd.concat([old, part], ignore_index=True)
+                merged = merged.drop_duplicates(subset=keys, keep="last")
         else:
             merged = part
         merged = merged.sort_values(keys).reset_index(drop=True)
@@ -76,7 +86,7 @@ def _upsert(df_new: pd.DataFrame, dir_path: Path, prefix: str, keys: list) -> No
 
 
 def upsert_snapshots(df: pd.DataFrame) -> None:
-    _upsert(df[SNAP_COLS], SNAP_DIR, "snapshots", SNAP_KEYS)
+    _upsert(df[SNAP_COLS], SNAP_DIR, "snapshots", SNAP_KEYS, merge_na=True)
 
 
 def upsert_flows(df: pd.DataFrame) -> None:
