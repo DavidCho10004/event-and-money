@@ -3,3 +3,4 @@ pandas>=2.0
 matplotlib>=3.7
 requests>=2.28
 lxml>=4.9
+pykrx>=1.0.45
