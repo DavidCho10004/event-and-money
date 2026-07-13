@@ -30,8 +30,10 @@ from datetime import datetime
 import pandas as pd
 from pykrx import stock
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+# 루트 로거는 WARNING — pykrx 내부의 깨진 logging.info 호출(--- Logging error --- 소음) 차단
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 from pathlib import Path
 
@@ -185,6 +187,15 @@ def build_matrix(market: str, today: datetime) -> pd.DataFrame:
 
 
 def main():
+    # 최신 pykrx는 KRX 정보데이터시스템(data.krx.co.kr) 로그인이 필수.
+    # 계정이 없으면 무료 회원가입 후 KRX_ID / KRX_PW 환경 변수로 설정해야 한다.
+    import os
+    if not (os.environ.get("KRX_ID") and os.environ.get("KRX_PW")):
+        logger.error("KRX_ID / KRX_PW 환경 변수가 없습니다.")
+        logger.error("1) data.krx.co.kr 에서 무료 회원가입")
+        logger.error("2) 매수검토_수집.bat 를 실행하면 아이디/비밀번호를 물어봅니다.")
+        sys.exit(1)
+
     parser = argparse.ArgumentParser(description="매수 검토 매트릭스 수집")
     parser.add_argument("--market", default="ALL", choices=["KOSPI", "KOSDAQ", "ALL"])
     args = parser.parse_args()
