@@ -123,7 +123,7 @@
         </div>
         <div style="font-size:12px; color:#888; margin-top:2px;">
             최근 1주일:
-            {% if r.delta_1w is not none %}{{ "%+.2f"|format(r.delta_1w) }}%p
+            {% if r.delta_1w is not none %}{{ "%+.2f"|format(r.delta_1w) }}%p{% if r.accel is defined and data.sort == "accel" %} <b style="color:#1a1a2e;">(가속 ×{{ r.accel }})</b>{% endif %}
             {% else %}<span style="color:#bbb;">일별 데이터 수집 후 제공</span>{% endif %}
         </div>
         <div style="font-size:12px; color:#555; margin-top:2px;">

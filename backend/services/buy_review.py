@@ -19,7 +19,8 @@ PROCESSED_DIR = ROOT / "data" / "processed"
 MARKET_NAME = {"KOSPI": "코스피", "KOSDAQ": "코스닥"}
 PERIOD_NAME = {"6m": "6개월", "3m": "3개월", "1m": "1개월", "1w": "1주일"}
 DEFAULT_PERIOD = "3m"
-SORT_NAME = {"delta": "변화폭순", "amount": "금액순", "strength": "강도순"}
+SORT_NAME = {"delta": "변화폭순", "amount": "금액순", "accel": "가속순", "strength": "강도순"}
+ACCEL_DENOM_MIN = 0.5  # 가속순: |기간 변화폭|이 이 값(%p) 미만이면 분모 불안정 → 제외
 DEFAULT_SORT = "delta"   # strength는 순매수량/상장주식수 데이터 확보 후 활성화
 LIST_LIMIT = 100      # 카드 리스트 표시 상한
 PBR_MAX_DEFAULT = 2.0  # 'PBR 상한' 칩을 켰을 때의 상한값
@@ -147,6 +148,15 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
     # 플래그 종목은 순위 유지 + 경고색 카드로 시각 구분
     if sort == "amount":
         rows.sort(key=lambda x: -(x["netbuy_frgn"] if x["netbuy_frgn"] is not None else float("-inf")))
+    elif sort == "accel":
+        # 최근 1주일 변화폭 ÷ 기간 변화폭 — 최근에 몰린 종목 우선.
+        # 분모가 작으면(|변화폭| < ACCEL_DENOM_MIN) 비율이 불안정 → 제외
+        rows = [x for x in rows if x["delta_1w"] is not None
+                and abs(x["delta"]) >= ACCEL_DENOM_MIN]
+        for x in rows:
+            x["accel"] = round(x["delta_1w"] / x["delta"], 2)
+        matched = len(rows)
+        rows.sort(key=lambda x: -x["accel"])
     else:
         rows.sort(key=lambda x: -x["delta"])
     shown = rows[:LIST_LIMIT]
