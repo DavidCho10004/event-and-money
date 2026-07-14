@@ -23,6 +23,15 @@ SORT_NAME = {"delta": "변화폭순", "amount": "금액순", "strength": "강도
 DEFAULT_SORT = "delta"   # strength는 순매수량/상장주식수 데이터 확보 후 활성화
 LIST_LIMIT = 100      # 카드 리스트 표시 상한
 PBR_MAX_DEFAULT = 2.0  # 'PBR 상한' 칩을 켰을 때의 상한값
+MIN_NETBUY_EOK = 100   # '순매수 100억↑' 칩: 외인 순매수 절대값 하한 (억원)
+
+# 우선주 종목명 패턴: ...우 / ...우B / ...우C / ...N우B (한화3우B 등)
+import re
+_PREF_RE = re.compile(r"(우|[0-9]우[BC]?|우[BC])$")
+
+
+def _is_preferred(name: str) -> bool:
+    return bool(_PREF_RE.search(name or ""))
 
 
 def _num(v):
@@ -77,7 +86,7 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
                    sort: str = DEFAULT_SORT,
                    f3: bool = False, f5: bool = False,
                    pbr: bool = False, inst: bool = False, indiv: bool = False,
-                   tri: bool = False) -> dict:
+                   tri: bool = False, nopref: bool = False, minamt: bool = False) -> dict:
     market = market if market in MARKET_NAME else "KOSPI"
     if sort not in SORT_NAME or sort == "strength":   # 강도순은 데이터 확보 전 비활성
         sort = DEFAULT_SORT
@@ -94,12 +103,14 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
     if p not in PERIOD_NAME or not periods.get(p, {}).get("available"):
         p = DEFAULT_PERIOD
 
-    filters = {"f3": f3, "f5": f5, "pbr": pbr, "inst": inst, "indiv": indiv, "tri": tri}
+    filters = {"f3": f3, "f5": f5, "pbr": pbr, "inst": inst, "indiv": indiv, "tri": tri,
+               "nopref": nopref, "minamt": minamt}
     base = {"market": market, "market_name": MARKET_NAME[market],
             "p": p, "p_name": PERIOD_NAME[p], "periods": periods,
             "base_date": periods[p]["base_date"],
             "sort": sort, "sort_name": SORT_NAME[sort],
-            "sorts": SORT_NAME, "filters": filters, "pbr_max": PBR_MAX_DEFAULT}
+            "sorts": SORT_NAME, "filters": filters,
+            "pbr_max": PBR_MAX_DEFAULT, "min_netbuy": MIN_NETBUY_EOK}
 
     rows = _load(market, p)
     if rows is None:
@@ -108,6 +119,11 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
 
     total = len(rows)
     rows = [x for x in rows if x["delta"] is not None]
+    if nopref:   # 우선주 제외 (종목명 패턴 기반)
+        rows = [x for x in rows if not _is_preferred(x["name"])]
+    if minamt:   # 외인 순매수 절대값 하한
+        rows = [x for x in rows if x["netbuy_frgn"] is not None
+                and abs(x["netbuy_frgn"]) >= MIN_NETBUY_EOK]
 
     # 필터 적용 (+5%p가 켜지면 +3%p보다 우선) — 선택 기간의 변화폭 기준
     if f5:
