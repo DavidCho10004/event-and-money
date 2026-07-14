@@ -7,7 +7,7 @@
 <h1>매수 검토</h1>
 <p style="color:#666; font-size:13px; margin-bottom:6px;">
     선택한 기간의 <b>외국인 지분율 변화폭</b> 상위 종목입니다.
-    수급이 주가에 선행한다는 가설은 추후 백테스트로 검증 예정입니다.
+    <a href="/backtest" style="color:#1a56b0;">10년 백테스트 결과: 매수 신호 없음 · 유일한 견고 신호는 개인 쏠림 회피 →</a>
 </p>
 
 {% if data.is_empty %}
@@ -80,7 +80,8 @@
     <a href="{{ url(inst=(not data.filters.inst)) }}"
        style="{{ chip }}{{ chip_on if data.filters.inst else chip_off }}">기관 동반</a>
     <a href="{{ url(indiv=(not data.filters.indiv)) }}"
-       style="{{ chip }}{{ chip_on if data.filters.indiv else chip_off }}">개인 순매도</a>
+       style="{{ chip }}{{ chip_on if data.filters.indiv else chip_off }}"
+       title="근거: 백테스트 H3 — 개인 쏠림 상위 종목은 코스피 1~3개월 유의한 저성과 (/backtest)">개인 순매도</a>
     <a href="{{ url(nopref=(not data.filters.nopref)) }}"
        style="{{ chip }}{{ chip_on if data.filters.nopref else chip_off }}">우선주 제외</a>
     <a href="{{ url(minamt=(not data.filters.minamt)) }}"
@@ -134,11 +135,22 @@
             {% if r.strength_rank is not none and r.strength_rank <= data.rank_cut %}
             <span style="color:#999; font-size:11px;">(강도 {{ r.strength_rank }}위)</span>
             {% endif %}
+            {% if r.strength > 0 and r.stype == "지속" %}
+            <span style="background:#e6f4ea; color:#137333; border-radius:4px; padding:1px 6px; font-size:11px;"
+                  title="3개월 연속 외인 순매수 — 백테스트에서 스파이크형보다 일관 우위">지속형</span>
+            {% elif r.strength > 0 and r.stype == "스파이크" %}
+            <span style="background:#fce8e6; color:#c5221f; border-radius:4px; padding:1px 6px; font-size:11px;"
+                  title="이번 달만 순매수, 직전 2개월 순매도 — 백테스트에서 열위">스파이크형</span>
+            {% endif %}
             {% else %}<span style="color:#bbb;">주식수 대비 — (거래량 미확보)</span>{% endif %}
         </div>
         <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
             {% if r.flag_shares %}
             <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 상장주식수 {{ "%+.1f"|format(r.shares_chg) }}%</span>
+            {% endif %}
+            {% if r.indiv_crowd %}
+            <span style="background:#5f6368; color:#fff; border-radius:4px; padding:1px 6px; font-size:11px;"
+                  title="백테스트 H3: 과거 10년 코스피에서 1~3개월 유의한 저성과 (t=-2.4~-3.7)">⚠ 개인 몰림 {{ r.indiv_crowd_rank }}위</span>
             {% endif %}
             {% if r.flag_offmkt %}
             <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 장외 지분변동 {{ "%+.1f"|format(r.offmkt) }}%p</span>

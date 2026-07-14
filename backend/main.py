@@ -23,6 +23,7 @@ from backend.models import Event, Asset, Price, Return
 from backend.services.hypothesis import run_all as run_hypotheses
 from backend.services.supply_demand import get_supply_demand
 from backend.services.buy_review import get_buy_review, get_stock_detail
+from backend.services.backtest_view import get_backtest_view
 
 app = FastAPI(title="Event & Money")
 
@@ -613,6 +614,16 @@ def buy_review_detail_page(request: Request, code: str, p: str = Query("3m")):
     """매수 검토 — 종목 상세 (뼈대: 상단 정보 + 시계열 로드)"""
     data = get_stock_detail(code, p)
     return templates.TemplateResponse("buy_review_detail.html", {
+        "request": request,
+        "data": data,
+    })
+
+
+@app.get("/backtest", response_class=HTMLResponse)
+def backtest_page(request: Request):
+    """수급 전략 10년 백테스트 결과 — 성적표/강건성/가설 3종"""
+    data = get_backtest_view()
+    return templates.TemplateResponse("backtest.html", {
         "request": request,
         "data": data,
     })
