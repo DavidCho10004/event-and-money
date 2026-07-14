@@ -62,6 +62,7 @@ def _load(market: str, p: str):
                 "netbuy_inst": _num(r.get(f"순매수억_기관_{p}")),
                 "netbuy_indiv": _num(r.get(f"순매수억_개인_{p}")),
                 "pbr": _num(r["PBR_최근"]),
+                "price_chg": _num(r.get(f"주가등락pct_{p}")),
                 "shares_chg": _num(r.get(f"주식수변동pct_{p}")),
                 "offmkt": _num(r.get(f"장외변동pct_{p}")),
                 "flag_shares": _flag(r.get(f"플래그_주식수변동_{p}")),

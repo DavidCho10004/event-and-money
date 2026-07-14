@@ -124,6 +124,9 @@
             {{ data.p_name }} 순매수: 외국인 {{ "{:+,.0f}".format(r.netbuy_frgn) if r.netbuy_frgn is not none else "—" }}억
             · 기관 {{ "{:+,.0f}".format(r.netbuy_inst) if r.netbuy_inst is not none else "—" }}억
             · 개인 {{ "{:+,.0f}".format(r.netbuy_indiv) if r.netbuy_indiv is not none else "—" }}억
+            {% if r.price_chg is not none %}
+            <b style="color:{{ '#d32f2f' if r.price_chg > 0 else '#1565c0' }};">· 기간 주가 {{ "%+.1f"|format(r.price_chg) }}%</b>
+            {% endif %}
         </div>
         <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
             {% if r.flag_shares %}
