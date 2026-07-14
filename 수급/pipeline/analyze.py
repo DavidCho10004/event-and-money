@@ -23,9 +23,10 @@ OUT_DIR = ROOT / "data" / "processed"   # Railway가 읽는 위치
 # 기간 정의: (일수, 기준 스냅샷 허용 오차 일수)
 PERIODS = {"6m": (182, 25), "3m": (91, 25), "1m": (30, 25), "1w": (7, 3)}
 
-# 주식수 변동 의심 판정 기준 (조정 가능)
-SUSPECT_DELTA_MIN = 1.0    # 이 이상 지분율이 움직였는데 (%p)
-SUSPECT_NETBUY_EOK = 50    # 순매수가 이 금액(억) 이하로 미미하거나, 방향이 반대면 의심
+# 팩트 플래그 기준 (조정 가능) — "의심" 휴리스틱 대신 산수로 확인되는 사실만 표시
+SHARES_CHANGE_FLAG_PCT = 1.0   # 기간 중 상장주식수 변동률(%)이 이 이상이면 플래그
+OFFMARKET_GAP_PCT = 1.0        # |지분율 기반 보유주식 변화 − 장내 외인 순매수량|이
+                               # 상장주식수의 이 비율(%p) 이상이면 '장외 지분변동' 플래그
 
 
 def pick_base_date(dates: list, latest: str, days: int, tol: int) -> str | None:
@@ -97,10 +98,22 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
             df[f"순매수억_{label}_{p}"] = ((pivot[inv] / 1e8).round(1)
                                           if inv in pivot.columns else pd.NA)
 
-        # 플래그 (기간 정합: 같은 기간의 변화폭 vs 순매수)
-        nb = df[f"순매수억_외국인_{p}"]
-        moved = delta.abs() >= SUSPECT_DELTA_MIN
-        df[f"플래그_주식수변동의심_{p}"] = (moved & (((delta * nb) < 0) | (nb.abs() <= SUSPECT_NETBUY_EOK))).fillna(False)
+        # 팩트 플래그 1: 상장주식수 변동률 (기준→최근, 실측)
+        S_base = snap[snap["날짜"] == base].set_index("코드")["상장주식수"]
+        S_latest = latest_snap["상장주식수"]
+        shares_chg = ((S_latest / S_base - 1) * 100).round(2)
+        df[f"주식수변동pct_{p}"] = shares_chg
+
+        # 팩트 플래그 2: 장외 지분변동 — 지분율 기반 보유주식 변화와
+        # 장내 외인 순매수량(외국인+기타외국인)의 격차 (상장주식수 대비 %p)
+        vol = fp[fp["투자자"].isin(["외국인", "기타외국인"])].pivot_table(
+            index="코드", values="거래량", aggfunc="sum")["거래량"]
+        dH = (f_latest * S_latest - f_base * S_base) / 100    # 보유주식 변화(주)
+        gap_pct = ((dH - vol.reindex(dH.index).fillna(0)) / S_latest * 100).round(2)
+        df[f"장외변동pct_{p}"] = gap_pct
+
+        df[f"플래그_주식수변동_{p}"] = (shares_chg.abs() >= SHARES_CHANGE_FLAG_PCT).fillna(False)
+        df[f"플래그_장외변동_{p}"] = (gap_pct.abs() >= OFFMARKET_GAP_PCT).fillna(False)
         df[f"플래그_기관동반_{p}"] = (df[f"순매수억_기관_{p}"] > 0).fillna(False)
         df[f"플래그_개인순매도_{p}"] = (df[f"순매수억_개인_{p}"] < 0).fillna(False)
         meta_periods[p] = {"available": True, "기준일": base}

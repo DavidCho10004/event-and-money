@@ -62,7 +62,10 @@ def _load(market: str, p: str):
                 "netbuy_inst": _num(r.get(f"순매수억_기관_{p}")),
                 "netbuy_indiv": _num(r.get(f"순매수억_개인_{p}")),
                 "pbr": _num(r["PBR_최근"]),
-                "suspect": _flag(r.get(f"플래그_주식수변동의심_{p}")),
+                "shares_chg": _num(r.get(f"주식수변동pct_{p}")),
+                "offmkt": _num(r.get(f"장외변동pct_{p}")),
+                "flag_shares": _flag(r.get(f"플래그_주식수변동_{p}")),
+                "flag_offmkt": _flag(r.get(f"플래그_장외변동_{p}")),
                 "inst_buy": _flag(r.get(f"플래그_기관동반_{p}")),
                 "indiv_sell": _flag(r.get(f"플래그_개인순매도_{p}")),
             })
@@ -116,8 +119,10 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
     if indiv:
         rows = [x for x in rows if x["indiv_sell"]]
 
+    for x in rows:
+        x["warn"] = x["flag_shares"] or x["flag_offmkt"]
     matched = len(rows)
-    # 의심 종목은 순위 유지 + 경고색 카드로 시각 구분
+    # 플래그 종목은 순위 유지 + 경고색 카드로 시각 구분
     if sort == "amount":
         rows.sort(key=lambda x: -(x["netbuy_frgn"] if x["netbuy_frgn"] is not None else float("-inf")))
     else:
