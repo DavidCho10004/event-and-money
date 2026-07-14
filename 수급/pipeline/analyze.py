@@ -98,6 +98,14 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
             df[f"순매수억_{label}_{p}"] = ((pivot[inv] / 1e8).round(1)
                                           if inv in pivot.columns else pd.NA)
 
+        # 기간 주가 등락률 — 기준일에 종가가 없는 종목은 그 이전 가장 가까운
+        # 실제 거래일 종가 사용 (보간·추정 금지)
+        closes = snap[snap["종가"].notna()][["날짜", "코드", "종가"]]
+        c_base = (closes[closes["날짜"] <= base].sort_values("날짜")
+                  .groupby("코드")["종가"].last())
+        c_latest = latest_snap["종가"]
+        df[f"주가등락pct_{p}"] = ((c_latest / c_base - 1) * 100).round(2)
+
         # 팩트 플래그 1: 상장주식수 변동률 (기준→최근, 실측)
         S_base = snap[snap["날짜"] == base].set_index("코드")["상장주식수"]
         S_latest = latest_snap["상장주식수"]

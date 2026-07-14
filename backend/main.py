@@ -587,9 +587,10 @@ def buy_review_page(request: Request, market: str = Query("KOSPI"),
                     p: str = Query("3m"), sort: str = Query("delta"),
                     f3: bool = Query(False), f5: bool = Query(False),
                     pbr: bool = Query(False), inst: bool = Query(False),
-                    indiv: bool = Query(False)):
+                    indiv: bool = Query(False), tri: bool = Query(False),
+                    nopref: bool = Query(False), minamt: bool = Query(False)):
     """매수 검토 스크리너 — 외인 지분율 변화폭(상대 기간) 카드 리스트"""
-    data = get_buy_review(market, p=p, sort=sort, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv)
+    data = get_buy_review(market, p=p, sort=sort, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv, tri=tri, nopref=nopref, minamt=minamt)
     return templates.TemplateResponse("buy_review.html", {
         "request": request,
         "data": data,
@@ -601,9 +602,10 @@ def api_buy_review(market: str = Query("KOSPI"), p: str = Query("3m"),
                    sort: str = Query("delta"),
                    f3: bool = Query(False), f5: bool = Query(False),
                    pbr: bool = Query(False), inst: bool = Query(False),
-                   indiv: bool = Query(False)):
+                   indiv: bool = Query(False), tri: bool = Query(False),
+                   nopref: bool = Query(False), minamt: bool = Query(False)):
     """매수 검토 스크리너 JSON"""
-    return JSONResponse(get_buy_review(market, p=p, sort=sort, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv))
+    return JSONResponse(get_buy_review(market, p=p, sort=sort, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv, tri=tri, nopref=nopref, minamt=minamt))
 
 
 @app.get("/buy-review/{code}", response_class=HTMLResponse)

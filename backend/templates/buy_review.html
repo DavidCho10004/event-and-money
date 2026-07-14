@@ -18,7 +18,7 @@
 {% else %}
 
 {# 필터/기간 상태를 유지한 채 특정 파라미터만 바꾼 URL 생성 #}
-{% macro url(market=None, p=None, sort=None, f3=None, f5=None, pbr=None, inst=None, indiv=None) -%}
+{% macro url(market=None, p=None, sort=None, f3=None, f5=None, pbr=None, inst=None, indiv=None, tri=None, nopref=None, minamt=None) -%}
 /buy-review?market={{ market if market is not none else data.market
   }}&p={{ p if p is not none else data.p
   }}&sort={{ sort if sort is not none else data.sort
@@ -26,7 +26,10 @@
   %}{% if (f5 if f5 is not none else data.filters.f5) %}&f5=1{% endif
   %}{% if (pbr if pbr is not none else data.filters.pbr) %}&pbr=1{% endif
   %}{% if (inst if inst is not none else data.filters.inst) %}&inst=1{% endif
-  %}{% if (indiv if indiv is not none else data.filters.indiv) %}&indiv=1{% endif %}
+  %}{% if (indiv if indiv is not none else data.filters.indiv) %}&indiv=1{% endif
+  %}{% if (tri if tri is not none else data.filters.tri) %}&tri=1{% endif
+  %}{% if (nopref if nopref is not none else data.filters.nopref) %}&nopref=1{% endif
+  %}{% if (minamt if minamt is not none else data.filters.minamt) %}&minamt=1{% endif %}
 {%- endmacro %}
 
 <div class="filter-bar" style="margin:10px 0 4px;">
@@ -72,6 +75,8 @@
     {% set chip_on = "background:#e94560; color:#fff; border:1px solid #e94560;" %}
     {% set chip_off = "background:#fff; color:#555; border:1px solid #ccc;" %}
     {% set chip = "border-radius:14px; padding:4px 10px; font-size:12px; text-decoration:none;" %}
+    <a href="{{ url(tri=(not data.filters.tri)) }}"
+       style="{{ chip }}{{ chip_on if data.filters.tri else chip_off }}"><b>삼박자</b> 외인+·기관+·개인−</a>
     <a href="{{ url(f3=(not data.filters.f3), f5=false) }}"
        style="{{ chip }}{{ chip_on if data.filters.f3 else chip_off }}">외인 +3%p↑</a>
     <a href="{{ url(f5=(not data.filters.f5), f3=false) }}"
@@ -82,6 +87,10 @@
        style="{{ chip }}{{ chip_on if data.filters.inst else chip_off }}">기관 동반</a>
     <a href="{{ url(indiv=(not data.filters.indiv)) }}"
        style="{{ chip }}{{ chip_on if data.filters.indiv else chip_off }}">개인 순매도</a>
+    <a href="{{ url(nopref=(not data.filters.nopref)) }}"
+       style="{{ chip }}{{ chip_on if data.filters.nopref else chip_off }}">우선주 제외</a>
+    <a href="{{ url(minamt=(not data.filters.minamt)) }}"
+       style="{{ chip }}{{ chip_on if data.filters.minamt else chip_off }}">순매수 {{ data.min_netbuy }}억↑</a>
 </div>
 
 <div style="font-size:12px; color:#888; margin-bottom:10px;">
@@ -114,13 +123,16 @@
         </div>
         <div style="font-size:12px; color:#888; margin-top:2px;">
             최근 1주일:
-            {% if r.delta_1w is not none %}{{ "%+.2f"|format(r.delta_1w) }}%p
+            {% if r.delta_1w is not none %}{{ "%+.2f"|format(r.delta_1w) }}%p{% if r.accel is defined and data.sort == "accel" %} <b style="color:#1a1a2e;">(가속 ×{{ r.accel }})</b>{% endif %}
             {% else %}<span style="color:#bbb;">일별 데이터 수집 후 제공</span>{% endif %}
         </div>
         <div style="font-size:12px; color:#555; margin-top:2px;">
             {{ data.p_name }} 순매수: 외국인 {{ "{:+,.0f}".format(r.netbuy_frgn) if r.netbuy_frgn is not none else "—" }}억
             · 기관 {{ "{:+,.0f}".format(r.netbuy_inst) if r.netbuy_inst is not none else "—" }}억
             · 개인 {{ "{:+,.0f}".format(r.netbuy_indiv) if r.netbuy_indiv is not none else "—" }}억
+            {% if r.price_chg is not none %}
+            <b style="color:{{ '#d32f2f' if r.price_chg > 0 else '#1565c0' }};">· 기간 주가 {{ "%+.1f"|format(r.price_chg) }}%</b>
+            {% endif %}
         </div>
         <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
             {% if r.flag_shares %}
