@@ -75,7 +75,8 @@ def _load(market: str, p: str):
 def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
                    sort: str = DEFAULT_SORT,
                    f3: bool = False, f5: bool = False,
-                   pbr: bool = False, inst: bool = False, indiv: bool = False) -> dict:
+                   pbr: bool = False, inst: bool = False, indiv: bool = False,
+                   tri: bool = False) -> dict:
     market = market if market in MARKET_NAME else "KOSPI"
     if sort not in SORT_NAME or sort == "strength":   # 강도순은 데이터 확보 전 비활성
         sort = DEFAULT_SORT
@@ -92,7 +93,7 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
     if p not in PERIOD_NAME or not periods.get(p, {}).get("available"):
         p = DEFAULT_PERIOD
 
-    filters = {"f3": f3, "f5": f5, "pbr": pbr, "inst": inst, "indiv": indiv}
+    filters = {"f3": f3, "f5": f5, "pbr": pbr, "inst": inst, "indiv": indiv, "tri": tri}
     base = {"market": market, "market_name": MARKET_NAME[market],
             "p": p, "p_name": PERIOD_NAME[p], "periods": periods,
             "base_date": periods[p]["base_date"],
@@ -118,6 +119,10 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
         rows = [x for x in rows if x["inst_buy"]]
     if indiv:
         rows = [x for x in rows if x["indiv_sell"]]
+    if tri:  # 삼박자: 외인 순매수 + AND 기관 순매수 + AND 개인 순매도 (핵심 투자 로직 원형)
+        rows = [x for x in rows if
+                (x["netbuy_frgn"] or 0) > 0 and (x["netbuy_inst"] or 0) > 0
+                and (x["netbuy_indiv"] or 0) < 0]
 
     for x in rows:
         x["warn"] = x["flag_shares"] or x["flag_offmkt"]

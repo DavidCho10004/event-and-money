@@ -18,7 +18,7 @@
 {% else %}
 
 {# 필터/기간 상태를 유지한 채 특정 파라미터만 바꾼 URL 생성 #}
-{% macro url(market=None, p=None, sort=None, f3=None, f5=None, pbr=None, inst=None, indiv=None) -%}
+{% macro url(market=None, p=None, sort=None, f3=None, f5=None, pbr=None, inst=None, indiv=None, tri=None) -%}
 /buy-review?market={{ market if market is not none else data.market
   }}&p={{ p if p is not none else data.p
   }}&sort={{ sort if sort is not none else data.sort
@@ -26,7 +26,8 @@
   %}{% if (f5 if f5 is not none else data.filters.f5) %}&f5=1{% endif
   %}{% if (pbr if pbr is not none else data.filters.pbr) %}&pbr=1{% endif
   %}{% if (inst if inst is not none else data.filters.inst) %}&inst=1{% endif
-  %}{% if (indiv if indiv is not none else data.filters.indiv) %}&indiv=1{% endif %}
+  %}{% if (indiv if indiv is not none else data.filters.indiv) %}&indiv=1{% endif
+  %}{% if (tri if tri is not none else data.filters.tri) %}&tri=1{% endif %}
 {%- endmacro %}
 
 <div class="filter-bar" style="margin:10px 0 4px;">
@@ -72,6 +73,8 @@
     {% set chip_on = "background:#e94560; color:#fff; border:1px solid #e94560;" %}
     {% set chip_off = "background:#fff; color:#555; border:1px solid #ccc;" %}
     {% set chip = "border-radius:14px; padding:4px 10px; font-size:12px; text-decoration:none;" %}
+    <a href="{{ url(tri=(not data.filters.tri)) }}"
+       style="{{ chip }}{{ chip_on if data.filters.tri else chip_off }}"><b>삼박자</b> 외인+·기관+·개인−</a>
     <a href="{{ url(f3=(not data.filters.f3), f5=false) }}"
        style="{{ chip }}{{ chip_on if data.filters.f3 else chip_off }}">외인 +3%p↑</a>
     <a href="{{ url(f5=(not data.filters.f5), f3=false) }}"
