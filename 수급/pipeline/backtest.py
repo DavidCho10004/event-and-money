@@ -43,6 +43,7 @@ DELTA_WINDOW = 3                 # 변화폭 창 (개월)
 STRENGTH_TOP = 20                # 전략 b: 강도 상위 N
 RANDOM_DRAWS = 100               # 랜덤 벤치마크 반복 횟수
 RANDOM_SEED = 42                 # 시드 고정
+COST_PER_TRADE = 0.003           # 거래비용: 왕복(진입+청산) 1회당 0.3% 가정
 M_CUTOFF = "2025-06-30"          # 이 날짜까지는 M행(월별 백필), 이후는 D행 월 합산
 
 
@@ -194,6 +195,8 @@ def run(start: str, end: str) -> pd.DataFrame:
     df = pd.DataFrame(rows)
     df["초과_시장"] = df["수익률"] - df["시장프록시"]
     df["초과_랜덤"] = df["수익률"] - df["랜덤평균"]
+    df["수익률_비용후"] = df["수익률"] - COST_PER_TRADE
+    df["초과_랜덤_비용후"] = df["수익률_비용후"] - df["랜덤평균"]
     return df
 
 
@@ -214,6 +217,7 @@ def summarize(df: pd.DataFrame) -> pd.DataFrame:
             "평균수익률%": round(g["수익률"].mean() * 100, 2),
             "평균초과_시장%p": round(g["초과_시장"].mean() * 100, 2),
             "평균초과_랜덤%p": round(g["초과_랜덤"].mean() * 100, 2),
+            "평균초과_랜덤_비용후%p": round(g["초과_랜덤_비용후"].mean() * 100, 2),
             "누적배수(중첩단순)": round(curve, 2),
             "최악의달": f"{worst['진입월']} ({worst['수익률']*100:.1f}%)",
             "만기누락합": int(g["만기누락"].sum()),
