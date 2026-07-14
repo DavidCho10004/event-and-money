@@ -18,9 +18,10 @@
 {% else %}
 
 {# 필터/기간 상태를 유지한 채 특정 파라미터만 바꾼 URL 생성 #}
-{% macro url(market=None, p=None, f3=None, f5=None, pbr=None, inst=None, indiv=None) -%}
+{% macro url(market=None, p=None, sort=None, f3=None, f5=None, pbr=None, inst=None, indiv=None) -%}
 /buy-review?market={{ market if market is not none else data.market
   }}&p={{ p if p is not none else data.p
+  }}&sort={{ sort if sort is not none else data.sort
   }}{% if (f3 if f3 is not none else data.filters.f3) %}&f3=1{% endif
   %}{% if (f5 if f5 is not none else data.filters.f5) %}&f5=1{% endif
   %}{% if (pbr if pbr is not none else data.filters.pbr) %}&pbr=1{% endif
@@ -45,6 +46,23 @@
       <a href="{{ url(p=key) }}" style="{{ seg }}{{ seg_on if data.p == key else seg_off }}">{{ info.name }}</a>
       {% else %}
       <span style="{{ seg }}{{ seg_dis }}" title="일별 데이터 수집 후 제공">{{ info.name }}</span>
+      {% endif %}
+    {% endfor %}
+</div>
+
+{# 정렬 토글 #}
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 4px; align-items:center;">
+    <span style="font-size:11px; color:#888;">정렬</span>
+    {% for key, name in data.sorts.items() %}
+      {% if key == "strength" %}
+      <span style="border-radius:6px; padding:4px 12px; font-size:12px;
+                   background:#f5f5f5; color:#bbb; border:1px solid #e0e0e0;"
+            title="순매수량·상장주식수 데이터 확보 후 제공">{{ name }}</span>
+      {% else %}
+      <a href="{{ url(sort=key) }}"
+         style="border-radius:6px; padding:4px 12px; font-size:12px; text-decoration:none;
+                {{ 'background:#1a1a2e; color:#fff; border:1px solid #1a1a2e;' if data.sort == key
+                   else 'background:#fff; color:#555; border:1px solid #ccc;' }}">{{ name }}</a>
       {% endif %}
     {% endfor %}
 </div>
