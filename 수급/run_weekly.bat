@@ -1,6 +1,5 @@
 @echo off
 chcp 65001 > nul
-setlocal EnableDelayedExpansion
 REM ==========================================================
 REM  주간 수급 갱신 (매주 금요일 저녁)
 REM  [1/5] 증분 수집 → [2/5] 검증 → [3/5] 분석 → [4/5] 커밋 → [5/5] 푸시
@@ -16,7 +15,7 @@ echo ===== run_weekly %date% %time% ===== >> "%LOG%"
 if "%KRX_ID%"=="" (
     echo KRX 정보데이터시스템 ^(data.krx.co.kr^) 계정을 입력하세요.
     set /p KRX_ID=KRX 아이디:
-    set /p KRX_PW=KRX 비밀번호:
+    for /f "usebackq delims=" %%p in (`powershell -NoProfile -Command "$s=Read-Host 'KRX 비밀번호(입력 숨김)' -AsSecureString; $b=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($s); [Runtime.InteropServices.Marshal]::PtrToStringAuto($b)"`) do set "KRX_PW=%%p"
 )
 
 echo [1/5] 증분 수집 (지난 실행 이후 거래일)...
