@@ -6,6 +6,10 @@
   a  삼박자(그 달 외인+·기관+·개인−) AND 지분율 3개월 변화폭 +3%p↑
   b  외인 순매수 강도(그 달 순매수량 ÷ 전월말 상장주식수) 상위 20
   c  a ∩ b
+  d  b AND 같은 달(t-1월말→t월말) 주가 등락률 ≤ 시장 프록시 등락률
+     (매집 확인 + 주가 미반응 — 상대 기준: 절대 기준은 장세 왜곡)
+  dp d의 반대쪽(b AND 시장 초과 상승) — 미반응 필터의 부가가치 대조군
+  ※ d/dp의 주가·시장 등락률은 t-1, t 월말 종가만 사용 (진입 시점 이전 데이터만)
 진입: 각 월말 종가. 포트폴리오 20종목 초과 시 지분율 3개월 변화폭 상위 20 컷.
 보유: 1/3/6개월 후 월말 종가 매도, 균등 가중.
   - 만기 시점에 종가가 없는 종목(상장폐지/거래정지)은 제외하고 dropped로 기록
@@ -122,12 +126,21 @@ def pick_portfolio(panel, ym: str) -> dict:
 
     port_c = port_a.intersection(port_b)
 
+    # d/dp: b 풀을 "진입 직전 1개월 상대수익"으로 이분 (t-1→t 종가만 사용, 룩어헤드 없음)
+    closes_prev = panel["closes"][prev]
+    stock_ret = (closes_t / closes_prev.reindex(universe) - 1)
+    mkt_ret_1m = market_proxy_return(panel, prev, ym)
+    rel = (stock_ret - mkt_ret_1m).reindex(port_b)
+    port_d = list(rel[rel <= 0].index)    # 매집됐는데 시장만큼도 안 오른 종목
+    port_dp = list(rel[rel > 0].index)    # 이미 시장 초과 상승한 종목 (대조군)
+
     def cap20(idx):
         if len(idx) <= PORTFOLIO_CAP:
             return list(idx)
         return list(delta3.reindex(idx).nlargest(PORTFOLIO_CAP).index)
 
     return {"a": cap20(port_a), "b": list(port_b), "c": cap20(port_c),
+            "d": port_d, "dp": port_dp,
             "_delta3": delta3, "_universe": universe}
 
 
@@ -178,7 +191,7 @@ def run(start: str, end: str) -> pd.DataFrame:
                 if ym_out is None:
                     continue
                 mkt_ret = market_proxy_return(panel, ym, ym_out)
-                for strat in ["a", "b", "c"]:
+                for strat in ["a", "b", "c", "d", "dp"]:
                     codes = ports[strat]
                     if not codes:
                         rows.append({"시장": market, "전략": strat, "보유": hold,
@@ -225,6 +238,29 @@ def summarize(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(out)
 
 
+def robustness(df: pd.DataFrame) -> pd.DataFrame:
+    """기간 분할 / 상위 3 제거 / 비용 후 — 전 조합 자동 검증 (랜덤 대비 %p)."""
+    out = []
+    for (mkt, strat, hold), g in df.groupby(["시장", "전략", "보유"]):
+        g = g[g["종목수"] > 0].dropna(subset=["수익률", "랜덤평균"])
+        if len(g) < 10:
+            continue
+        first = g[g["진입월"] <= "2020-12"]["초과_랜덤"]
+        second = g[g["진입월"] >= "2021-01"]["초과_랜덤"]
+        trimmed = g.sort_values("초과_랜덤", ascending=False).iloc[3:]["초과_랜덤"]
+        out.append({
+            "시장": mkt, "전략": strat, "보유개월": hold,
+            "초과랜덤_전체%p": round(g["초과_랜덤"].mean() * 100, 2),
+            "초과랜덤_2016~20%p": round(first.mean() * 100, 2) if len(first) else None,
+            "초과랜덤_2021~26%p": round(second.mean() * 100, 2) if len(second) else None,
+            "초과랜덤_상위3제거%p": round(trimmed.mean() * 100, 2),
+            "초과랜덤_비용후%p": round(g["초과_랜덤_비용후"].mean() * 100, 2),
+            "전구간_생존": bool(len(first) and len(second)
+                             and first.mean() > 0 and second.mean() > 0 and trimmed.mean() > 0),
+        })
+    return pd.DataFrame(out)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--start", default="2016-04")   # 3개월 창 확보 후 첫 진입
@@ -238,7 +274,11 @@ def main():
     df.to_csv(OUT_DIR / f"backtest_monthly{tag}.csv", index=False, encoding="utf-8-sig")
     summary = summarize(df)
     summary.to_csv(OUT_DIR / f"backtest_summary{tag}.csv", index=False, encoding="utf-8-sig")
+    robust = robustness(df)
+    robust.to_csv(OUT_DIR / f"backtest_robustness{tag}.csv", index=False, encoding="utf-8-sig")
     print(summary.to_string(index=False))
+    print()
+    print(robust.to_string(index=False))
 
 
 if __name__ == "__main__":
