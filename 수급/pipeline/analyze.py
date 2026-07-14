@@ -28,6 +28,8 @@ PERIODS = {"6m": (182, 25), "3m": (91, 25), "1m": (30, 25), "1w": (7, 3)}
 SHARES_CHANGE_FLAG_PCT = 1.0   # 기간 중 상장주식수 변동률(%)이 이 이상이면 플래그
 OFFMARKET_GAP_PCT = 1.0        # |지분율 기반 보유주식 변화 − 장내 외인 순매수량|이
                                # 상장주식수의 이 비율(%p) 이상이면 '장외 지분변동' 플래그
+INDIV_CROWD_TOP = 20           # H3 경계 배지: 개인 강도 매수 상위 N위
+                               # (백테스트 H3: 개인 쏠림 상위 20 = 코스피 1~3개월 유의한 저성과)
 
 
 def pick_base_date(dates: list, latest: str, days: int, tol: int) -> str | None:
@@ -120,6 +122,14 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
         gap_pct = ((dH - vol.reindex(dH.index).fillna(0)) / S_latest * 100).round(2)
         df[f"장외변동pct_{p}"] = gap_pct
 
+        # H3 경계: 개인 순매수 강도 상위 N위 (과거 10년 코스피 1~3개월 유의 저성과)
+        vol_i = fp[fp["투자자"] == "개인"].pivot_table(
+            index="코드", values="거래량", aggfunc="sum")["거래량"]
+        indiv_strength = (vol_i / S_base).dropna()
+        crowd_rank = indiv_strength[indiv_strength > 0].rank(ascending=False, method="min")
+        df[f"개인강도순위_{p}"] = crowd_rank.reindex(df.index).astype("Int64")
+        df[f"플래그_개인몰림_{p}"] = (crowd_rank.reindex(df.index) <= INDIV_CROWD_TOP).fillna(False)
+
         # 강도(%): 기간 외국인 순매수 주식수 ÷ 기간 시작 상장주식수
         # (기간 중 주식수 변동 종목은 ⚠플래그로 표시되므로 분모 보정하지 않음)
         vol_f = fp[fp["투자자"] == "외국인"].pivot_table(
@@ -133,6 +143,24 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
         df[f"플래그_기관동반_{p}"] = (df[f"순매수억_기관_{p}"] > 0).fillna(False)
         df[f"플래그_개인순매도_{p}"] = (df[f"순매수억_개인_{p}"] < 0).fillna(False)
         meta_periods[p] = {"available": True, "기준일": base}
+
+    # 강도 유형 (H2): 최근 3개 캘린더월 외인 순매수량 부호
+    #   지속   = 3개월 연속 양수 (백테스트에서 스파이크보다 일관 우위)
+    #   스파이크 = 이번 달 양수, 직전 2개월 음수
+    d_flow = flow[(flow["해상도"] == "D") & (flow["투자자"] == "외국인")].copy()
+    d_flow["ym"] = d_flow["날짜"].str[:7]
+    vol_m = d_flow.pivot_table(index="코드", columns="ym", values="거래량", aggfunc="sum")
+    last3 = sorted(vol_m.columns)[-3:]
+    if len(last3) == 3:
+        v0, v1, v2 = (vol_m[m] for m in reversed(last3))   # v0=이번 달
+        persistent = (v0 > 0) & (v1 > 0) & (v2 > 0)
+        spike = (v0 > 0) & (v1 < 0) & (v2 < 0)
+        stype = pd.Series("", index=vol_m.index)
+        stype[persistent] = "지속"
+        stype[spike] = "스파이크"
+        df["강도유형"] = stype.reindex(df.index).fillna("")
+    else:
+        df["강도유형"] = ""
 
     names = pd.read_csv(store.PROCESSED_DIR / f"names_{market}.csv", dtype={"코드": str})
     names["코드"] = names["코드"].str.zfill(6)
