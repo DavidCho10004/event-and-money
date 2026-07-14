@@ -6,6 +6,9 @@ data/snapshots/
 data/flows/
 data/_checkpoints/
 
+# 주간 실행 로그 (pykrx가 로그인 ID를 출력하므로 커밋 금지)
+logs/
+
 # Python
 __pycache__/
 *.py[cod]
