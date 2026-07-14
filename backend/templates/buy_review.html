@@ -94,9 +94,9 @@
     {% for r in data.rows %}
     <a href="/buy-review/{{ r.code }}?p={{ data.p }}"
        style="display:block; text-decoration:none; color:inherit;
-              border:1px solid {{ '#f0b429' if r.suspect else '#e0e0e0' }};
+              border:1px solid {{ '#f0b429' if r.warn else '#e0e0e0' }};
               border-radius:10px; padding:12px 14px;
-              background:{{ '#fffbf0' if r.suspect else '#fff' }};">
+              background:{{ '#fffbf0' if r.warn else '#fff' }};">
         <div style="display:flex; justify-content:space-between; align-items:baseline;">
             <span style="font-weight:bold; font-size:15px;">
                 {{ r.name }}
@@ -123,8 +123,11 @@
             · 개인 {{ "{:+,.0f}".format(r.netbuy_indiv) if r.netbuy_indiv is not none else "—" }}억
         </div>
         <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
-            {% if r.suspect %}
-            <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 주식수 변동 의심</span>
+            {% if r.flag_shares %}
+            <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 상장주식수 {{ "%+.1f"|format(r.shares_chg) }}%</span>
+            {% endif %}
+            {% if r.flag_offmkt %}
+            <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 장외 지분변동 {{ "%+.1f"|format(r.offmkt) }}%p</span>
             {% endif %}
             {% if r.inst_buy %}
             <span style="background:#e8f0fe; color:#1a56b0; border-radius:4px; padding:1px 6px; font-size:11px;">기관 동반</span>

@@ -44,8 +44,11 @@
             {% endif %}
         </div>
         <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
-            {% if data.head.suspect %}
-            <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 주식수 변동 의심</span>
+            {% if data.head.flag_shares %}
+            <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 상장주식수 {{ "%+.1f"|format(data.head.shares_chg) }}%</span>
+            {% endif %}
+            {% if data.head.flag_offmkt %}
+            <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 장외 지분변동 {{ "%+.1f"|format(data.head.offmkt) }}%p</span>
             {% endif %}
             {% if data.head.inst_buy %}
             <span style="background:#e8f0fe; color:#1a56b0; border-radius:4px; padding:1px 6px; font-size:11px;">기관 동반</span>
