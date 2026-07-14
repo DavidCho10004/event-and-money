@@ -22,7 +22,6 @@ from backend.db.database import SessionLocal
 from backend.models import Event, Asset, Price, Return
 from backend.services.hypothesis import run_all as run_hypotheses
 from backend.services.supply_demand import get_supply_demand
-from backend.services.screener import get_screener
 from backend.services.buy_review import get_buy_review, get_stock_detail
 
 app = FastAPI(title="Event & Money")
@@ -585,12 +584,12 @@ def hypothesis(request: Request):
 
 @app.get("/buy-review", response_class=HTMLResponse)
 def buy_review_page(request: Request, market: str = Query("KOSPI"),
-                    p: str = Query("3m"),
+                    p: str = Query("3m"), sort: str = Query("delta"),
                     f3: bool = Query(False), f5: bool = Query(False),
                     pbr: bool = Query(False), inst: bool = Query(False),
                     indiv: bool = Query(False)):
     """매수 검토 스크리너 — 외인 지분율 변화폭(상대 기간) 카드 리스트"""
-    data = get_buy_review(market, p=p, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv)
+    data = get_buy_review(market, p=p, sort=sort, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv)
     return templates.TemplateResponse("buy_review.html", {
         "request": request,
         "data": data,
@@ -599,11 +598,12 @@ def buy_review_page(request: Request, market: str = Query("KOSPI"),
 
 @app.get("/api/buy-review")
 def api_buy_review(market: str = Query("KOSPI"), p: str = Query("3m"),
+                   sort: str = Query("delta"),
                    f3: bool = Query(False), f5: bool = Query(False),
                    pbr: bool = Query(False), inst: bool = Query(False),
                    indiv: bool = Query(False)):
     """매수 검토 스크리너 JSON"""
-    return JSONResponse(get_buy_review(market, p=p, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv))
+    return JSONResponse(get_buy_review(market, p=p, sort=sort, f3=f3, f5=f5, pbr=pbr, inst=inst, indiv=indiv))
 
 
 @app.get("/buy-review/{code}", response_class=HTMLResponse)
@@ -632,26 +632,6 @@ def supply_demand_page(request: Request,
 def api_supply_demand(market: str = Query("KOSPI"), freq: str = Query("W")):
     """수급 시계열 + 상관계수 JSON (탭/주기 토글 시 재조회용)"""
     return JSONResponse(get_supply_demand(market, freq))
-
-
-@app.get("/screener", response_class=HTMLResponse)
-def screener_page(request: Request,
-                  market: str = Query("KOSPI"),
-                  period: str = Query("1w"),
-                  investor: str = Query("외국인")):
-    """수급 스크리너 — 전 종목을 투자자 순매수 기준으로 순위화"""
-    data = get_screener(market, period, investor)
-    return templates.TemplateResponse("screener.html", {
-        "request": request,
-        "data": data,
-    })
-
-
-@app.get("/api/screener")
-def api_screener(market: str = Query("KOSPI"), period: str = Query("1w"),
-                 investor: str = Query("외국인")):
-    """수급 스크리너 JSON"""
-    return JSONResponse(get_screener(market, period, investor))
 
 
 @app.get("/compare", response_class=HTMLResponse)

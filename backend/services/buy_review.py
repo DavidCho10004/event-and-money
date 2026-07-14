@@ -19,6 +19,8 @@ PROCESSED_DIR = ROOT / "data" / "processed"
 MARKET_NAME = {"KOSPI": "코스피", "KOSDAQ": "코스닥"}
 PERIOD_NAME = {"6m": "6개월", "3m": "3개월", "1m": "1개월", "1w": "1주일"}
 DEFAULT_PERIOD = "3m"
+SORT_NAME = {"delta": "변화폭순", "amount": "금액순", "strength": "강도순"}
+DEFAULT_SORT = "delta"   # strength는 순매수량/상장주식수 데이터 확보 후 활성화
 LIST_LIMIT = 100      # 카드 리스트 표시 상한
 PBR_MAX_DEFAULT = 2.0  # 'PBR 상한' 칩을 켰을 때의 상한값
 
@@ -68,9 +70,12 @@ def _load(market: str, p: str):
 
 
 def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
+                   sort: str = DEFAULT_SORT,
                    f3: bool = False, f5: bool = False,
                    pbr: bool = False, inst: bool = False, indiv: bool = False) -> dict:
     market = market if market in MARKET_NAME else "KOSPI"
+    if sort not in SORT_NAME or sort == "strength":   # 강도순은 데이터 확보 전 비활성
+        sort = DEFAULT_SORT
 
     meta_path = PROCESSED_DIR / "buy_review_meta.json"
     meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
@@ -88,7 +93,8 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
     base = {"market": market, "market_name": MARKET_NAME[market],
             "p": p, "p_name": PERIOD_NAME[p], "periods": periods,
             "base_date": periods[p]["base_date"],
-            "filters": filters, "pbr_max": PBR_MAX_DEFAULT}
+            "sort": sort, "sort_name": SORT_NAME[sort],
+            "sorts": SORT_NAME, "filters": filters, "pbr_max": PBR_MAX_DEFAULT}
 
     rows = _load(market, p)
     if rows is None:
@@ -111,8 +117,11 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
         rows = [x for x in rows if x["indiv_sell"]]
 
     matched = len(rows)
-    # 변화폭 내림차순. 의심 종목은 순위 유지 + 경고색 카드로 시각 구분
-    rows.sort(key=lambda x: -x["delta"])
+    # 의심 종목은 순위 유지 + 경고색 카드로 시각 구분
+    if sort == "amount":
+        rows.sort(key=lambda x: -(x["netbuy_frgn"] if x["netbuy_frgn"] is not None else float("-inf")))
+    else:
+        rows.sort(key=lambda x: -x["delta"])
     shown = rows[:LIST_LIMIT]
 
     return {**base, "as_of": mmeta.get("기준일"), "total": total,
