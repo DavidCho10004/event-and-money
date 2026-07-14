@@ -57,16 +57,10 @@
 <div style="display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 4px; align-items:center;">
     <span style="font-size:11px; color:#888;">정렬</span>
     {% for key, name in data.sorts.items() %}
-      {% if key == "strength" %}
-      <span style="border-radius:6px; padding:4px 12px; font-size:12px;
-                   background:#f5f5f5; color:#bbb; border:1px solid #e0e0e0;"
-            title="순매수량·상장주식수 데이터 확보 후 제공">{{ name }}</span>
-      {% else %}
       <a href="{{ url(sort=key) }}"
          style="border-radius:6px; padding:4px 12px; font-size:12px; text-decoration:none;
                 {{ 'background:#1a1a2e; color:#fff; border:1px solid #1a1a2e;' if data.sort == key
                    else 'background:#fff; color:#555; border:1px solid #ccc;' }}">{{ name }}</a>
-      {% endif %}
     {% endfor %}
 </div>
 
@@ -133,6 +127,14 @@
             {% if r.price_chg is not none %}
             <b style="color:{{ '#d32f2f' if r.price_chg > 0 else '#1565c0' }};">· 기간 주가 {{ "%+.1f"|format(r.price_chg) }}%</b>
             {% endif %}
+        </div>
+        <div style="font-size:12px; color:#555; margin-top:2px;">
+            {% if r.strength is not none %}
+            주식수 대비 {{ "%+.2f"|format(r.strength) }}%
+            {% if r.strength_rank is not none and r.strength_rank <= data.rank_cut %}
+            <span style="color:#999; font-size:11px;">(강도 {{ r.strength_rank }}위)</span>
+            {% endif %}
+            {% else %}<span style="color:#bbb;">주식수 대비 — (거래량 미확보)</span>{% endif %}
         </div>
         <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
             {% if r.flag_shares %}

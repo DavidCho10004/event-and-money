@@ -21,7 +21,8 @@ PERIOD_NAME = {"6m": "6개월", "3m": "3개월", "1m": "1개월", "1w": "1주일
 DEFAULT_PERIOD = "3m"
 SORT_NAME = {"delta": "변화폭순", "amount": "금액순", "accel": "가속순", "strength": "강도순"}
 ACCEL_DENOM_MIN = 0.5  # 가속순: |기간 변화폭|이 이 값(%p) 미만이면 분모 불안정 → 제외
-DEFAULT_SORT = "delta"   # strength는 순매수량/상장주식수 데이터 확보 후 활성화
+DEFAULT_SORT = "delta"
+RANK_BADGE_CUT = 100     # 순위 배지 표시 컷 (100위 이내만)
 LIST_LIMIT = 100      # 카드 리스트 표시 상한
 PBR_MAX_DEFAULT = 2.0  # 'PBR 상한' 칩을 켰을 때의 상한값
 MIN_NETBUY_EOK = 100   # '순매수 100억↑' 칩: 외인 순매수 절대값 하한 (억원)
@@ -73,6 +74,8 @@ def _load(market: str, p: str):
                 "netbuy_indiv": _num(r.get(f"순매수억_개인_{p}")),
                 "pbr": _num(r["PBR_최근"]),
                 "price_chg": _num(r.get(f"주가등락pct_{p}")),
+                "strength": _num(r.get(f"강도pct_{p}")),
+                "strength_rank": int(float(r[f"강도순위_{p}"])) if r.get(f"강도순위_{p}") not in (None, "") else None,
                 "shares_chg": _num(r.get(f"주식수변동pct_{p}")),
                 "offmkt": _num(r.get(f"장외변동pct_{p}")),
                 "flag_shares": _flag(r.get(f"플래그_주식수변동_{p}")),
@@ -89,7 +92,7 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
                    pbr: bool = False, inst: bool = False, indiv: bool = False,
                    tri: bool = False, nopref: bool = False, minamt: bool = False) -> dict:
     market = market if market in MARKET_NAME else "KOSPI"
-    if sort not in SORT_NAME or sort == "strength":   # 강도순은 데이터 확보 전 비활성
+    if sort not in SORT_NAME:
         sort = DEFAULT_SORT
 
     meta_path = PROCESSED_DIR / "buy_review_meta.json"
@@ -111,7 +114,8 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
             "base_date": periods[p]["base_date"],
             "sort": sort, "sort_name": SORT_NAME[sort],
             "sorts": SORT_NAME, "filters": filters,
-            "pbr_max": PBR_MAX_DEFAULT, "min_netbuy": MIN_NETBUY_EOK}
+            "pbr_max": PBR_MAX_DEFAULT, "min_netbuy": MIN_NETBUY_EOK,
+            "rank_cut": RANK_BADGE_CUT}
 
     rows = _load(market, p)
     if rows is None:
@@ -148,6 +152,8 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
     # 플래그 종목은 순위 유지 + 경고색 카드로 시각 구분
     if sort == "amount":
         rows.sort(key=lambda x: -(x["netbuy_frgn"] if x["netbuy_frgn"] is not None else float("-inf")))
+    elif sort == "strength":
+        rows.sort(key=lambda x: -(x["strength"] if x["strength"] is not None else float("-inf")))
     elif sort == "accel":
         # 최근 1주일 변화폭 ÷ 기간 변화폭 — 최근에 몰린 종목 우선.
         # 분모가 작으면(|변화폭| < ACCEL_DENOM_MIN) 비율이 불안정 → 제외

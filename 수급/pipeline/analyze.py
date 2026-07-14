@@ -6,7 +6,8 @@
   - 기준 시점 지분율은 해당 시점 스냅샷에서 직접 조회 (역산 금지)
   - 기준 스냅샷이 허용 오차 내에 없으면 그 기간은 '미제공' (meta에 기록, 지어내지 않음)
   - 1w는 일별 지분율 스냅샷이 쌓인 뒤에 자동 활성화
-강도(%)는 거래량·상장주식수 확보 후. 수급동행은 2단계 예약.
+강도(%) = 기간 외국인 순매수 주식수 ÷ 기간 시작 시점 상장주식수 × 100.
+수급동행은 2단계 예약.
 """
 import json
 import logging
@@ -75,7 +76,6 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
     df["PBR_최근"] = latest_snap["PBR"]
     df["시가총액_억"] = (latest_snap["시가총액"] / 1e8).round(0)
     df["종가_최근"] = latest_snap["종가"]
-    df["강도_외국인"] = pd.NA   # 거래량·상장주식수 확보 후
     df["수급동행"] = pd.NA      # 2단계 예약
 
     meta_periods = {}
@@ -119,6 +119,14 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
         dH = (f_latest * S_latest - f_base * S_base) / 100    # 보유주식 변화(주)
         gap_pct = ((dH - vol.reindex(dH.index).fillna(0)) / S_latest * 100).round(2)
         df[f"장외변동pct_{p}"] = gap_pct
+
+        # 강도(%): 기간 외국인 순매수 주식수 ÷ 기간 시작 상장주식수
+        # (기간 중 주식수 변동 종목은 ⚠플래그로 표시되므로 분모 보정하지 않음)
+        vol_f = fp[fp["투자자"] == "외국인"].pivot_table(
+            index="코드", values="거래량", aggfunc="sum")["거래량"]
+        strength = (vol_f / S_base * 100).round(3)
+        df[f"강도pct_{p}"] = strength
+        df[f"강도순위_{p}"] = strength.rank(ascending=False, method="min").astype("Int64")
 
         df[f"플래그_주식수변동_{p}"] = (shares_chg.abs() >= SHARES_CHANGE_FLAG_PCT).fillna(False)
         df[f"플래그_장외변동_{p}"] = (gap_pct.abs() >= OFFMARKET_GAP_PCT).fillna(False)
