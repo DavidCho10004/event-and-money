@@ -1,146 +1,80 @@
 {% extends "base.html" %}
 {% block title %}수급 분석 — Event & Money{% endblock %}
-{% block og_title %}코스피·코스닥 투자자별 수급 분석{% endblock %}
-{% block og_description %}개인·외국인·기관 순매수를 일/주/월 시계열로 보고 지수 등락과의 관계를 확인{% endblock %}
+{% block og_title %}코스피·코스닥 시장 수급 조망{% endblock %}
+{% block og_description %}투자자별 순매수 주간·월간 추이 (실데이터){% endblock %}
 
 {% block content %}
-<h1>투자자별 수급 분석</h1>
+<h1>수급 분석 — 시장 조망</h1>
 <p style="color:#666; font-size:13px; margin-bottom:6px;">
-    개인·외국인·기관의 <b>순매수(수급)</b>를 시계열로 보고, 그 흐름이 지수 등락과
-    어떻게 연결되는지 확인합니다. (순매수 = 매수 − 매도, 단위: 억원)
+    시장 전체의 투자자별 순매수 흐름입니다. 종목 발굴은
+    <a href="/buy-review" style="color:#1a56b0;">매수 검토</a>,
+    신호 검증은 <a href="/backtest" style="color:#1a56b0;">백테스트</a> 참조.
 </p>
 
 {% if data.is_empty %}
 <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px;
-            padding:12px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
-    ⚠️ <b>데이터 준비 중입니다.</b> 이 탭의 실데이터는 아직 수집되지 않았습니다.<br>
-    실데이터 기반 수급 분석은 <a href="/buy-review" style="color:#1a56b0; font-weight:bold;">매수 검토 탭</a>에서 이용하세요.
+            padding:10px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
+    ⚠️ 데이터가 아직 없습니다. 주간 수집(run_weekly) 후 표시됩니다.
 </div>
 {% else %}
 
-<!-- 시장 / 주기 토글 -->
-<div class="filter-bar">
-    <span style="font-size:12px; color:#888; margin-right:6px;">시장</span>
+<div class="filter-bar" style="margin:10px 0 4px;">
     {% for m, label in [("KOSPI","코스피"), ("KOSDAQ","코스닥")] %}
     <a href="/supply-demand?market={{ m }}&freq={{ data.freq }}"
        class="{{ 'active' if data.market == m else '' }}">{{ label }}</a>
     {% endfor %}
-    <span style="font-size:12px; color:#888; margin:0 6px 0 16px;">주기</span>
-    {% for f, label in [("D","일간"), ("W","주간"), ("M","월간")] %}
+</div>
+<div style="display:flex; gap:6px; margin:6px 0 10px;">
+    {% for f, label in [("W","주간"), ("M","월간")] %}
     <a href="/supply-demand?market={{ data.market }}&freq={{ f }}"
-       class="{{ 'active' if data.freq == f else '' }}">{{ label }}</a>
+       style="border-radius:6px; padding:4px 12px; font-size:12px; text-decoration:none;
+              {{ 'background:#1a1a2e; color:#fff; border:1px solid #1a1a2e;' if data.freq == f
+                 else 'background:#fff; color:#555; border:1px solid #ccc;' }}">{{ label }}</a>
     {% endfor %}
 </div>
 
-<!-- 차트 1: 지수 + 누적 순매수 -->
-<h2 style="margin-top:20px;">{{ data.market_name }} 지수 vs 누적 순매수
-    <span style="font-weight:normal; font-size:12px; color:#999;">({{ data.freq_name }})</span></h2>
-<div class="sd-chart-wrap"><canvas id="indexChart"></canvas></div>
-
-<!-- 차트 2: 투자자별 순매수 막대 -->
-<h2 style="margin-top:24px;">투자자별 순매수
-    <span style="font-weight:normal; font-size:12px; color:#999;">(빨강=순매수, 파랑=순매도 관행)</span></h2>
-<div class="sd-chart-wrap"><canvas id="netbuyChart"></canvas></div>
-
-<!-- 상관표 -->
-<h2 style="margin-top:24px;">순매수 ↔ 지수 수익률 상관</h2>
-<p style="font-size:12px; color:#888; margin-bottom:6px;">
-    +상관: 그 주체가 순매수할 때 지수가 오르는 경향 / n: 표본 구간 수 ·
-    <b>상관은 인과가 아닙니다</b> (동행/선행 경향으로만 해석)
-</p>
-<table style="max-width:520px;">
-    <thead>
-        <tr><th>투자자</th><th>표본(n)</th><th>Pearson (선형)</th><th>Spearman (순위)</th></tr>
-    </thead>
-    <tbody>
-    {% for row in data.corr %}
-        <tr>
-            <td style="font-weight:600;">{{ row.investor }}</td>
-            <td>{{ row.n }}</td>
-            {% for v in [row.pearson, row.spearman] %}
-                {% if v is none %}
-                <td style="color:#ccc;">—</td>
-                {% elif v > 0 %}
-                <td class="positive">+{{ '%.3f'|format(v) }}</td>
-                {% else %}
-                <td class="negative">{{ '%.3f'|format(v) }}</td>
-                {% endif %}
-            {% endfor %}
-        </tr>
+{% if data.summary %}
+<div style="display:flex; gap:8px; max-width:640px; margin-bottom:12px;">
+    {% for key, label in [("frgn","외국인"), ("inst","기관"), ("indiv","개인")] %}
+    <div style="flex:1; border:1px solid #e0e0e0; border-radius:10px; padding:10px 12px; background:#fff;">
+        <div style="font-size:11px; color:#888;">이번 주 {{ label }}</div>
+        <div style="font-size:17px; font-weight:bold;
+                    color:{{ '#d32f2f' if data.summary[key + '_raw'] and data.summary[key + '_raw'] > 0 else '#1565c0' }};">
+            {{ data.summary[key] }}</div>
+    </div>
     {% endfor %}
-    </tbody>
-</table>
+</div>
+<div style="font-size:11px; color:#999; margin-bottom:10px;">
+    주간 기준 ~{{ data.summary.label }} · 차트 기준일 {{ data.as_of }} (최근 1년, 순매수 단위: 억원)
+</div>
+{% endif %}
 
-<p style="font-size:11px; color:#aaa; margin-top:14px;">Source: KRX (pykrx)</p>
-
-<style>
-    .sd-chart-wrap {
-        position:relative; height:360px; background:#fff;
-        padding:10px; border:1px solid #e0e0e0; border-radius:6px;
-    }
-    @media (max-width:640px) { .sd-chart-wrap { height:280px; } }
-</style>
+<div style="border:1px solid #e0e0e0; border-radius:10px; padding:12px; background:#fff; max-width:760px;">
+    <div style="font-size:13px; font-weight:bold; margin-bottom:6px;">
+        {{ data.market_name }} 투자자별 순매수 ({{ data.freq_name }} 합산, 억원)</div>
+    <div style="position:relative; height:260px;"><canvas id="flowChart"></canvas></div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
-const SD = {{ data | tojson }};
-const C = { 개인: "#888888", 외국인: "#d62728", 기관: "#1f77b4" };
-
-// ── 차트 1: 지수(좌축, 검정) + 외국인/기관 누적순매수(우축) ──
-new Chart(document.getElementById("indexChart").getContext("2d"), {
-    type: "line",
+const R = {{ data.rows | tojson }};
+new Chart(document.getElementById("flowChart"), {
+    type: "bar",
     data: {
-        labels: SD.dates,
+        labels: R.map(r => r.label),
         datasets: [
-            {
-                label: SD.market_name + " 지수", data: SD.close,
-                borderColor: "#111", borderWidth: 1.8, pointRadius: 0,
-                yAxisID: "yIndex", tension: 0.1,
-            },
-            {
-                label: "외국인 누적순매수", data: SD.cum["외국인"],
-                borderColor: C["외국인"], borderWidth: 1.2, pointRadius: 0,
-                yAxisID: "yCum", tension: 0.1,
-            },
-            {
-                label: "기관 누적순매수", data: SD.cum["기관"],
-                borderColor: C["기관"], borderWidth: 1.2, pointRadius: 0,
-                yAxisID: "yCum", tension: 0.1,
-            },
+            { label: "외국인", data: R.map(r => r.frgn), backgroundColor: "#e94560" },
+            { label: "기관",   data: R.map(r => r.inst), backgroundColor: "#1a56b0" },
+            { label: "개인",   data: R.map(r => r.indiv), backgroundColor: "#9e9e9e" },
         ],
     },
     options: {
         responsive: true, maintainAspectRatio: false,
         interaction: { mode: "index", intersect: false },
-        plugins: { legend: { labels: { font: { size: 11 } } } },
+        plugins: { legend: { labels: { boxWidth: 12, font: { size: 11 } } } },
         scales: {
-            x: { ticks: { maxTicksLimit: 12, font: { size: 10 } } },
-            yIndex: { position: "left", title: { display: true, text: "지수" } },
-            yCum: {
-                position: "right", title: { display: true, text: "누적 순매수(억원)" },
-                grid: { drawOnChartArea: false },
-            },
-        },
-    },
-});
-
-// ── 차트 2: 투자자별 순매수 막대 ──
-new Chart(document.getElementById("netbuyChart").getContext("2d"), {
-    type: "bar",
-    data: {
-        labels: SD.dates,
-        datasets: ["개인", "외국인", "기관"].map(inv => ({
-            label: inv, data: SD.netbuy[inv],
-            backgroundColor: C[inv], borderWidth: 0,
-        })),
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: "index", intersect: false },
-        plugins: { legend: { labels: { font: { size: 11 } } } },
-        scales: {
-            x: { stacked: false, ticks: { maxTicksLimit: 12, font: { size: 10 } } },
-            y: { title: { display: true, text: "순매수(억원)" } },
+            x: { stacked: true, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
+            y: { stacked: true, ticks: { font: { size: 10 }, callback: v => v.toLocaleString() } },
         },
     },
 });
