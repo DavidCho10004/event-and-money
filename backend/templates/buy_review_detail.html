@@ -44,6 +44,17 @@
             {% endif %}
         </div>
         <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+            {% if data.head.strength is not none and data.head.strength > 0 and data.head.stype == "지속" %}
+            <span style="background:#e6f4ea; color:#137333; border-radius:4px; padding:1px 6px; font-size:11px;"
+                  title="3개월 연속 외인 순매수 — 백테스트에서 스파이크형보다 일관 우위">지속형</span>
+            {% elif data.head.strength is not none and data.head.strength > 0 and data.head.stype == "스파이크" %}
+            <span style="background:#fce8e6; color:#c5221f; border-radius:4px; padding:1px 6px; font-size:11px;"
+                  title="이번 달만 순매수, 직전 2개월 순매도 — 백테스트에서 열위">스파이크형</span>
+            {% endif %}
+            {% if data.head.indiv_crowd %}
+            <span style="background:#5f6368; color:#fff; border-radius:4px; padding:1px 6px; font-size:11px;"
+                  title="백테스트 H3: 과거 10년 코스피에서 1~3개월 유의한 저성과 (t=-2.4~-3.7)">⚠ 개인 몰림 {{ data.head.indiv_crowd_rank }}위</span>
+            {% endif %}
             {% if data.head.flag_shares %}
             <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 상장주식수 {{ "%+.1f"|format(data.head.shares_chg) }}%</span>
             {% endif %}
