@@ -202,6 +202,30 @@ def build_detail() -> int:
     return len(detail)
 
 
+def build_market_flows() -> None:
+    """시장 조망 (/supply-demand): 시장별 투자자 순매수 주간/월간 합산 (최근 1년, D행)
+
+    출력: data/processed/market_flows_{시장}_{W|M}.csv — 라벨(구간 마지막 거래일),
+          외인_억/기관_억/개인_억. 실데이터만 (데모 폴백 금지 규칙).
+    """
+    fl = store.read_flows()
+    fl = fl[(fl["해상도"] == "D") & (fl["투자자"].isin(["외국인", "기관합계", "개인"]))].copy()
+    fl["dt"] = pd.to_datetime(fl["날짜"])
+    inv_label = {"외국인": "외인_억", "기관합계": "기관_억", "개인": "개인_억"}
+
+    for market in ["KOSPI", "KOSDAQ"]:
+        m = fl[fl["시장"] == market]
+        for freq, rule in [("W", "W-FRI"), ("M", "ME")]:
+            g = (m.groupby([pd.Grouper(key="dt", freq=rule), "투자자"])
+                 .agg(금액=("거래대금", "sum"), 마지막=("날짜", "max")).reset_index())
+            piv = g.pivot_table(index="마지막", columns="투자자", values="금액", aggfunc="sum")
+            piv = (piv / 1e8).round(0).rename(columns=inv_label).reset_index()
+            piv = piv.rename(columns={"마지막": "라벨"}).sort_values("라벨")
+            out = OUT_DIR / f"market_flows_{market}_{freq}.csv"
+            piv.to_csv(out, index=False, encoding="utf-8-sig")
+            logger.info("시장 조망 저장: %s (%d구간)", out.name, len(piv))
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     meta = {}
@@ -211,6 +235,7 @@ def main():
         df.to_csv(out, index=False, encoding="utf-8-sig")
         meta[market] = m
         logger.info("[%s] 저장: %s (%d종목) periods=%s", market, out.name, len(df), m["periods"])
+    build_market_flows()
     detail_rows = build_detail()
     meta["detail"] = {"rows": detail_rows, "shard": "코드 앞 2자리",
                       "path": "data/processed/detail/detail_{XX}.csv"}
