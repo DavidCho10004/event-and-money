@@ -45,6 +45,7 @@ def load_market(market: str):
         s = pd.DataFrame({
             "날짜": date, "시장": market, "코드": df["코드"],
             "종가": df.get(f"주가_{label}"),
+            "시가": pd.NA,
             "시가총액": df.get(f"시가총액(억)_{label}") * 1e8,  # 억원 → 원
             "상장주식수": pd.NA,
             "PER": df.get(f"PER_{label}"), "PBR": df.get(f"PBR_{label}"),

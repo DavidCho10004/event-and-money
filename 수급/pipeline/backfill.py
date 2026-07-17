@@ -82,7 +82,7 @@ def collect_snapshot(market: str, ym: str) -> bool:
     frgn = _retry(stock.get_exhaustion_rates_of_foreign_investment, day, market=market)
     df = pd.DataFrame({
         "날짜": day, "시장": market, "코드": cap.index.astype(str),
-        "종가": cap["종가"].values, "시가총액": cap["시가총액"].values,
+        "종가": cap["종가"].values, "시가": pd.NA, "시가총액": cap["시가총액"].values,
         "상장주식수": cap["상장주식수"].values,
     }).set_index("코드")
     df["PER"] = fund["PER"] if fund is not None and not fund.empty else pd.NA
