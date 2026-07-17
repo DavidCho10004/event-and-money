@@ -14,6 +14,7 @@ STRAT_NAME = {
     "a": "a 삼박자+3%p", "b": "b 강도 상위20", "c": "c 교집합",
     "d": "d 매집+미반응", "dp": "d′ 매집+기반응(대조군)",
     "H1": "H1 폭락 레짐", "H2i": "H2 지속형", "H2ii": "H2 스파이크형", "H3": "H3 개인 쏠림(역신호)",
+    "E1": "E1 사건 월 개인 쏠림", "E2": "E2 사건 월 외인 쏠림(대조군)",
 }
 CURVE_COMBO = ("KOSPI", "b", "6")   # 누적 곡선 기본 조합
 
@@ -49,9 +50,11 @@ def get_backtest_view() -> dict:
     _, robust = _read("backtest_robustness.csv")
     hyp_comments, hyp_summary = _read("backtest_hyp_summary.csv")
     _, hyp_robust = _read("backtest_hyp_robustness.csv")
+    ev_comments, ev_summary = _read("backtest_event_summary.csv")
+    _, ev_robust = _read("backtest_event_robustness.csv")
     _, monthly = _read("backtest_monthly.csv")
 
-    robust_map = {(r["시장"], r["전략"], r["보유개월"]): r for r in robust + hyp_robust}
+    robust_map = {(r["시장"], r["전략"], r["보유개월"]): r for r in robust + hyp_robust + ev_robust}
 
     def enrich(rows):
         out = []
@@ -87,6 +90,8 @@ def get_backtest_view() -> dict:
         "summary": enrich(summary),
         "hyp_summary": enrich(hyp_summary),
         "hyp_comments": hyp_comments,
+        "ev_summary": enrich(ev_summary),
+        "ev_comments": ev_comments,
         "curve": curve,
         "curve_label": f"{mkt} · {STRAT_NAME[strat]} · {hold}개월 보유",
         "is_empty": not summary,

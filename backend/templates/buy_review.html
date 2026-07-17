@@ -145,7 +145,7 @@
             {% endif %}
             {% if r.indiv_crowd %}
             <span style="background:#5f6368; color:#fff; border-radius:4px; padding:1px 6px; font-size:11px;"
-                  title="백테스트 H3: 과거 10년 코스피에서 1~3개월 유의한 저성과 (t=-2.4~-3.7)">⚠ 개인 몰림 {{ r.indiv_crowd_rank }}위</span>
+                  title="백테스트 H3: 과거 10년 코스피에서 1~3개월 유의한 저성과 (t=-2.4~-3.7){% if data.market == 'KOSDAQ' %} · 사건 국면에서는 6개월 -9.7%p (36사건, t=-3.2, 상위3 제거 시 -13.4%p){% endif %}">⚠ 개인 몰림 {{ r.indiv_crowd_rank }}위</span>
             {% endif %}
             {% if r.flag_offmkt %}
             <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 장외 지분변동 {{ "%+.1f"|format(r.offmkt) }}%p</span>
