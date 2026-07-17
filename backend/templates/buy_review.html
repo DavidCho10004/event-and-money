@@ -101,50 +101,45 @@
               border:1px solid {{ '#f0b429' if r.warn else '#e0e0e0' }};
               border-radius:10px; padding:12px 14px;
               background:{{ '#fffbf0' if r.warn else '#fff' }};">
-        <div style="display:flex; justify-content:space-between; align-items:baseline;">
-            <span style="font-weight:bold; font-size:15px;">
+        {# 1행: 종목명 + 변화폭 + 기간 주가 (강조) #}
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;">
+            <span style="font-weight:bold; font-size:15px; min-width:0;">
                 {{ r.name }}
                 <span style="color:#999; font-size:11px; font-weight:normal;">{{ r.code }}</span>
             </span>
-            <span style="font-weight:bold; font-size:15px;
-                         color:{{ '#d32f2f' if r.delta > 0 else '#1565c0' }};">
-                {{ "%+.1f"|format(r.delta) }}%p
-                <span style="color:#999; font-size:11px; font-weight:normal;">({{ data.p_name }} 변화폭 {{ r.rank }}위)</span>
+            <span style="font-weight:bold; font-size:14px; white-space:nowrap;">
+                <span style="color:{{ '#d32f2f' if r.delta > 0 else '#1565c0' }};">{{ "%+.1f"|format(r.delta) }}%p</span>
+                {% if r.price_chg is not none %}
+                <span style="color:{{ '#d32f2f' if r.price_chg > 0 else '#1565c0' }};">· 주가 {{ "%+.1f"|format(r.price_chg) }}%</span>
+                {% endif %}
             </span>
         </div>
-        <div style="font-size:12px; color:#555; margin-top:4px;">
+        {# 2행: 지분율 여정 #}
+        <div style="font-size:12px; color:#555; margin-top:3px;">
             외인 지분율 {{ "%.1f"|format(r.frgn_base) if r.frgn_base is not none else "—" }}%
             → {{ "%.1f"|format(r.frgn_now) if r.frgn_now is not none else "—" }}%
+            <span style="color:#999; font-size:11px;">({{ data.p_name }} {{ r.rank }}위)</span>
+            {% if r.delta_1w is not none %}
+            <span style="color:#888;">· 1주 {{ "%+.2f"|format(r.delta_1w) }}%p</span>{% if r.accel is defined and data.sort == "accel" %} <b style="color:#1a1a2e; font-size:11px;">(가속 ×{{ r.accel }})</b>{% endif %}
+            {% endif %}
         </div>
-        <div style="font-size:12px; color:#888; margin-top:2px;">
-            최근 1주일:
-            {% if r.delta_1w is not none %}{{ "%+.2f"|format(r.delta_1w) }}%p{% if r.accel is defined and data.sort == "accel" %} <b style="color:#1a1a2e;">(가속 ×{{ r.accel }})</b>{% endif %}
-            {% else %}<span style="color:#bbb;">일별 데이터 수집 후 제공</span>{% endif %}
-        </div>
-        <div style="font-size:12px; color:#555; margin-top:2px;">
-            {{ data.p_name }} 순매수: 외국인 {{ "{:+,.0f}".format(r.netbuy_frgn) if r.netbuy_frgn is not none else "—" }}억
+        {# 3행: 순매수 + 강도 (작게) #}
+        <div style="font-size:11px; color:#777; margin-top:2px;">
+            외인 {{ "{:+,.0f}".format(r.netbuy_frgn) if r.netbuy_frgn is not none else "—" }}억
             · 기관 {{ "{:+,.0f}".format(r.netbuy_inst) if r.netbuy_inst is not none else "—" }}억
             · 개인 {{ "{:+,.0f}".format(r.netbuy_indiv) if r.netbuy_indiv is not none else "—" }}억
-            {% if r.price_chg is not none %}
-            <b style="color:{{ '#d32f2f' if r.price_chg > 0 else '#1565c0' }};">· 기간 주가 {{ "%+.1f"|format(r.price_chg) }}%</b>
+            {% if r.strength is not none %}
+            · 주식수比 {{ "%+.2f"|format(r.strength) }}%{% if r.strength_rank is not none and r.strength_rank <= data.rank_cut %} (강도 {{ r.strength_rank }}위){% endif %}
             {% endif %}
         </div>
-        <div style="font-size:12px; color:#555; margin-top:2px;">
-            {% if r.strength is not none %}
-            주식수 대비 {{ "%+.2f"|format(r.strength) }}%
-            {% if r.strength_rank is not none and r.strength_rank <= data.rank_cut %}
-            <span style="color:#999; font-size:11px;">(강도 {{ r.strength_rank }}위)</span>
-            {% endif %}
-            {% if r.strength > 0 and r.stype == "지속" %}
+        <div style="margin-top:5px; display:flex; flex-wrap:wrap; gap:4px;">
+            {% if r.strength is not none and r.strength > 0 and r.stype == "지속" %}
             <span style="background:#e6f4ea; color:#137333; border-radius:4px; padding:1px 6px; font-size:11px;"
                   title="3개월 연속 외인 순매수 — 백테스트에서 스파이크형보다 일관 우위">지속형</span>
-            {% elif r.strength > 0 and r.stype == "스파이크" %}
+            {% elif r.strength is not none and r.strength > 0 and r.stype == "스파이크" %}
             <span style="background:#fce8e6; color:#c5221f; border-radius:4px; padding:1px 6px; font-size:11px;"
                   title="이번 달만 순매수, 직전 2개월 순매도 — 백테스트에서 열위">스파이크형</span>
             {% endif %}
-            {% else %}<span style="color:#bbb;">주식수 대비 — (거래량 미확보)</span>{% endif %}
-        </div>
-        <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
             {% if r.flag_shares %}
             <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 상장주식수 {{ "%+.1f"|format(r.shares_chg) }}%</span>
             {% endif %}
