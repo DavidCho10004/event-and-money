@@ -88,6 +88,39 @@ H3(개인 쏠림)은 <b>수익이 낮을수록 가설 지지</b> — 코스피 1
 </p>
 
 </details>
+<details open style="margin-top:16px;"><summary style="font-size:16px; font-weight:bold; cursor:pointer;">이벤트×수급 (E1 사건 월 개인 쏠림 / E2 외인 대조군)</summary>
+{% for c in data.ev_comments %}
+<p style="font-size:12px; color:#888; margin:2px 0;">{{ c }}</p>
+{% endfor %}
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse; font-size:12px; white-space:nowrap;">
+<tr style="background:#f0f0f5;">
+    <th style="padding:5px 8px;">시장</th><th style="padding:5px 8px;">가설</th><th style="padding:5px 8px;">보유</th>
+    <th style="padding:5px 8px;">진입</th><th style="padding:5px 8px;">초과(랜덤)</th>
+    <th style="padding:5px 8px;">비용후</th><th style="padding:5px 8px;">상위3 제거</th>
+    <th style="padding:5px 8px;">승률</th><th style="padding:5px 8px;">최악의 달</th>
+</tr>
+{% for r in data.ev_summary %}
+<tr style="border-bottom:1px solid #eee;">
+    <td style="padding:4px 8px;">{{ r.시장 }}</td>
+    <td style="padding:4px 8px;">{{ r.전략명 }}</td>
+    <td style="padding:4px 8px;">{{ r.보유개월 }}m</td>
+    <td style="padding:4px 8px;">{{ r.진입횟수 }}</td>
+    <td style="padding:4px 8px; font-weight:bold; color:{{ '#d32f2f' if r['평균초과_랜덤%p']|float > 0 else '#1565c0' }};">{{ r['평균초과_랜덤%p'] }}%p</td>
+    <td style="padding:4px 8px;">{{ r['평균초과_랜덤_비용후%p'] }}%p</td>
+    <td style="padding:4px 8px;">{{ r.상위3제거 or "—" }}%p</td>
+    <td style="padding:4px 8px;">{{ r['승률_vs랜덤'] }}%</td>
+    <td style="padding:4px 8px;">{{ r.최악의달 }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+<p style="font-size:12px; color:#555; max-width:760px;">
+E1도 <b>수익이 낮을수록 가설 지지</b> — 코스닥 6개월 -9.7%p(t=-3.16)는 상위 3 사건 제거 시 -13.4%p로
+오히려 심화, 특정 사건이 아닌 광범위한 패턴. <b>사건 국면의 개인 쏠림은 평상시보다 강한 회피 대상.</b>
+사건별 낱장:
+<a href="https://github.com/DavidCho10004/event-and-money/blob/master/data/processed/backtest/backtest_event_monthly.csv">backtest_event_monthly.csv</a>
+</p>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
