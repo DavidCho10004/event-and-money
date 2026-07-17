@@ -97,7 +97,7 @@ def fetch_snapshot_for_day(day: str) -> pd.DataFrame:
             continue
         df = pd.DataFrame({
             "날짜": day, "시장": market, "코드": cap.index.astype(str),
-            "종가": cap["종가"].values, "시가총액": cap["시가총액"].values,
+            "종가": cap["종가"].values, "시가": pd.NA, "시가총액": cap["시가총액"].values,
             "상장주식수": cap["상장주식수"].values,
         })
         df = df.set_index("코드")
@@ -180,7 +180,7 @@ def main():
                 continue
             df_s = pd.DataFrame({
                 "날짜": day, "시장": market, "코드": cap.index.astype(str),
-                "종가": cap["종가"].values, "시가총액": cap["시가총액"].values,
+                "종가": cap["종가"].values, "시가": pd.NA, "시가총액": cap["시가총액"].values,
                 "상장주식수": cap["상장주식수"].values, "PER": pd.NA, "PBR": pd.NA,
             }).set_index("코드")
             df_s["외인지분율"] = frgn["지분율"] if frgn is not None and not frgn.empty else pd.NA
