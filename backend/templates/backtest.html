@@ -105,6 +105,9 @@ new Chart(document.getElementById("curveChart"), {
         scales: { x: { ticks: { maxTicksLimit: 8, font: { size: 10 } } },
                   y: { type: "logarithmic", ticks: { font: { size: 10 } } } } },
 });
+// 접힌 details 안에서 0폭으로 초기화된 차트를 펼칠 때 리사이즈
+document.querySelectorAll("details").forEach(d =>
+    d.addEventListener("toggle", () => Object.values(Chart.instances).forEach(c => c.resize())));
 </script>
 {% endif %}
 {% endblock %}
