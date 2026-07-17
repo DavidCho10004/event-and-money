@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 {% block title %}사건 목록 — Event & Money{% endblock %}
 {% block content %}
+<div style="border:1px solid #e0e0e0; border-radius:10px; padding:12px 16px; margin-bottom:14px;
+            background:#fff; font-size:13px; color:#555; max-width:760px;">
+    <b style="color:#1a1a2e;">Event & Money</b> — 주요 사건이 자산 가격에 남긴 흔적을 데이터로 검증하는 투자 매뉴얼입니다.
+    <b>본편</b>은 사건(전쟁·금융위기 등)별 자산 반응 분석,
+    <b>수급편</b>은 코스피·코스닥 투자자별 수급 데이터와 그 신호의 백테스트입니다.
+    <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;">
+        <a href="/heatmap" style="background:#1a1a2e; color:#fff; border-radius:6px; padding:4px 12px; font-size:12px; text-decoration:none;">본편: 사건×자산 히트맵</a>
+        <a href="/buy-review" style="background:#e94560; color:#fff; border-radius:6px; padding:4px 12px; font-size:12px; text-decoration:none;">수급: 매수 검토</a>
+        <a href="/backtest" style="background:#fff; color:#555; border:1px solid #ccc; border-radius:6px; padding:4px 12px; font-size:12px; text-decoration:none;">수급: 백테스트 결론</a>
+    </div>
+</div>
 <h1>사건 목록 ({{ events|length }}건)</h1>
 
 <div class="filter-bar scale-bar">
