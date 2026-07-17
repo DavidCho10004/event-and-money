@@ -1,0 +1,58 @@
+﻿ID,사건,날짜,분류,월별커버,일별커버,비고
+A01,1차 오일쇼크 (4차 중동전쟁 + OPEC 금수조치),1973-10-06,war/macro,X,X,수급 커버 이전
+A02,2차 오일쇼크 (이란 혁명 + 이란-이라크 전쟁),1979-01-01,war/macro,X,X,수급 커버 이전
+A03,걸프전 (이라크의 쿠웨이트 침공),1990-08-02,war/macro,X,X,수급 커버 이전
+A04,9/11 테러,2001-09-11,war/macro,X,X,수급 커버 이전
+A05,이라크 전쟁 (미국 침공),2003-03-20,war/macro,X,X,수급 커버 이전
+A06,러시아-우크라이나 전쟁,2022-02-24,war/macro,O,X,
+A07,이스라엘-하마스 전쟁,2023-10-07,war/macro,O,X,
+A08,미국-이란 전쟁 (2026),2026-02-28,war/macro,O,O,
+B01,블랙먼데이,1987-10-19,financial/macro,X,X,수급 커버 이전
+B02,아시아 외환위기,1997-07-02,financial/macro,X,X,수급 커버 이전
+B03,LTCM 붕괴 + 러시아 디폴트,1998-08-17,financial/macro,X,X,수급 커버 이전
+B04,닷컴 버블 붕괴,2000-03-10,financial/macro,X,X,수급 커버 이전
+B05,글로벌 금융위기 (리먼 브라더스),2008-09-15,financial/macro,X,X,수급 커버 이전
+B06,유럽 재정위기 (그리스),2010-04-23,financial/macro,X,X,수급 커버 이전
+B07,SVB 뱅크런,2023-03-10,financial/macro,O,X,
+C01,후쿠시마 원전 사고,2011-03-11,pandemic/macro,X,X,수급 커버 이전
+C02,코로나19 팬데믹,2020-03-11,pandemic/macro,O,X,
+C03,코로나 변이 (오미크론 쇼크),2021-11-26,pandemic/macro,O,X,
+C04,에버그란데 위기,2021-09-20,pandemic/macro,O,X,
+D01,볼커 쇼크 (금리 20% 인상),1980-03-14,policy/macro,X,X,수급 커버 이전
+D02,플라자 합의,1985-09-22,policy/macro,X,X,수급 커버 이전
+D03,위안화 절하 (차이나 쇼크),2015-08-11,policy/macro,X,X,수급 커버 이전
+D04,브렉시트 국민투표,2016-06-23,policy/macro,O,X,
+D05,미중 무역전쟁 격화,2018-03-22,policy/macro,O,X,
+D06,연준 긴축 쇼크 (2022),2022-01-05,policy/macro,O,X,
+E01,BP 딥워터 호라이즌 원유 유출,2010-04-20,industry/macro,X,X,수급 커버 이전
+E02,폭스바겐 디젤 게이트,2015-09-18,industry/macro,X,X,수급 커버 이전
+E03,ChatGPT 출시 / AI 빅뱅,2022-11-30,industry/macro,O,X,
+E04,딥시크 쇼크,2025-01-27,industry/macro,O,X,
+E05,트럼프 관세 폭탄 (2025),2025-04-02,industry/macro,O,X,
+M001,스타벅스 5·18 탱크데이 논란,2026-05-18,corporate_scandal/micro,O,O,해외 기업 — 국내 증시 직접 연관 낮음(수동 확인 필요)
+M002,한진 조현민 물컵 갑질 사건,2018-04-12,owner_risk/micro,O,X,
+M003,남양유업 갑질 음성파일 공개,2013-05-04,owner_risk/micro,X,X,수급 커버 이전
+M004,카카오 SK C&C 판교 데이터센터 화재,2022-10-15,product_safety/micro,O,X,
+M005,화물연대 2차 총파업 (안전운임제),2022-11-24,labor/micro,O,X,
+M006,이건희 회장 와병 (심근경색 입원),2014-05-10,succession/micro,X,X,수급 커버 이전
+M007,이건희 회장 별세 (상속·배당 정책 전환),2020-10-25,succession/micro,O,X,
+M008,제일모직-삼성물산 합병 주총 통과,2015-07-17,succession/micro,X,X,수급 커버 이전
+M009,정기선 HD현대 부회장 승진 (3세 승계 가시화),2023-11-23,succession/micro,O,X,
+M010,LG화학 LG에너지솔루션 물적분할 발표,2020-09-17,capital_event/micro,O,X,
+M011,LG에너지솔루션 상장 (한국 최대 IPO),2022-01-27,listing_event/micro,O,X,
+M012,카카오뱅크 상장 (인터넷전문은행 최초 IPO),2021-08-06,listing_event/micro,O,X,
+M013,삼성전자 50:1 액면분할,2018-05-04,capital_event/micro,O,X,
+M014,카카오 5:1 액면분할,2021-04-15,capital_event/micro,O,X,
+M015,대한항공 아시아나 인수 + 2.5조 유상증자 발표,2020-11-16,capital_event/micro,O,X,
+M016,SK이노베이션 배터리 분할 발표 (SK온),2021-07-01,capital_event/micro,O,X,
+M017,메리츠금융 완전자회사 편입 (주주환원 선언),2022-11-21,capital_event/micro,O,X,
+M018,SK바이오팜 IPO 따상상상,2020-07-02,listing_event/micro,O,X,
+M019,카카오게임즈 IPO 따상,2020-09-10,listing_event/micro,O,X,
+M020,하이브(빅히트) 상장 — 따상 후 급락,2020-10-15,listing_event/micro,O,X,
+M021,SK바이오사이언스 IPO 따상,2021-03-18,listing_event/micro,O,X,
+M022,크래프톤 IPO 첫날 약세 (4.3조 빅딜),2021-08-10,listing_event/micro,O,X,
+M023,카카오페이 IPO + 경영진 스톡옵션 매도 논란,2021-11-03,listing_event/micro,O,X,
+M024,두산밥캣 IPO (사모펀드 회수),2016-11-18,listing_event/micro,O,X,
+M025,두산로보틱스 IPO 따상 후 급락,2023-10-05,listing_event/micro,O,X,
+M026,에코프로머티리얼즈 IPO (2차전지 분할),2023-11-17,listing_event/micro,O,X,
+M027,HD현대마린솔루션 IPO (HD현대 분할 시리즈),2024-05-08,listing_event/micro,O,X,
