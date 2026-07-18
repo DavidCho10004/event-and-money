@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block title %}백테스트 — Event & Money{% endblock %}
 {% block og_title %}수급 전략 10년 백테스트{% endblock %}
-{% block og_description %}50개 조합 검증 — 매수 신호 없음, 유일한 견고 신호는 개인 쏠림 회피{% endblock %}
+{% block og_description %}90여 조합 검증 — 매수 신호 없음, 유일한 견고 신호는 개인 쏠림 회피{% endblock %}
 
 {% block content %}
 <h1>수급 전략 백테스트 (2016~2026)</h1>
 
 <div style="background:#1a1a2e; color:#fff; border-radius:10px; padding:14px 16px; margin:12px 0; font-size:14px; max-width:760px;">
-    <div><b>① 매수 신호 없음</b> <span style="color:#ccc; font-size:13px;">— 수급·팩터·빈도 60여 조합 중 강건성(기간 분할·극단값 제거·비용) 전부 통과 0개</span></div>
+    <div><b>① 매수 신호 없음</b> <span style="color:#ccc; font-size:13px;">— 수급·팩터·빈도·사건·조건부 90여 조합 중 강건성(기간 분할·극단값 제거·비용) 전부 통과 0개</span></div>
     <div style="margin-top:4px;"><b>② 견고한 회피 신호 1개</b> <span style="color:#ccc; font-size:13px;">— 개인 쏠림(H3): 코스피 1~3개월 유의한 저성과 (t=-2.4~-3.7)</span></div>
     <div style="margin-top:4px;"><b>③ 서열 발견</b> <span style="color:#ccc; font-size:13px;">— 지속 매집 > 스파이크 매집 (전 조합 일관, 단 절대 우위는 없음)</span></div>
 </div>
@@ -120,6 +120,47 @@ E1도 <b>수익이 낮을수록 가설 지지</b> — 코스닥 6개월 -9.7%p(t
 오히려 심화, 특정 사건이 아닌 광범위한 패턴. <b>사건 국면의 개인 쏠림은 평상시보다 강한 회피 대상.</b>
 사건별 낱장:
 <a href="https://github.com/DavidCho10004/event-and-money/blob/master/data/processed/backtest/backtest_event_monthly.csv">backtest_event_monthly.csv</a>
+</p>
+
+</details>
+<details style="margin-top:16px;"><summary style="font-size:16px; font-weight:bold; cursor:pointer;">조건부 1라운드 (C1 밸류 / C2 위치 / C3 변동성 — 베이스 이등분, A군 종료)</summary>
+{% for c in data.cond_comments %}
+<p style="font-size:12px; color:#888; margin:2px 0;">{{ c }}</p>
+{% endfor %}
+<p style="font-size:12px; color:#c5221f; max-width:760px;">⚠ 베이스(외인 강도 상위 30 ∩ 지속형)가 월평균 8~10종목뿐이라
+분할군 거의 전 셀이 <b>표본 희박</b>(월평균 10 미만, 희박 열 ⚠) — 아래 숫자는 지침 수준.</p>
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse; font-size:12px; white-space:nowrap;">
+<tr style="background:#f0f0f5;">
+    <th style="padding:5px 8px;">시장</th><th style="padding:5px 8px;">분할군</th><th style="padding:5px 8px;">보유</th>
+    <th style="padding:5px 8px;">진입</th><th style="padding:5px 8px;">평균종목수</th>
+    <th style="padding:5px 8px;">초과(랜덤)</th><th style="padding:5px 8px;">비용후</th>
+    <th style="padding:5px 8px;">상위3 제거</th><th style="padding:5px 8px;">승률</th>
+    <th style="padding:5px 8px;">희박</th>
+</tr>
+{% for r in data.cond_summary %}
+<tr style="border-bottom:1px solid #eee;">
+    <td style="padding:4px 8px;">{{ r.시장 }}</td>
+    <td style="padding:4px 8px;">{{ r.전략명 }}</td>
+    <td style="padding:4px 8px;">{{ r.보유개월 }}m</td>
+    <td style="padding:4px 8px;">{{ r.진입횟수 }}</td>
+    <td style="padding:4px 8px;">{{ r.평균종목수 }}</td>
+    <td style="padding:4px 8px; font-weight:bold; color:{{ '#d32f2f' if r['평균초과_랜덤%p']|float > 0 else '#1565c0' }};">{{ r['평균초과_랜덤%p'] }}%p</td>
+    <td style="padding:4px 8px;">{{ r['평균초과_랜덤_비용후%p'] }}%p</td>
+    <td style="padding:4px 8px;">{{ r.상위3제거 or "—" }}%p</td>
+    <td style="padding:4px 8px;">{{ r['승률_vs랜덤'] }}%</td>
+    <td style="padding:4px 8px;">{{ "⚠" if r.표본희박 == "True" else "" }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+<p style="font-size:12px; color:#555; max-width:760px;">
+<b>매수 신호 0 유지.</b> 유일한 유의 격차는 코스피 6개월 고점근처−낙폭 +8.0%p(t=2.06)이나 12셀 다중비교 중
+1건·표본 희박이라 신호 승격 없음. 강건한 쪽은 반대편 — <b>낙폭군(코스피 6개월)은 강건성 전 항목
+음수(-5.5~-8.8%p)</b> → "수급이 좋아도 낙폭 구간은 피하라"는 참고 지침으로만 기록.
+C3는 사전 예상(저변동 우위)과 반대(코스피 6개월 고변동 우위, t=-2.12).
+베이스 표본 희박으로 <b>조건부 검증(A군)은 이 베이스에서 구조적으로 종료.</b> 상세:
+<a href="https://github.com/DavidCho10004/event-and-money/blob/master/docs/hypotheses.md">docs/hypotheses.md</a>
 </p>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
