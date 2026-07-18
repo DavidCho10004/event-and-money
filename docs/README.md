@@ -63,6 +63,7 @@
 | `market_flows_{시장}_{W,M}.csv` | 수급 분석 화면 (/supply-demand) 주간/월간 추이 |
 | `detail/` | 종목 상세 (/buy-review/{코드}) |
 | `event_supply/` | 사건×수급 지도 ([event_supply_map.py](../수급/pipeline/event_supply_map.py) 산출) |
+| `cowalk/` | 수급동행 진단 — 종목별 52주 상관·분포·검산 낱장, 상세 배지 원자료 ([cowalk.py](../수급/pipeline/cowalk.py), 검증 아닌 기술 통계) |
 
 `수급/data/*.csv` (stock_*.csv, supply_demand_*.csv 등)는 구버전 Streamlit 로컬 앱의 캐시로, 현재 검증·운영과 무관하다.
 
