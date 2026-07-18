@@ -52,6 +52,7 @@
 | `backtest_daily*.csv` | A 익일 감쇠 곡선 (일별 외인 상위 → t+1 진입) | [backtest_daily.py](../수급/pipeline/backtest_daily.py) |
 | `backtest_freq_*.csv` | B 빈도 가설 (직전 20거래일 순위 진입 일수) | [backtest_freq.py](../수급/pipeline/backtest_freq.py) |
 | `backtest_event_*.csv` | E1/E2 사건 월 개인·외인 쏠림 (사건 36건) | [backtest_event.py](../수급/pipeline/backtest_event.py) |
+| `backtest_cond_*.csv` | C1~C3 조건부 1라운드 (베이스 이등분: 밸류/위치/변동성) | [backtest_conditional.py](../수급/pipeline/backtest_conditional.py) |
 | `backtest_*_test2020.csv` | 파이프라인 시험 실행분 (2020년 한정) — 분석에 사용하지 말 것 | backtest.py `--start/--end` |
 
 ### 화면용 CSV — `data/processed/` (커밋됨, 주간 갱신 대상)
@@ -78,6 +79,7 @@ python pipeline/backtest_f1_stress.py    # F1 스트레스
 python pipeline/backtest_daily.py        # A (일별)
 python pipeline/backtest_freq.py         # B (빈도)
 python pipeline/backtest_event.py        # E1/E2 (사건)
+python pipeline/backtest_conditional.py  # C1~C3 (조건부 1라운드)
 ```
 
 전제: 로컬에 원본 Parquet이 있어야 한다 (git에 없음 — ⑤ 백업 항목 참조).
