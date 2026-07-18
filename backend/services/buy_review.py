@@ -85,6 +85,8 @@ def _load(market: str, p: str):
                 "flag_offmkt": _flag(r.get(f"플래그_장외변동_{p}")),
                 "inst_buy": _flag(r.get(f"플래그_기관동반_{p}")),
                 "indiv_sell": _flag(r.get(f"플래그_개인순매도_{p}")),
+                "cowalk": (r.get("수급동행") or "").strip(),
+                "cowalk_r": _num(r.get("수급동행r")),
             })
     return rows
 

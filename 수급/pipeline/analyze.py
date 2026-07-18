@@ -7,12 +7,14 @@
   - 기준 스냅샷이 허용 오차 내에 없으면 그 기간은 '미제공' (meta에 기록, 지어내지 않음)
   - 1w는 일별 지분율 스냅샷이 쌓인 뒤에 자동 활성화
 강도(%) = 기간 외국인 순매수 주식수 ÷ 기간 시작 시점 상장주식수 × 100.
-수급동행은 2단계 예약.
+수급동행 = cowalk.compute_cowalk() (주간 외인 수급 vs 주가 52주 동행 상관, 시장별 3분위).
 """
 import json
 import logging
 
 import pandas as pd
+
+import cowalk
 import store
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -78,7 +80,7 @@ def build(market: str) -> tuple[pd.DataFrame, dict]:
     df["PBR_최근"] = latest_snap["PBR"]
     df["시가총액_억"] = (latest_snap["시가총액"] / 1e8).round(0)
     df["종가_최근"] = latest_snap["종가"]
-    df["수급동행"] = pd.NA      # 2단계 예약
+    df["수급동행"] = pd.NA      # main()에서 cowalk 결과로 채움 (등급 상/중/하, 관측 부족은 빈칸)
 
     meta_periods = {}
     for p, (days, tol) in PERIODS.items():
@@ -228,9 +230,14 @@ def build_market_flows() -> None:
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    # 수급동행 (52주 롤링이라 주 단위 변화 작음 — 계산 ~5초라 주간 갱신에 포함)
+    cw = cowalk.compute_cowalk()
     meta = {}
     for market in ["KOSPI", "KOSDAQ"]:
         df, m = build(market)
+        cw_m = cw[cw["시장"] == market].set_index("코드")
+        df["수급동행"] = df["코드"].map(cw_m["수급동행"]).fillna("")
+        df["수급동행r"] = df["코드"].map(cw_m["r_동행"])
         out = OUT_DIR / f"buy_review_{market}.csv"
         df.to_csv(out, index=False, encoding="utf-8-sig")
         meta[market] = m

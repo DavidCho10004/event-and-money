@@ -55,6 +55,10 @@
             <span style="background:#5f6368; color:#fff; border-radius:4px; padding:1px 6px; font-size:11px;"
                   title="백테스트 H3: 과거 10년 코스피에서 1~3개월 유의한 저성과 (t=-2.4~-3.7){% if data.market == 'KOSDAQ' %} · 사건 국면에서는 6개월 -9.7%p (36사건, t=-3.2, 상위3 제거 시 -13.4%p){% endif %}">⚠ 개인 몰림 {{ data.head.indiv_crowd_rank }}위</span>
             {% endif %}
+            {% if data.head.cowalk and data.head.cowalk_r is not none %}
+            <span style="background:#f0f0f5; color:#555; border-radius:4px; padding:1px 6px; font-size:11px;"
+                  title="이 종목의 주간 외인 수급과 주가의 1년 동행 상관 r={{ '%.2f'|format(data.head.cowalk_r) }} — 과거 기술 통계이며 예측 지표 아님 (시장 내 3분위: 상/중/하)">수급동행 {{ data.head.cowalk }} · r={{ "%.2f"|format(data.head.cowalk_r) }} ⓘ</span>
+            {% endif %}
             {% if data.head.flag_shares %}
             <span style="background:#f0b429; color:#5c4400; border-radius:4px; padding:1px 6px; font-size:11px;">⚠ 상장주식수 {{ "%+.1f"|format(data.head.shares_chg) }}%</span>
             {% endif %}
