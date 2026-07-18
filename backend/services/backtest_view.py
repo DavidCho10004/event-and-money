@@ -15,6 +15,10 @@ STRAT_NAME = {
     "d": "d 매집+미반응", "dp": "d′ 매집+기반응(대조군)",
     "H1": "H1 폭락 레짐", "H2i": "H2 지속형", "H2ii": "H2 스파이크형", "H3": "H3 개인 쏠림(역신호)",
     "E1": "E1 사건 월 개인 쏠림", "E2": "E2 사건 월 외인 쏠림(대조군)",
+    "베이스": "베이스 (강도30 ∩ 지속형)",
+    "C1_저PBR": "C1 저PBR (충족)", "C1_고PBR": "C1 고PBR (미충족)",
+    "C2_고점근처": "C2 고점근처 (충족)", "C2_낙폭": "C2 낙폭 (미충족)",
+    "C3_저변동": "C3 저변동 (충족)", "C3_고변동": "C3 고변동 (미충족)",
 }
 CURVE_COMBO = ("KOSPI", "b", "6")   # 누적 곡선 기본 조합
 
@@ -52,9 +56,12 @@ def get_backtest_view() -> dict:
     _, hyp_robust = _read("backtest_hyp_robustness.csv")
     ev_comments, ev_summary = _read("backtest_event_summary.csv")
     _, ev_robust = _read("backtest_event_robustness.csv")
+    cond_comments, cond_summary = _read("backtest_cond_summary.csv")
+    _, cond_robust = _read("backtest_cond_robustness.csv")
     _, monthly = _read("backtest_monthly.csv")
 
-    robust_map = {(r["시장"], r["전략"], r["보유개월"]): r for r in robust + hyp_robust + ev_robust}
+    robust_map = {(r["시장"], r["전략"], r["보유개월"]): r
+                  for r in robust + hyp_robust + ev_robust + cond_robust}
 
     def enrich(rows):
         out = []
@@ -92,6 +99,8 @@ def get_backtest_view() -> dict:
         "hyp_comments": hyp_comments,
         "ev_summary": enrich(ev_summary),
         "ev_comments": ev_comments,
+        "cond_summary": enrich(cond_summary),
+        "cond_comments": cond_comments,
         "curve": curve,
         "curve_label": f"{mkt} · {STRAT_NAME[strat]} · {hold}개월 보유",
         "is_empty": not summary,
