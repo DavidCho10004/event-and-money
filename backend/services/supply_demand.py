@@ -64,5 +64,9 @@ def get_supply_demand(market: str = "KOSPI", freq: str = "W") -> dict:
                        "inst": _jo(_num(last.get("기관_억"))), "inst_raw": _num(last.get("기관_억")),
                        "indiv": _jo(_num(last.get("개인_억"))), "indiv_raw": _num(last.get("개인_억"))}
 
+    from backend.services.buy_review import staleness
+    as_of = rows[-1]["label"]
+    stale_days, is_stale = staleness(as_of)
     return {**base, "is_empty": False, "rows": rows,
-            "summary": summary, "as_of": rows[-1]["label"]}
+            "summary": summary, "as_of": as_of,
+            "stale_days": stale_days, "is_stale": is_stale}

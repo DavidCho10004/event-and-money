@@ -10,6 +10,20 @@
     <a href="/backtest" style="color:#1a56b0;">10년 백테스트 결과: 매수 신호 없음 · 유일한 견고 신호는 개인 쏠림 회피 →</a>
 </p>
 
+{% if data.is_stale %}
+<div style="background:#fdecea; border:1px solid #f5b7b1; border-radius:6px;
+            padding:10px 14px; margin:10px 0; font-size:13px; color:#922b21;">
+    ⚠️ <b>{{ data.stale_days }}일 지난 데이터입니다</b> (기준일 {{ data.as_of }}).
+    수급 데이터는 로컬 PC에서 주기적으로 갱신해야 하며, 현재 표시된 순위는 최신이 아닙니다.
+    투자 판단에 사용하지 마세요.
+</div>
+{% endif %}
+
+<p style="font-size:11px; color:#999; margin-bottom:6px;">
+    ※ 본 화면은 정보 제공 목적의 데이터 분석이며 <b>투자 추천·매수 신호가 아닙니다.</b>
+    표시된 종목·순위는 과거 수급 통계일 뿐이며, 매매 판단과 그 결과의 책임은 이용자 본인에게 있습니다.
+</p>
+
 {% if data.is_empty %}
 <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px;
             padding:10px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
