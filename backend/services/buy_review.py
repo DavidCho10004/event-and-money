@@ -11,7 +11,22 @@
 """
 import csv
 import json
+from datetime import date
 from pathlib import Path
+
+# 데이터가 이 일수를 넘겨 오래되면 화면에 경고 배너 표시
+STALE_WARN_DAYS = 14
+
+
+def staleness(as_of: str | None):
+    """as_of('YYYY-MM-DD') 기준 경과일과 경고 여부. 파싱 실패 시 (None, False)."""
+    if not as_of:
+        return None, False
+    try:
+        days = (date.today() - date.fromisoformat(str(as_of)[:10])).days
+    except (ValueError, TypeError):
+        return None, False
+    return days, days > STALE_WARN_DAYS
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 PROCESSED_DIR = ROOT / "data" / "processed"
@@ -32,8 +47,19 @@ import re
 _PREF_RE = re.compile(r"(우|[0-9]우[BC]?|우[BC])$")
 
 
-def _is_preferred(name: str) -> bool:
-    return bool(_PREF_RE.search(name or ""))
+def _is_preferred(name: str, code: str = "") -> bool:
+    """우선주 판정.
+
+    종목명 패턴만 쓰면 '미래에셋대우'처럼 보통주인데 '우'로 끝나는 종목이
+    오탐된다. 한국 우선주 종목코드는 끝자리가 0이 아님(보통주는 대개 0으로 끝남,
+    우선주는 5/7/9 등)을 함께 요구해 오탐을 제거한다.
+    """
+    if not _PREF_RE.search(name or ""):
+        return False
+    # 종목코드 끝자리가 0이면 보통주로 간주 (미래에셋대우 006800 → 보통주)
+    if code and str(code)[-1] == "0":
+        return False
+    return True
 
 
 def _num(v):
@@ -122,15 +148,23 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
             "pbr_max": PBR_MAX_DEFAULT, "min_netbuy": MIN_NETBUY_EOK,
             "rank_cut": RANK_BADGE_CUT}
 
+    as_of = mmeta.get("기준일")
+    stale_days, is_stale = staleness(as_of)
+    base = {**base, "as_of": as_of, "stale_days": stale_days,
+            "is_stale": is_stale, "stale_warn_days": STALE_WARN_DAYS}
+
     rows = _load(market, p)
     if rows is None:
-        return {**base, "as_of": None, "total": 0, "matched": 0, "shown": 0,
+        return {**base, "total": 0, "matched": 0, "shown": 0,
                 "rows": [], "is_empty": True}
 
     total = len(rows)
     rows = [x for x in rows if x["delta"] is not None]
-    if nopref:   # 우선주 제외 (종목명 패턴 기반)
-        rows = [x for x in rows if not _is_preferred(x["name"])]
+    # '매수 후보' 스크리너이므로 외인 지분율이 증가한(delta>0) 종목만 후보로 둔다.
+    # 외인이 순매도(delta<=0)한 종목이 매수 후보 리스트에 섞여 오도되던 버그 수정.
+    rows = [x for x in rows if x["delta"] > 0]
+    if nopref:   # 우선주 제외 (종목명 패턴 + 종목코드 끝자리)
+        rows = [x for x in rows if not _is_preferred(x["name"], x["code"])]
     if minamt:   # 외인 순매수 절대값 하한
         rows = [x for x in rows if x["netbuy_frgn"] is not None
                 and abs(x["netbuy_frgn"]) >= MIN_NETBUY_EOK]
@@ -160,10 +194,12 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
     elif sort == "strength":
         rows.sort(key=lambda x: -(x["strength"] if x["strength"] is not None else float("-inf")))
     elif sort == "accel":
-        # 최근 1주일 변화폭 ÷ 기간 변화폭 — 최근에 몰린 종목 우선.
-        # 분모가 작으면(|변화폭| < ACCEL_DENOM_MIN) 비율이 불안정 → 제외
+        # 최근 1주일 매수 변화폭 ÷ 기간 매수 변화폭 — 최근에 매수가 몰린 종목 우선.
+        # 분모(delta)는 위에서 delta>0으로 이미 걸러져 항상 양수.
+        # 부호 가드 없이 abs()를 쓰던 기존 로직은 '매도 가속' 종목(delta<0,
+        # delta_1w<0)이 accel>0으로 매수 스크리너 상단에 오르던 버그가 있었음.
         rows = [x for x in rows if x["delta_1w"] is not None
-                and abs(x["delta"]) >= ACCEL_DENOM_MIN]
+                and x["delta"] >= ACCEL_DENOM_MIN]
         for x in rows:
             x["accel"] = round(x["delta_1w"] / x["delta"], 2)
         matched = len(rows)
@@ -172,7 +208,7 @@ def get_buy_review(market: str = "KOSPI", p: str = DEFAULT_PERIOD,
         rows.sort(key=lambda x: -x["delta"])
     shown = rows[:LIST_LIMIT]
 
-    return {**base, "as_of": mmeta.get("기준일"), "total": total,
+    return {**base, "total": total,
             "matched": matched, "shown": len(shown), "rows": shown, "is_empty": False}
 
 

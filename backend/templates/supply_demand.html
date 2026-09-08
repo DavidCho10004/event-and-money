@@ -11,6 +11,14 @@
     신호 검증은 <a href="/backtest" style="color:#1a56b0;">백테스트</a> 참조.
 </p>
 
+{% if data.is_stale %}
+<div style="background:#fdecea; border:1px solid #f5b7b1; border-radius:6px;
+            padding:10px 14px; margin:10px 0; font-size:13px; color:#922b21;">
+    ⚠️ <b>{{ data.stale_days }}일 지난 데이터입니다</b> (기준일 {{ data.as_of }}).
+    주간 수집(run_weekly)이 최근 실행되지 않아 최신 흐름이 아닙니다.
+</div>
+{% endif %}
+
 {% if data.is_empty %}
 <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:6px;
             padding:10px 14px; margin:12px 0; font-size:13px; color:#8a6d3b;">
