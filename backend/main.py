@@ -12,13 +12,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from datetime import timedelta
 
-from fastapi import FastAPI, Request, Query
+from fastapi import FastAPI, Request, Query, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
-from backend.db.database import SessionLocal
+from backend.db.database import get_db
 from backend.models import Event, Asset, Price, Return
 from backend.services.hypothesis import run_all as run_hypotheses
 from backend.services.supply_demand import get_supply_demand
@@ -68,11 +69,11 @@ SUMMARIES = _load_summaries()
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, category: str = Query(None), scale: str = Query(None),
-          q: str = Query(None), sort: str = Query("date_desc")):
+          q: str = Query(None), sort: str = Query("date_desc"),
+          db: Session = Depends(get_db)):
     if sort not in ("date_asc", "date_desc", "category"):
         sort = "date_desc"
 
-    db = SessionLocal()
     query = db.query(Event)
     if category:
         query = query.filter(Event.category == category)
@@ -100,7 +101,6 @@ def index(request: Request, category: str = Query(None), scale: str = Query(None
 
     scale_counts = dict(db.query(Event.scale, func.count()).group_by(Event.scale).all())
 
-    db.close()
     return templates.TemplateResponse("index.html", {
         "request": request,
         "events": events,
@@ -115,18 +115,15 @@ def index(request: Request, category: str = Query(None), scale: str = Query(None
 
 
 @app.get("/event/{key}", response_class=HTMLResponse)
-def event_detail(request: Request, key: str):
+def event_detail(request: Request, key: str, db: Session = Depends(get_db)):
     """사건 상세. key는 slug(권장) 또는 ID(하위호환). ID 접근 시 slug로 301 리다이렉트."""
-    db = SessionLocal()
     event = db.query(Event).filter((Event.slug == key) | (Event.id == key)).first()
 
     if not event:
-        db.close()
         return HTMLResponse("<h1>404</h1><p>사건을 찾을 수 없습니다. <a href='/'>목록으로</a></p>", status_code=404)
 
     # canonical URL = slug
     if event.slug and key == event.id:
-        db.close()
         return RedirectResponse(f"/event/{event.slug}", status_code=301)
 
     event_id = event.id
@@ -219,7 +216,6 @@ def event_detail(request: Request, key: str):
 
     missing_affected = [s for s in affected if s not in table] if affected else []
 
-    db.close()
     return templates.TemplateResponse("event_detail.html", {
         "request": request,
         "event": event,
@@ -235,7 +231,7 @@ def event_detail(request: Request, key: str):
 
 
 @app.get("/api/timeline/{event_id}")
-def api_timeline(event_id: str):
+def api_timeline(event_id: str, db: Session = Depends(get_db)):
     """마이크로 사건의 직접영향·비교군 자산 가격 추이를 한 번에 반환 (인라인 차트용).
 
     윈도우:
@@ -243,17 +239,14 @@ def api_timeline(event_id: str):
       - announce_date가 사건일 7일 이상 앞이면 announce_date - 7부터 시작 (트랙C 사전반응)
     값: 사건일(D=0) 가격 = 0%, 이후 일별 누적수익률 (%)
     """
-    db = SessionLocal()
     event = db.query(Event).filter(Event.id == event_id).first()
     if not event:
-        db.close()
         return JSONResponse({"error": "event not found"}, status_code=404)
 
     affected = json.loads(event.affected_entities) if event.affected_entities else []
     comparable = json.loads(event.comparable_universe) if event.comparable_universe else []
     all_symbols = list(dict.fromkeys(affected + comparable))  # 순서 유지 + 중복 제거
     if not all_symbols:
-        db.close()
         return JSONResponse({
             "event_id": event_id,
             "event_date": str(event.event_date),
@@ -301,7 +294,6 @@ def api_timeline(event_id: str):
             ],
         })
 
-    db.close()
     return JSONResponse({
         "event_id": event_id,
         "event_date": str(event.event_date),
@@ -311,12 +303,10 @@ def api_timeline(event_id: str):
 
 
 @app.get("/api/prices/{event_id}/{symbol}")
-def api_prices(event_id: str, symbol: str):
+def api_prices(event_id: str, symbol: str, db: Session = Depends(get_db)):
     """사건 기준 D-30~D+365 가격 데이터를 JSON으로 반환"""
-    db = SessionLocal()
     event = db.query(Event).filter(Event.id == event_id).first()
     if not event:
-        db.close()
         return JSONResponse({"error": "event not found"}, status_code=404)
 
     asset = db.query(Asset).filter(Asset.symbol == symbol).first()
@@ -353,7 +343,6 @@ def api_prices(event_id: str, symbol: str):
         "base_price": round(base_price, 2),
         "base_date": str(event.event_date),
     }
-    db.close()
     return JSONResponse(data)
 
 
@@ -405,13 +394,11 @@ def _heatmap_cell_class(v):
 
 
 @app.get("/og/{key}.png")
-def og_image(key: str):
+def og_image(key: str, db: Session = Depends(get_db)):
     """사건별 OG 이미지(1200x630 PNG) 동적 생성. 30분 캐시."""
     from backend.services.og_image import render_event_og
 
-    db = SessionLocal()
     event = db.query(Event).filter((Event.slug == key) | (Event.id == key)).first()
-    db.close()
 
     if not event:
         return Response(status_code=404)
@@ -425,7 +412,8 @@ def og_image(key: str):
 def heatmap(request: Request,
             scale: str = Query(None),
             period: str = Query("D+30"),
-            assets: str = Query(None)):
+            assets: str = Query(None),
+            db: Session = Depends(get_db)):
     """인터랙티브 히트맵 (HTML 테이블).
 
     필터: scale (all/macro/micro), period (D-30~D+365), assets (summary/korea/all)
@@ -435,8 +423,6 @@ def heatmap(request: Request,
         period = "D+30"
     if assets not in ("summary", "korea", "all"):
         assets = "korea" if scale == "micro" else "summary"
-
-    db = SessionLocal()
 
     # 사건 (최신순, scale 필터)
     eq = db.query(Event).order_by(Event.event_date.desc())
@@ -475,8 +461,6 @@ def heatmap(request: Request,
     matrix = {(r.event_id, r.symbol): float(r.return_pct) for r in returns}
 
     scale_counts = dict(db.query(Event.scale, func.count()).group_by(Event.scale).all())
-
-    db.close()
 
     rows = []
     for e in events:
@@ -572,11 +556,9 @@ def _event_compare_data(db, event_id, override_symbol=None):
 
 
 @app.get("/hypothesis", response_class=HTMLResponse)
-def hypothesis(request: Request):
+def hypothesis(request: Request, db: Session = Depends(get_db)):
     """5대 가설 검증 결과 페이지 — Return 테이블에서 실시간 산출"""
-    db = SessionLocal()
     results = run_hypotheses(db)
-    db.close()
     return templates.TemplateResponse("hypothesis.html", {
         "request": request,
         "r": results,
@@ -650,9 +632,9 @@ def api_supply_demand(market: str = Query("KOSPI"), freq: str = Query("W")):
 @app.get("/compare", response_class=HTMLResponse)
 def compare(request: Request,
             a: str = Query(None), b: str = Query(None),
-            sa: str = Query(None), sb: str = Query(None)):
+            sa: str = Query(None), sb: str = Query(None),
+            db: Session = Depends(get_db)):
     """두 사건을 나란히 비교. 쿼리: a, b (event_id) / sa, sb (각 사건 대표 자산 override)"""
-    db = SessionLocal()
     events_all = db.query(Event).order_by(Event.event_date.desc()).all()
     # 드롭다운용 그룹화 (매크로/마이크로)
     events_macro = [e for e in events_all if (e.scale or "macro") == "macro"]
@@ -661,7 +643,6 @@ def compare(request: Request,
     side_a = _event_compare_data(db, a, sa) if a else None
     side_b = _event_compare_data(db, b, sb) if b else None
 
-    db.close()
     return templates.TemplateResponse("compare.html", {
         "request": request,
         "events_all": events_all,
