@@ -49,6 +49,37 @@ def _num(v):
         return None
 
 
+def _sweep_grid():
+    """inst_streak_sweep.csv → 연속일(행) × 보유일(열) 격자. 없으면 None.
+
+    각 셀: 평균초과%p(전략 평균 − 랜덤 평균), 승률%, N, shade(0~5, |초과| 상대 농도).
+    """
+    comments, rows = _read("inst_streak_sweep.csv")
+    if not rows:
+        return None
+    streaks = sorted({int(r["연속일"]) for r in rows})
+    holds = sorted({int(r["보유일"]) for r in rows})
+    cell = {(int(r["연속일"]), int(r["보유일"])): r for r in rows}
+    vals = [v for v in (_num(r["평균초과%p"]) for r in rows) if v is not None]
+    max_abs = max((abs(v) for v in vals), default=1.0) or 1.0
+    grid = []
+    for st in streaks:
+        line = []
+        for h in holds:
+            r = cell.get((st, h))
+            ex = _num(r["평균초과%p"]) if r else None
+            shade = 0 if ex is None else min(5, max(1, int(round(abs(ex) / max_abs * 5))))
+            line.append({**(r or {}), "excess": ex, "shade": shade, "neg": (ex or 0) < 0})
+        grid.append({"streak": st, "cells": line})
+    return {
+        "comments": comments, "streaks": streaks, "holds": holds, "grid": grid,
+        "n_cells": len(vals), "n_neg": sum(1 for x in vals if x < 0),
+        "min_excess": round(min(vals), 2), "max_excess": round(max(vals), 2),
+        "win_min": round(min(_num(r["승률%"]) for r in rows), 1),
+        "win_max": round(max(_num(r["승률%"]) for r in rows), 1),
+    }
+
+
 def get_backtest_view() -> dict:
     _, summary = _read("backtest_summary.csv")
     _, robust = _read("backtest_robustness.csv")
@@ -103,5 +134,6 @@ def get_backtest_view() -> dict:
         "cond_comments": cond_comments,
         "curve": curve,
         "curve_label": f"{mkt} · {STRAT_NAME[strat]} · {hold}개월 보유",
+        "sweep": _sweep_grid(),
         "is_empty": not summary,
     }
