@@ -163,6 +163,53 @@ C3는 사전 예상(저변동 우위)과 반대(코스피 6개월 고변동 우�
 <a href="https://github.com/DavidCho10004/event-and-money/blob/master/docs/hypotheses.md">docs/hypotheses.md</a>
 </p>
 
+{% if data.sweep %}
+{% set sw = data.sweep %}
+<details style="margin-top:16px;" open><summary style="font-size:16px; font-weight:bold; cursor:pointer;">기관 연속 순매수 추종 — 파라미터 스윕 (연속 {{ sw.streaks|min }}~{{ sw.streaks|max }}일 × 보유 {{ sw.holds|min }}~{{ sw.holds|max }}일, {{ sw.n_cells }}조합)</summary>
+{% for c in sw.comments %}
+<p style="font-size:12px; color:#888; margin:2px 0;">{{ c }}</p>
+{% endfor %}
+<p style="font-size:13px; color:#333; max-width:760px; margin-top:6px;">
+질문 "기관이 N일 연속 사면 다음날 따라 사서 M일 들고 있으면 되나?"에 대한 답.
+<b>{{ sw.n_cells }}칸 중 {{ sw.n_neg }}칸이 랜덤보다 나쁨</b>
+(평균초과 {{ sw.min_excess }} ~ {{ sw.max_excess }}%p, 승률 {{ sw.win_min }}~{{ sw.win_max }}%, 50% 초과 조합 없음).
+노이즈였다면 일부 칸이 양수여야 하는데 전부 음수이고 표면이 한 방향으로 매끄럽게 기울어 있어 <b>구조적</b>입니다.
+</p>
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse; font-size:12px; white-space:nowrap;">
+<tr style="background:#f0f0f5;">
+    <th style="padding:5px 10px; text-align:left;">연속 \ 보유</th>
+    {% for hd in sw.holds %}<th style="padding:5px 10px;">{{ hd }}일</th>{% endfor %}
+</tr>
+{% for row in sw.grid %}
+<tr style="border-bottom:1px solid #eee;">
+    <td style="padding:5px 10px; font-weight:bold;">{{ row.streak }}일 연속</td>
+    {% for c in row.cells %}
+    {% set bg = ['#fff','#eaf2f8','#aed6f1','#5dade2','#2980b9','#1a5276'][c.shade] if c.neg else ['#fff','#fdecea','#fab1a0','#f1948a','#e74c3c','#a93226'][c.shade] %}
+    {% set fg = '#fff' if c.shade >= 3 else '#333' %}
+    <td style="padding:5px 10px; text-align:center; background:{{ bg }}; color:{{ fg }};"
+        title="N={{ c.N }} · 승률 {{ c['승률%'] }}% · 평균 {{ c['평균%'] }}% (비용전 {{ c['비용전평균%'] }}%) · 랜덤 {{ c['대조평균%'] }}% · t={{ c.t }}">
+        {% if c.excess is none %}—{% else %}<b>{{ '%+.2f'|format(c.excess) }}</b><br><span style="font-size:10px; opacity:.85;">승률 {{ c['승률%'] }}%</span>{% endif %}
+    </td>
+    {% endfor %}
+</tr>
+{% endfor %}
+</table>
+</div>
+<p style="font-size:11px; color:#888; margin-top:4px;">셀 = 전략 평균수익 − 랜덤 대조군 (%p). 파랑 = 랜덤보다 나쁨, 빨강 = 좋음 (진할수록 큼). 마우스를 올리면 N·승률·t.</p>
+<p style="font-size:12px; color:#555; max-width:760px;">
+두 가지 규칙적 패턴: <b>보유가 길수록 악화</b>(초반 상승분은 이미 반영, 이후 평균회귀 누적),
+<b>기관이 더 오래 연속으로 산 종목일수록 악화</b>(길게 밀어올린 종목일수록 되돌림).
+기존 결론 "수급 정보는 다음날 이미 반영"과 일치. 연속일 역상관은 효과가 작고 장세 하나라 <b>전략화 금지</b> — "기관 추종의 함정" 설명 근거로만.
+</p>
+<p style="font-size:12px; color:#c5221f; max-width:760px;">⚠ 한계: 일별 데이터 13개월·단일 장세 / D+1 <b>종가</b> 진입(시가 없음) / 상폐 생존편향(실제는 더 나쁠 가능성) / 종목당 평균 24회 중복 신호로 t 과장.
+3년 백필 후 <code>scripts/backtest_inst_streak_sweep.py --from</code>로 재실행. 원장:
+<a href="https://github.com/DavidCho10004/event-and-money/blob/master/data/processed/backtest/inst_streak_sweep.csv">inst_streak_sweep.csv</a> ·
+<a href="https://github.com/DavidCho10004/event-and-money/blob/master/data/processed/backtest/inst_streak_summary.csv">inst_streak_summary.csv</a>
+</p>
+</details>
+
+{% endif %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
 const C = {{ data.curve | tojson }};
